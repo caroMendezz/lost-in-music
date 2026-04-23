@@ -7,11 +7,28 @@ const Mensajes = sequelize.define('mensajes', {
     primaryKey: true,
     autoIncrement: true
   },
-  id_emisor: DataTypes.INTEGER(11),
-  id_receptor: DataTypes.INTEGER(11),
-  contenido: DataTypes.TEXT,
-  fecha: DataTypes.DATE,
-  leído: DataTypes.TINYINT(1)
+    id_emisor: {
+    type: DataTypes.INTEGER(11),
+    allowNull: false,
+    unique: true
+  },
+    id_receptor: {
+    type: DataTypes.INTEGER(11),
+    allowNull: false,
+    unique: true
+  },
+    contenido: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
+    fecha: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+    leído: {
+    type: DataTypes.TINYINT(1),
+    allowNull: false,
+  },
 });
 
 module.exports = {

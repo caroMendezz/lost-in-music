@@ -7,8 +7,32 @@ const Producto = sequelize.define('producto', {
     primaryKey: true,
     autoIncrement: true
   },
-  título: DataTypes.STRING(150),
-  categoría: DataTypes.STRING(100),
+  título: {
+    type: DataTypes.STRING(150),
+    allowNull: false,
+    unique: true
+  },
+  categoria: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    unique: true
+  },
+  estado: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    unique: true
+  },
+  disponibilidad: {
+    type: DataTypes.TINYINT(1),
+    allowNull: false,
+    unique: true
+  },
+    título: {
+    type: DataTypes.STRING(150),
+    allowNull: false,
+    unique: true
+  },
+
   estado: DataTypes.STRING(50),
   disponibilidad: DataTypes.TINYINT(1),
   ubicación: DataTypes.STRING(150),

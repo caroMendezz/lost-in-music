@@ -2,14 +2,27 @@ const sequelize = require("../config/db");
 const { DataTypes} = require("sequelize")
 
 const Publicaciones = sequelize.define('publicaciones', {
-  id_usuario: DataTypes.INTEGER(11),
+    id_usuario: {
+    type: DataTypes.INTEGER(11),
+    allowNull: false,
+    unique: true
+  },
   id_publicacion: {
     type: DataTypes.INTEGER(11),
     primaryKey: true,
     autoIncrement: true
   },
-  guardado: DataTypes.TINYINT(1),
-  likes: DataTypes.TINYINT(1)
+    guardado: {
+    type: DataTypes.TINYINT(1),
+    allowNull: false,
+    unique: true
+  },
+    likes: {
+    type: DataTypes.TINYINT(1),
+    allowNull: false,
+    unique: true
+  },
+
 });
 
 module.exports = {

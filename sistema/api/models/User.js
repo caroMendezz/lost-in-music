@@ -7,20 +7,72 @@ const Usuario = sequelize.define('usuario', {
     primaryKey: true,
     autoIncrement: true
   },
-  nombre: DataTypes.STRING(100),
-  email: DataTypes.STRING(100),
-  contraseña: DataTypes.STRING(255),
-  descripcion: DataTypes.TEXT,
-  DVH: DataTypes.STRING(255),
-  rol: DataTypes.STRING(50),
-  eliminado: DataTypes.TINYINT(1),
-  cant_seguidores: DataTypes.INTEGER(11),
-  cant_seguidos: DataTypes.INTEGER(11),
-  foto_perfil: DataTypes.STRING(255),
-  banner: DataTypes.STRING(255),
-  id_amigo: DataTypes.INTEGER(11),
-  ubicacion: DataTypes.STRING(150),
-  fecha_penalizacion: DataTypes.DATE
+
+  nombre: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    unique: true
+  },
+
+    email: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    unique: true
+  },
+
+    contraseña: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+  },
+
+    descripcion: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
+
+    DVH: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+    unique: true
+  },
+
+    rol: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+  },
+    eliminado: {
+    type: DataTypes.TINYINT(1),
+    allowNull: false,
+  },
+    cant_seguidores: {
+    type: DataTypes.INTEGER(11),
+    allowNull: false,
+  },
+    cant_seguidos: {
+    type: DataTypes.INTEGER(11),
+    allowNull: false,
+  },
+    foto_perfil: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+  },
+    banner: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+  },
+    id_amigo: {
+    type: DataTypes.INTEGER(11),
+    allowNull: false,
+  },
+    ubicacion: {
+    type: DataTypes.STRING(150),
+    allowNull: false,
+  },
+    fecha_penalizacion: {
+    type: DataTypes.STRING(150),
+    allowNull: false,
+  },
+
 });
 
 module.exports = {

@@ -7,10 +7,25 @@ const Bitacora = sequelize.define('bitácora', {
     primaryKey: true,
     autoIncrement: true
   },
-  fecha: DataTypes.DATE,
-  tipo_accion: DataTypes.STRING(100),
-  descripcion: DataTypes.TEXT,
-  usuario_id: DataTypes.INTEGER(11)
+    fecha: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+    tipo_accion: {
+    type: DataTypes.STRING(100),
+    allowNull: false,
+    unique: true
+  },
+    descripcion: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+    unique: true
+  },
+    usuario_id: {
+    type: DataTypes.INTEGER(11),
+    allowNull: false,
+    unique: true
+  },
 });
 
 module.exports = {

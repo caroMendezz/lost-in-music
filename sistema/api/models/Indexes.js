@@ -7,11 +7,26 @@ const Indexes = sequelize.define('indexes', {
     primaryKey: true,
     autoIncrement: true
   },
-  descripcion: DataTypes.TEXT,
-  multimedia: DataTypes.STRING(255),
-  cant_likes: DataTypes.INTEGER(11),
-  es_comentarios: DataTypes.TINYINT(1),
-  cant_compartidos: DataTypes.INTEGER(11)
+    descripcion: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
+    multimedia: {
+    type: DataTypes.STRING(255),
+    allowNull: false,
+  },
+    cant_likes: {
+    type: DataTypes.INTEGER(11),
+    allowNull: false,
+  },
+    es_comentarios: {
+    type: DataTypes.TINYINT(1),
+    allowNull: false,
+  },
+    cant_compartidos: {
+    type: DataTypes.INTEGER(11),
+    allowNull: false,
+  },
 });
 
 module.exports = {
