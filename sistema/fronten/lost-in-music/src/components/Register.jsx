@@ -9,23 +9,25 @@ export default function Register({ onLoginClick }) {
     password: '',
   });
 
+  const [showPassword, setShowPassword] = useState(false);
+  const [nombreValido, setNombreValido] = useState(false);
+  const [nombreTouched, setNombreTouched] = useState(false);
+
   const [isPlaying, setIsPlaying] = useState(false);
   const bgMusicRef = useRef(null);
 
   useEffect(() => {
-    // Inicialización del audio de fondo 
     bgMusicRef.current = new Audio('/background-music.mp3');
     bgMusicRef.current.volume = 0.2;
     bgMusicRef.current.loop = true;
     bgMusicRef.current.preload = 'auto';
 
-    // Intento de reproducción automática (puede ser bloqueado por el navegador)
     const playAttempt = bgMusicRef.current.play();
     if (playAttempt !== undefined) {
       playAttempt
         .then(() => setIsPlaying(true))
         .catch(() => {
-          console.log("Autoplay bloqueado: El usuario debe interactuar primero.");
+          console.log('Autoplay bloqueado: El usuario debe interactuar primero.');
           setIsPlaying(false);
         });
     }
@@ -47,29 +49,41 @@ export default function Register({ onLoginClick }) {
     setIsPlaying(!isPlaying);
   };
 
+  // Valida que haya al menos dos palabras con 2+ caracteres cada una
+  const validarNombreCompleto = (valor) => {
+    const palabras = valor.trim().split(/\s+/).filter((p) => p.length >= 2);
+    return palabras.length >= 2;
+  };
+
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    if (name === 'nombreCompleto') {
+      setNombreValido(validarNombreCompleto(value));
+    }
+  };
+
+  const handleNombreBlur = () => {
+    setNombreTouched(true);
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     const clickAudio = new Audio('/soundClick.mp3');
-    clickAudio.volume = 0.10;
+    clickAudio.volume = 0.1;
     clickAudio.play();
-
     console.log('Datos de registro:', formData);
   };
 
+  const showNombreError = nombreTouched && !nombreValido && formData.nombreCompleto.length > 0;
+
   return (
     <div className="register-bg">
-    {/* --- REPRODUCTOR MINI ESTILO RETRO --- */}
+      {/* --- REPRODUCTOR MINI ESTILO RETRO --- */}
       <div className="music-player-mini">
         <div className="player-left-section">
-          <button className="player-main-btn" onClick={toggleMusic} title={isPlaying ? "Pausar" : "Reproducir"}>
+          <button className="player-main-btn" onClick={toggleMusic} title={isPlaying ? 'Pausar' : 'Reproducir'}>
             {isPlaying ? (
               <svg width="20" height="20" viewBox="0 0 24 24" fill="#555">
                 <rect x="6" y="4" width="4" height="16" />
@@ -103,6 +117,7 @@ export default function Register({ onLoginClick }) {
           </div>
         </div>
       </div>
+
       {/* Bubbles decorativas */}
       <div className="bubble bubble-1" />
       <div className="bubble bubble-2" />
@@ -115,11 +130,7 @@ export default function Register({ onLoginClick }) {
         {/* Logo */}
         <div className="register-logo-wrapper">
           <div className="register-logo">
-            <img
-              src="/logoo.png"
-              alt="Logo Lost In Music"
-              className="register-logo-img"
-            />
+            <img src="/logoo.png" alt="Logo Lost In Music" className="register-logo-img" />
           </div>
         </div>
 
@@ -129,31 +140,18 @@ export default function Register({ onLoginClick }) {
 
         {/* Formulario */}
         <form onSubmit={handleSubmit}>
-          {/* Full Name */}
+
+          {/* ── Nombre Completo ── */}
           <div className="register-field-group">
-            <label
-              className="register-label"
-              htmlFor="nombreCompleto"
-            >
+            <label className="register-label" htmlFor="nombreCompleto">
               Nombre Completo
             </label>
 
             <div className="register-input-wrapper">
               <span className="register-input-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                  <circle
-                    cx="12"
-                    cy="8"
-                    r="4"
-                    stroke="#7ab8d8"
-                    strokeWidth="2"
-                  />
-                  <path
-                    d="M4 20c0-4 3.6-7 8-7s8 3 8 7"
-                    stroke="#7ab8d8"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
+                  <circle cx="12" cy="8" r="4" stroke="#7ab8d8" strokeWidth="2" />
+                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </span>
 
@@ -161,46 +159,53 @@ export default function Register({ onLoginClick }) {
                 id="nombreCompleto"
                 name="nombreCompleto"
                 type="text"
-                className="register-input"
+                className={`register-input ${showNombreError ? 'input-error' : ''}`}
                 placeholder="Tu nombre completo"
                 value={formData.nombreCompleto}
                 onChange={handleChange}
+                onBlur={handleNombreBlur}
                 autoComplete="name"
               />
+
+              {/* Tilde verde — nombre válido */}
+              {nombreValido && (
+                <span className="input-status-icon input-check">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="11" fill="#4cce8a" />
+                    <path d="M7 12.5l3.5 3.5 6.5-7" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                </span>
+              )}
+
+              {/* Cruz roja — tocado y no válido */}
+              {showNombreError && (
+                <span className="input-status-icon input-cross">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="11" fill="#f06060" />
+                    <path d="M8 8l8 8M16 8l-8 8" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" />
+                  </svg>
+                </span>
+              )}
             </div>
 
-            <p className="register-hint">
-              Ingresá nombre y apellido para que tus amigos te reconozcan.
+            <p className={`register-hint ${showNombreError ? 'hint-error' : ''}`}>
+              {showNombreError
+                ? 'Ingresá tu nombre y apellido para continuar.'
+                : 'Ingresá nombre y apellido para que tus amigos te reconozcan.'}
             </p>
           </div>
 
-          {/* Email */}
+          {/* ── Email ── */}
           <div className="register-field-group">
-            <label
-              className="register-label"
-              htmlFor="email"
-            >
+            <label className="register-label" htmlFor="email">
               Email
             </label>
 
             <div className="register-input-wrapper">
               <span className="register-input-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                  <rect
-                    x="3"
-                    y="5"
-                    width="18"
-                    height="14"
-                    rx="2"
-                    stroke="#7ab8d8"
-                    strokeWidth="2"
-                  />
-                  <path
-                    d="M3 7l9 6 9-6"
-                    stroke="#7ab8d8"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
+                  <rect x="3" y="5" width="18" height="14" rx="2" stroke="#7ab8d8" strokeWidth="2" />
+                  <path d="M3 7l9 6 9-6" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </span>
 
@@ -217,50 +222,58 @@ export default function Register({ onLoginClick }) {
             </div>
 
             <p className="register-hint">
-              Te enviaremos novedades y alertas de actividad musical.
+              Te vamos a mantener al tanto de las novedades y alertas del sitio.
             </p>
           </div>
 
-          {/* Password */}
+          {/* ── Contraseña con ojito ── */}
           <div className="register-field-group">
-            <label
-              className="register-label"
-              htmlFor="password"
-            >
-              Password
+            <label className="register-label" htmlFor="password">
+              Contraseña
             </label>
 
             <div className="register-input-wrapper">
               <span className="register-input-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                  <rect
-                    x="5"
-                    y="11"
-                    width="14"
-                    height="10"
-                    rx="2"
-                    stroke="#7ab8d8"
-                    strokeWidth="2"
-                  />
-                  <path
-                    d="M8 11V7a4 4 0 118 0v4"
-                    stroke="#7ab8d8"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                  />
+                  <rect x="5" y="11" width="14" height="10" rx="2" stroke="#7ab8d8" strokeWidth="2" />
+                  <path d="M8 11V7a4 4 0 118 0v4" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round" />
                 </svg>
               </span>
 
               <input
                 id="password"
                 name="password"
-                type="password"
-                className="register-input"
+                type={showPassword ? 'text' : 'password'}
+                className="register-input input-with-toggle"
                 placeholder="Crea una contraseña"
                 value={formData.password}
                 onChange={handleChange}
                 autoComplete="new-password"
               />
+
+              {/* Botón ojito */}
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword((prev) => !prev)}
+                title={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                tabIndex={-1}
+              >
+                {showPassword ? (
+                  /* Ojo abierto */
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+                    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <circle cx="12" cy="12" r="3" stroke="#7ab8d8" strokeWidth="2" />
+                  </svg>
+                ) : (
+                  /* Ojo tachado */
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+                    <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    <line x1="1" y1="1" x2="23" y2="23" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round" />
+                  </svg>
+                )}
+              </button>
             </div>
 
             <p className="register-hint">
@@ -269,10 +282,7 @@ export default function Register({ onLoginClick }) {
           </div>
 
           {/* Botón */}
-          <button
-            type="submit"
-            className="register-btn"
-          >
+          <button type="submit" className="register-btn">
             Crear Cuenta
           </button>
         </form>
