@@ -1,8 +1,8 @@
 const sequelize = require("../config/db");
 const { DataTypes} = require("sequelize")
 
-const Usuario = sequelize.define('usuario', {
-  id: {
+const Usuario = sequelize.define('Usuario', {
+  idusuario: {
     type: DataTypes.INTEGER(11),
     primaryKey: true,
     autoIncrement: true
@@ -14,61 +14,61 @@ const Usuario = sequelize.define('usuario', {
     unique: true
   },
 
-    email: {
+  email: {
     type: DataTypes.STRING(100),
     allowNull: false,
     unique: true
   },
 
-    contraseña: {
+  contraseña: {
     type: DataTypes.STRING(100),
     allowNull: false,
   },
 
-    descripcion: {
+  descripcion: {
     type: DataTypes.TEXT,
     allowNull: false,
   },
 
-    DVH: {
+  DVH: {
     type: DataTypes.STRING(255),
     allowNull: false,
     unique: true
   },
 
-    rol: {
+  rol: {
     type: DataTypes.STRING(50),
     allowNull: false,
   },
-    eliminado: {
+  eliminado: {
     type: DataTypes.TINYINT(1),
     allowNull: false,
   },
-    cant_seguidores: {
+  cant_seguidores: {
     type: DataTypes.INTEGER(11),
     allowNull: false,
   },
-    cant_seguidos: {
+  cant_seguidos: {
     type: DataTypes.INTEGER(11),
     allowNull: false,
   },
-    foto_perfil: {
+  foto_perfil: {
     type: DataTypes.STRING(255),
     allowNull: false,
   },
-    banner: {
+  banner: {
     type: DataTypes.STRING(255),
     allowNull: false,
   },
-    id_amigo: {
+  id_amigo: {
     type: DataTypes.INTEGER(11),
     allowNull: false,
   },
-    ubicacion: {
+  ubicacion: {
     type: DataTypes.STRING(150),
     allowNull: false,
   },
-    fecha_penalizacion: {
+  fecha_penalizacion: {
     type: DataTypes.STRING(150),
     allowNull: false,
   },
