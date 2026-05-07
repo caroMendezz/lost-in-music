@@ -1,32 +1,36 @@
 // MusicPlayerMini.jsx
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import './MusicPlayerMini.css';
 
 export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
   const [volume, setVolume]           = useState(0.2);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration]       = useState(0);
+  const [isDragging, setIsDragging]   = useState(false);
   const progressRef                   = useRef(null);
 
   // Refs para hold-to-change-volume
   const volIntervalRef = useRef(null);
   const volTimeoutRef  = useRef(null);
 
+  // Ref para saber si estamos arrastrando (accesible desde listeners globales)
+  const isDraggingRef = useRef(false);
+
   const songTitle  = 'Speed of Sound';
   const songArtist = 'Coldplay';
 
-  // ── Sync de progreso: intervalo cada 250ms leyendo audioRef.current en cada tick ──
+  // ── Sync de progreso: intervalo cada 250ms ──
   useEffect(() => {
     const interval = setInterval(() => {
+      // No actualizar currentTime mientras el usuario arrastra
+      if (isDraggingRef.current) return;
+
       const audio = audioRef?.current;
       if (!audio) return;
 
-      // Sync duration cuando esté disponible
       if (audio.duration && !isNaN(audio.duration)) {
         setDuration(audio.duration);
       }
-
-      // Sync currentTime siempre
       setCurrentTime(audio.currentTime);
     }, 250);
 
@@ -54,6 +58,90 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
     clearTimeout(volTimeoutRef.current);
   }, []);
 
+  // ── Helper: calcular ratio a partir de un evento de mouse/touch ──
+  const getRatioFromEvent = useCallback((clientX) => {
+    const rect = progressRef.current?.getBoundingClientRect();
+    if (!rect) return null;
+    return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
+  }, []);
+
+  // ── Aplicar seek al audio ──
+  const seekToRatio = useCallback((ratio) => {
+    const audio = audioRef?.current;
+    if (!audio) return;
+    const dur = audio.duration && !isNaN(audio.duration) ? audio.duration : 0;
+    if (!dur) return;
+    const newTime = ratio * dur;
+    audio.currentTime = newTime;
+    setCurrentTime(newTime);
+  }, [audioRef]);
+
+  // ── Drag handlers ──
+  const handleProgressMouseDown = useCallback((e) => {
+    e.preventDefault();
+    isDraggingRef.current = true;
+    setIsDragging(true);
+
+    const ratio = getRatioFromEvent(e.clientX);
+    if (ratio !== null) seekToRatio(ratio);
+  }, [getRatioFromEvent, seekToRatio]);
+
+  const handleProgressTouchStart = useCallback((e) => {
+    isDraggingRef.current = true;
+    setIsDragging(true);
+
+    const touch = e.touches[0];
+    const ratio = getRatioFromEvent(touch.clientX);
+    if (ratio !== null) seekToRatio(ratio);
+  }, [getRatioFromEvent, seekToRatio]);
+
+  // Listeners globales para mousemove/mouseup (se registran solo mientras se arrastra)
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const onMouseMove = (e) => {
+      if (!isDraggingRef.current) return;
+      const ratio = getRatioFromEvent(e.clientX);
+      if (ratio !== null) seekToRatio(ratio);
+    };
+
+    const onMouseUp = (e) => {
+      isDraggingRef.current = false;
+      setIsDragging(false);
+      const ratio = getRatioFromEvent(e.clientX);
+      if (ratio !== null) seekToRatio(ratio);
+    };
+
+    const onTouchMove = (e) => {
+      if (!isDraggingRef.current) return;
+      const touch = e.touches[0];
+      const ratio = getRatioFromEvent(touch.clientX);
+      if (ratio !== null) seekToRatio(ratio);
+    };
+
+    const onTouchEnd = (e) => {
+      isDraggingRef.current = false;
+      setIsDragging(false);
+      if (e.changedTouches.length > 0) {
+        const touch = e.changedTouches[0];
+        const ratio = getRatioFromEvent(touch.clientX);
+        if (ratio !== null) seekToRatio(ratio);
+      }
+    };
+
+    document.addEventListener('mousemove', onMouseMove);
+    document.addEventListener('mouseup',   onMouseUp);
+    document.addEventListener('touchmove', onTouchMove, { passive: true });
+    document.addEventListener('touchend',  onTouchEnd);
+
+    return () => {
+      document.removeEventListener('mousemove', onMouseMove);
+      document.removeEventListener('mouseup',   onMouseUp);
+      document.removeEventListener('touchmove', onTouchMove);
+      document.removeEventListener('touchend',  onTouchEnd);
+    };
+  }, [isDragging, getRatioFromEvent, seekToRatio]);
+
   // ── Acciones ──
   const togglePlay = () => {
     const audio = audioRef?.current;
@@ -78,7 +166,6 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
     setCurrentTime(audio.currentTime);
   };
 
-  // Cambio de volumen con aplicación inmediata al elemento audio
   const applyVolume = (delta) => {
     setVolume((prev) => {
       const next = Math.min(1, Math.max(0, parseFloat((prev + delta).toFixed(2))));
@@ -88,9 +175,8 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
     });
   };
 
-  // Hold-to-change: mousedown inicia el repeat, mouseup/mouseleave lo cancela
   const startHoldVolume = (delta) => {
-    applyVolume(delta); // primer cambio inmediato
+    applyVolume(delta);
     volTimeoutRef.current = setTimeout(() => {
       volIntervalRef.current = setInterval(() => applyVolume(delta), 80);
     }, 350);
@@ -99,17 +185,6 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
   const stopHoldVolume = () => {
     clearTimeout(volTimeoutRef.current);
     clearInterval(volIntervalRef.current);
-  };
-
-  const handleProgressClick = (e) => {
-    const audio = audioRef?.current;
-    if (!audio) return;
-    const dur = audio.duration && !isNaN(audio.duration) ? audio.duration : 0;
-    if (!dur) return;
-    const rect  = progressRef.current.getBoundingClientRect();
-    const ratio = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
-    audio.currentTime = ratio * dur;
-    setCurrentTime(audio.currentTime);
   };
 
   const formatTime = (s) => {
@@ -159,7 +234,7 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
             </svg>
           </button>
 
-          {/* Volumen + — hold to repeat */}
+          {/* Volumen + */}
           <button
             className="wmp-btn wmp-btn-top"
             onMouseDown={() => startHoldVolume(0.05)}
@@ -174,7 +249,7 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
             </svg>
           </button>
 
-          {/* Volumen - — hold to repeat */}
+          {/* Volumen - */}
           <button
             className="wmp-btn wmp-btn-bottom"
             onMouseDown={() => startHoldVolume(-0.05)}
@@ -215,9 +290,18 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
               <span className="wmp-title">{songTitle}</span>
             </div>
 
-            <div className="wmp-progress-track" ref={progressRef} onClick={handleProgressClick}>
+            {/* Progress track con soporte de drag */}
+            <div
+              className={`wmp-progress-track${isDragging ? ' wmp-progress-dragging' : ''}`}
+              ref={progressRef}
+              onMouseDown={handleProgressMouseDown}
+              onTouchStart={handleProgressTouchStart}
+            >
               <div className="wmp-progress-fill" style={{ width: `${progress}%` }} />
-              <div className="wmp-progress-knob" style={{ left: `calc(${progress}% - 5px)` }} />
+              <div
+                className={`wmp-progress-knob${isDragging ? ' wmp-knob-active' : ''}`}
+                style={{ left: `calc(${progress}% - 5px)` }}
+              />
             </div>
 
             <div className="wmp-time-row">

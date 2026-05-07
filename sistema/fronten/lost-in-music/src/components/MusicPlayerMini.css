@@ -13,7 +13,7 @@
   align-items: center;
   gap: 0;
 
-  border-radius: 40px;
+  border-radius: 50px;
   padding: 10px 16px 10px 10px;
 
   background:
@@ -115,14 +115,12 @@
   align-items: center;
   justify-content: center;
   color: rgba(30,80,140,0.80);
-  /* FIX 4: transición muy sutil, sin bounce exagerado */
   transition: color 0.12s, opacity 0.1s;
   border-radius: 50%;
   padding: 4px;
 }
 
 .wmp-btn:hover  { color: rgba(10,50,120,1); }
-/* FIX 4: :active solo baja la opacidad levemente, sin escalar */
 .wmp-btn:active { opacity: 0.55; }
 
 /* Centro: Play/Pause */
@@ -145,28 +143,24 @@
     linear-gradient(180deg, #eef7ff 0%, #c0e2ff 100%);
 }
 
-/* Retroceder — izquierda */
 .wmp-btn-left {
   left: 4px;
   top: 50%;
   transform: translateY(-50%);
 }
 
-/* FIX 3: Avanzar — derecha */
 .wmp-btn-right {
   right: 4px;
   top: 50%;
   transform: translateY(-50%);
 }
 
-/* Volumen + — arriba */
 .wmp-btn-top {
   top: 4px;
   left: 50%;
   transform: translateX(-50%);
 }
 
-/* Volumen - — abajo */
 .wmp-btn-bottom {
   bottom: 4px;
   left: 50%;
@@ -182,7 +176,7 @@
 }
 
 .wmp-screen-bezel {
-  border-radius: 14px;
+  border-radius: 27px;
   padding: 3px;
 
   background: linear-gradient(180deg, #8ab8d8 0%, #5a90c0 50%, #7aafd8 100%);
@@ -194,7 +188,7 @@
 }
 
 .wmp-screen {
-  border-radius: 12px;
+  border-radius: 25px;
   padding: 9px 12px 8px;
   position: relative;
   overflow: hidden;
@@ -234,7 +228,6 @@
   margin-bottom: 3px;
 }
 
-/* FIX 5: dot con dos variantes de color */
 .wmp-playing-dot {
   width: 6px;
   height: 6px;
@@ -271,7 +264,6 @@
   color: rgba(120,220,255,0.95);
   text-transform: uppercase;
   font-family: 'Courier New', monospace;
-  /* transición suave al cambiar texto */
   transition: color 0.2s;
 }
 
@@ -313,7 +305,9 @@
 .wmp-separator { opacity: 0.6; }
 .wmp-title     { font-weight: 400; }
 
-/* Barra de progreso */
+/* ════════════════════════════════════════════
+   BARRA DE PROGRESO — con soporte drag
+════════════════════════════════════════════ */
 .wmp-progress-track {
   position: relative;
   height: 6px;
@@ -325,13 +319,27 @@
   box-shadow: inset 0 1px 3px rgba(0,0,0,0.35);
 }
 
+/* Estado activo mientras se arrastra */
+.wmp-progress-track.wmp-progress-dragging {
+  cursor: grabbing;
+}
+
+.wmp-progress-track:hover .wmp-progress-knob,
+.wmp-progress-track.wmp-progress-dragging .wmp-progress-knob {
+  transform: scale(1.3);
+  box-shadow:
+    0 1px 6px rgba(0,60,150,0.45),
+    0 0 10px rgba(100,200,255,0.65);
+}
+
 .wmp-progress-fill {
   height: 100%;
   border-radius: 6px;
   background: linear-gradient(90deg, #5ad8f8 0%, #78e8ff 60%, #a0f0ff 100%);
   box-shadow: 0 0 6px rgba(100,220,255,0.60);
-  /* FIX 2: sin transition para que el knob siga en tiempo real */
   pointer-events: none;
+  position: relative;
+  top: 0;
 }
 
 .wmp-progress-knob {
@@ -345,6 +353,15 @@
   box-shadow: 0 1px 4px rgba(0,60,150,0.35), 0 0 6px rgba(100,200,255,0.45);
   pointer-events: none;
   /* FIX 2: sin transition para movimiento fluido real */
+}
+
+/* Knob más grande y brillante mientras se arrastra */
+.wmp-progress-knob.wmp-knob-active {
+  transform: scale(1.35);
+  background: radial-gradient(circle at 35% 30%, #ffffff, #d0f4ff);
+  box-shadow:
+    0 2px 8px rgba(0,60,150,0.50),
+    0 0 14px rgba(100,220,255,0.80);
 }
 
 /* Fila de tiempos */
