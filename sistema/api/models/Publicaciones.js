@@ -15,12 +15,10 @@ const Publicaciones = sequelize.define('publicaciones', {
     guardado: {
     type: DataTypes.TINYINT(1),
     allowNull: false,
-    unique: true
   },
     likes: {
     type: DataTypes.TINYINT(1),
     allowNull: false,
-    unique: true
   },
 
 });

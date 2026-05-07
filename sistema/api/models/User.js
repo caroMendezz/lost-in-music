@@ -5,7 +5,8 @@ const Usuario = sequelize.define('Usuario', {
   idusuario: {
     type: DataTypes.INTEGER(11),
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    unique: true
   },
 
   nombre: {
@@ -32,8 +33,7 @@ const Usuario = sequelize.define('Usuario', {
 
   DVH: {
     type: DataTypes.STRING(255),
-    allowNull: false,
-    unique: true
+    allowNull: false
   },
 
   rol: {

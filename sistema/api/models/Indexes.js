@@ -5,7 +5,8 @@ const Indexes = sequelize.define('indexes', {
   id: {
     type: DataTypes.INTEGER(11),
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    unique: true
   },
     descripcion: {
     type: DataTypes.TEXT,

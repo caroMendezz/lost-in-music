@@ -5,11 +5,22 @@ const Notificacion = sequelize.define('notificación', {
   id: {
     type: DataTypes.INTEGER(11),
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    unique: true
   },
-  fecha: DataTypes.DATE,
-  título: DataTypes.STRING(150),
-  descripcion: DataTypes.TEXT
+  fecha: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+  título: {
+    type: DataTypes.STRING(150),
+    allowNull: false,
+  },
+
+  descripcion: {
+    type: DataTypes.TEXT,
+    allowNull: false,
+  },
 });
 
 module.exports = {

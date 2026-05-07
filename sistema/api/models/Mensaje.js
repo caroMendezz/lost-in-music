@@ -5,7 +5,8 @@ const Mensajes = sequelize.define('mensajes', {
   id: {
     type: DataTypes.INTEGER(11),
     primaryKey: true,
-    autoIncrement: true
+    autoIncrement: true,
+    unique: true
   },
     id_emisor: {
     type: DataTypes.INTEGER(11),
