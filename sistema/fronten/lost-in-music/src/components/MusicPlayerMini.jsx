@@ -16,8 +16,8 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
   // Ref para saber si estamos arrastrando (accesible desde listeners globales)
   const isDraggingRef = useRef(false);
 
-  const songTitle  = 'Speed of Sound';
-  const songArtist = 'Coldplay';
+  const songTitle  = 'LEASE';
+  const songArtist = 'Takeshi Abo';
 
   // ── Sync de progreso: intervalo cada 250ms ──
   useEffect(() => {
