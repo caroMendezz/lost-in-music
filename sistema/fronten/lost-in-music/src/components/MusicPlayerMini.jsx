@@ -9,20 +9,20 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
   const [isDragging, setIsDragging]   = useState(false);
   const progressRef                   = useRef(null);
 
-  // Refs para hold-to-change-volume
+
   const volIntervalRef = useRef(null);
   const volTimeoutRef  = useRef(null);
 
-  // Ref para saber si estamos arrastrando (accesible desde listeners globales)
+
   const isDraggingRef = useRef(false);
 
   const songTitle  = 'LEASE';
   const songArtist = 'Takeshi Abo';
 
-  // ── Sync de progreso: intervalo cada 250ms ──
+
   useEffect(() => {
     const interval = setInterval(() => {
-      // No actualizar currentTime mientras el usuario arrastra
+
       if (isDraggingRef.current) return;
 
       const audio = audioRef?.current;
@@ -52,20 +52,20 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
     if (audio) audio.volume = volume;
   }, [volume, audioRef]);
 
-  // Cleanup hold-volume al desmontar
+
   useEffect(() => () => {
     clearInterval(volIntervalRef.current);
     clearTimeout(volTimeoutRef.current);
   }, []);
 
-  // ── Helper: calcular ratio a partir de un evento de mouse/touch ──
+
   const getRatioFromEvent = useCallback((clientX) => {
     const rect = progressRef.current?.getBoundingClientRect();
     if (!rect) return null;
     return Math.max(0, Math.min(1, (clientX - rect.left) / rect.width));
   }, []);
 
-  // ── Aplicar seek al audio ──
+
   const seekToRatio = useCallback((ratio) => {
     const audio = audioRef?.current;
     if (!audio) return;
@@ -76,7 +76,7 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
     setCurrentTime(newTime);
   }, [audioRef]);
 
-  // ── Drag handlers ──
+
   const handleProgressMouseDown = useCallback((e) => {
     e.preventDefault();
     isDraggingRef.current = true;
@@ -95,7 +95,7 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
     if (ratio !== null) seekToRatio(ratio);
   }, [getRatioFromEvent, seekToRatio]);
 
-  // Listeners globales para mousemove/mouseup (se registran solo mientras se arrastra)
+
   useEffect(() => {
     if (!isDragging) return;
 
@@ -142,7 +142,7 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
     };
   }, [isDragging, getRatioFromEvent, seekToRatio]);
 
-  // ── Acciones ──
+  //Acciones
   const togglePlay = () => {
     const audio = audioRef?.current;
     if (!audio) return;
@@ -201,7 +201,7 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
     <div className="wmp-shell">
       <div className="wmp-shell-gloss" />
 
-      {/* ── Disco de control ── */}
+      {/* Disco de control*/}
       <div className="wmp-disc-area">
         <div className="wmp-disc">
           <div className="wmp-disc-ring" />
@@ -290,7 +290,7 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
               <span className="wmp-title">{songTitle}</span>
             </div>
 
-            {/* Progress track con soporte de drag */}
+            {/* Progress track*/}
             <div
               className={`wmp-progress-track${isDragging ? ' wmp-progress-dragging' : ''}`}
               ref={progressRef}

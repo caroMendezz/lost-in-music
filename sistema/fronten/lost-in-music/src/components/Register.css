@@ -488,9 +488,9 @@
   font-size: 0.78rem;
 }
 
-/* ════════════════════════════
+/*
    FOTO DE PERFIL
-════════════════════════════ */
+*/
 .photo-area {
   display: flex;
   align-items: center;
@@ -580,9 +580,9 @@
   margin: 0;
 }
 
-/* ════════════════════════════
-   GÉNERO
-════════════════════════════ */
+/*
+   GENERO
+ */
 .genero-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -607,7 +607,6 @@
   text-align: left;
 }
 
-/* El botón "Prefiero no decir" ocupa todo el ancho */
 .genero-btn:last-child { grid-column: 1 / -1; }
 
 .genero-btn:hover {
@@ -634,9 +633,9 @@
 
 .genero-label { line-height: 1.2; }
 
-/* ════════════════════════════
+/*
    FECHA DE NACIMIENTO
-════════════════════════════ */
+*/
 .dob-row {
   display: flex;
   gap: 8px;

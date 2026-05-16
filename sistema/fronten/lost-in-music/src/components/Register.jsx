@@ -10,7 +10,7 @@ const calcPasswordStrength = (pwd) => {
   if (/[A-Z]/.test(pwd)) score++;
   if (/[0-9]/.test(pwd)) score++;
   if (/[^A-Za-z0-9]/.test(pwd)) score++;
-  return score; // 0–5
+  return score;
 };
 
 const strengthLabel = ['', 'Muy débil', 'Débil', 'Regular', 'Buena', 'Fuerte'];
@@ -35,8 +35,8 @@ const DAYS   = Array.from({ length: 31  }, (_, i) => i + 1);
 
 export default function Register({ onLoginClick }) {
   //paso actual
-  const [step, setStep] = useState(0); // 0 = card1, 1 = card2
-  const [slideDir, setSlideDir] = useState('idle'); // 'toLeft' | 'idle'
+  const [step, setStep] = useState(0);
+  const [slideDir, setSlideDir] = useState('idle');
 
   //datos
   const [formData, setFormData] = useState({
@@ -52,14 +52,14 @@ export default function Register({ onLoginClick }) {
     fotoPreview   : null,
   });
 
-  const [showPassword,   setShowPassword]   = useState(false);
-  const [showConfirm,    setShowConfirm]     = useState(false);
-  const [touched,        setTouched]         = useState({});
-  const [isPlaying,      setIsPlaying]       = useState(false);
+  const [showPassword,setShowPassword] = useState(false);
+  const [showConfirm,setShowConfirm]= useState(false);
+  const [touched,setTouched] = useState({});
+  const [isPlaying,setIsPlaying] = useState(false);
 
-  const bgMusicRef  = useRef(null);
-  const fileInputRef = useRef(null);
-  const sliderRef    = useRef(null);
+  const bgMusicRef= useRef(null);
+  const fileInputRef= useRef(null);
+  const sliderRef = useRef(null);
 
   //Audio
   useEffect(() => {
@@ -150,12 +150,12 @@ export default function Register({ onLoginClick }) {
         setIsPlaying={setIsPlaying}
       />
 
-      {/* Burbujas */}
+      {/*Burbujas*/}
       {[1,2,3,4,5,6].map((n) => <div key={n} className={`bubble bubble-${n}`} />)}
 
       <div className="register-card">
 
-        {/* Barra de progreso */}
+        {/*Barra de progreso*/}
         <div className="reg-progress-wrap">
           <div className="reg-progress-track">
             <div
@@ -173,7 +173,7 @@ export default function Register({ onLoginClick }) {
           </div>
         </div>
 
-        {/*Logo y título*/}
+        {/*Logo y titulo*/}
         <div className="register-logo-wrapper">
           <div className="register-logo">
             <img src="/logoo.png" alt="Logo" className="register-logo-img" />
@@ -186,11 +186,11 @@ export default function Register({ onLoginClick }) {
         <div className="reg-slider-viewport">
           <div className={sliderClass} data-step={step} ref={sliderRef}>
 
-            {/* CARD 1 — CREAR CUENTA */}
+            {/*CARD 1 - CREAR CUENTA*/}
             <div className="reg-panel">
               <form onSubmit={(e) => { e.preventDefault(); goToStep2(); }}>
 
-                {/* Nombre de usuario */}
+                {/*Nombre de usuario*/}
                 <Field
                   label="Nombre de usuario"
                   icon={<UserIcon />}
@@ -209,7 +209,7 @@ export default function Register({ onLoginClick }) {
                   />
                 </Field>
 
-                {/* Email */}
+                {/*Email*/}
                 <Field
                   label="Email"
                   icon={<MailIcon />}
@@ -228,7 +228,7 @@ export default function Register({ onLoginClick }) {
                   />
                 </Field>
 
-                {/* Contraseña */}
+                {/*Contraseña*/}
                 <Field
                   label="Contraseña"
                   icon={<LockIcon />}
@@ -257,7 +257,7 @@ export default function Register({ onLoginClick }) {
                   )}
                 </Field>
             
-                {/* Indicador fuerza */}
+                {/*Indicador fuerza*/}
                 {formData.password && (
                   <div className="pwd-strength-wrap">
                     <div className="pwd-strength-bars">
@@ -281,7 +281,7 @@ export default function Register({ onLoginClick }) {
                   </div>
                 )}
 
-                {/* Confirmar contraseña */}
+                {/*Confirmar contraseña*/}
 
                 <Field
                   label="Confirmar contraseña"
@@ -400,7 +400,7 @@ export default function Register({ onLoginClick }) {
                   Fecha de nacimiento
                 </div>
                 <div className="dob-row">
-                  {/* Día */}
+                  {/* Dia */}
                   <div className="dob-select-wrap">
                     <label className="dob-label">Día</label>
                     <div className="custom-select-wrap">
@@ -458,7 +458,7 @@ export default function Register({ onLoginClick }) {
                   </div>
                 </div>
 
-                {/* ── Botones ── */}
+                {/*Botones*/}
                 <div className="reg-btns-row">
                   <button type="button" className="register-btn register-btn--back" onClick={goToStep1}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginRight: 6 }}>
