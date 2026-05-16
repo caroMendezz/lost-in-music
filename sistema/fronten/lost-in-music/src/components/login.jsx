@@ -4,20 +4,20 @@ function Login() {
   const [emailUser, setEmailUser] = useState('');
   const [password, setPassword] = useState('');
   const [isEmailFocused, setIsEmailFocused] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
-  // Elimina el margen y padding del body al montar el componente
+  const [showPassword, setShowPassword] = useState(false);
+
+
   useEffect(() => {
-    // Guardar estilos originales por si acaso (opcional)
     const originalMargin = document.body.style.margin;
     const originalPadding = document.body.style.padding;
     const originalBackground = document.body.style.backgroundColor;
-    
-    // Forzar estilos para eliminar el borde blanco
+
     document.body.style.margin = '0';
     document.body.style.padding = '0';
-    document.body.style.backgroundColor = '#0f0c29'; // Color que combine con el fondo del gradiente
-    
-    // Restaurar al desmontar (opcional, pero limpio)
+    document.body.style.backgroundColor = '#8fd3ff';
+
     return () => {
       document.body.style.margin = originalMargin;
       document.body.style.padding = originalPadding;
@@ -45,168 +45,244 @@ function Login() {
   };
 
   const styles = {
+    
+    passwordWrapper: {
+    position: 'relative',
+    width: '100%',
+    },
+
+    passwordInput: {
+    paddingRight: '3rem',
+    },
+    passwordToggle: {
+    position: 'absolute',
+    right: '0.85rem',
+    top: '50%',
+    transform: 'translateY(-50%)',
+    border: 'none',
+    background: 'transparent',
+    cursor: 'pointer',
+    padding: '0.25rem',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    },
+
+
     container: {
-      background: 'linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)',
-      fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+      minHeight: '100vh',
+      width: '100%',
+      background:
+        'linear-gradient(180deg, #d9f2ff 0%, #83cff6 42%, #bfeeff 74%, #e9fff5 100%)',
+      fontFamily: "'Nunito', 'Segoe UI', system-ui, sans-serif",
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
-      minHeight: '100vh',
       padding: '1.5rem',
-      margin: 0,
+      boxSizing: 'border-box',
+      position: 'relative',
+      overflow: 'hidden',
     },
     card: {
-      maxWidth: '480px',
+      maxWidth: '440px',
       width: '100%',
-      background: '#000000cc',
-      borderRadius: '2rem',
-      boxShadow: '0 25px 45px -12px rgba(0, 0, 0, 0.5)',
+      position: 'relative',
+      borderRadius: '28px',
       overflow: 'hidden',
-      transition: 'transform 0.2s ease',
+      background:
+        'linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(220,245,255,0.82) 25%, rgba(190,232,252,0.78) 55%, rgba(210,242,255,0.92) 85%)',
+      border: '1px solid rgba(140,190,235,0.60)',
+      boxShadow:
+        'inset 0 4px 22px rgba(255,255,255,0.95), inset 0 -8px 14px rgba(70,130,180,0.08), 0 12px 40px rgba(60,120,190,0.22)',
+    },
+    shine: {
+      position: 'absolute',
+      top: '8px',
+      left: '5%',
+      width: '90%',
+      height: '22%',
+      background: 'linear-gradient(180deg, rgba(230,244,252,0.72) 0%, transparent 100%)',
+      borderRadius: '999px',
+      filter: 'blur(2px)',
+      pointerEvents: 'none',
+    },
+    bubbleOne: {
+      position: 'absolute',
+      width: '120px',
+      height: '120px',
+      top: '24px',
+      left: '28px',
+      borderRadius: '50%',
+      background:
+        'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.45), rgba(255,255,255,0.05))',
+      pointerEvents: 'none',
+    },
+    bubbleTwo: {
+      position: 'absolute',
+      width: '90px',
+      height: '90px',
+      top: '35px',
+      right: '34px',
+      borderRadius: '50%',
+      background:
+        'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), rgba(255,255,255,0.04))',
+      pointerEvents: 'none',
     },
     inner: {
-      padding: '2rem 1.5rem 1.8rem',
+      position: 'relative',
+      zIndex: 2,
+      padding: '2rem 2rem 1.5rem',
     },
     logo: {
-      textAlign: 'center',
-      marginBottom: '0.5rem',
+      width: '58px',
+      height: '58px',
+      margin: '0 auto 0.8rem',
+      borderRadius: '50%',
+      background:
+        'radial-gradient(circle at 30% 30%, rgba(255,255,255,0.95), rgba(255,255,255,0.15)), linear-gradient(180deg, #9fe8ff 0%, #5fcdf5 45%, #60ccfb 100%)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      border: '2px solid rgb(189,224,254)',
+      boxShadow:
+        'inset 0 2px 8px rgba(255,255,255,0.65), inset 0 -6px 10px rgba(0,0,0,0.08), 0 8px 18px rgba(80,180,240,0.30)',
+      fontSize: '1.8rem',
     },
     logoTitle: {
-      fontSize: '2rem',
+      textAlign: 'center',
+      fontSize: '1.65rem',
       fontWeight: 800,
-      background: 'linear-gradient(135deg, #b224ef 0%, #7579ff 100%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
-      letterSpacing: '-0.5px',
+      color: '#0b2a4c',
+      margin: '0',
     },
     welcome: {
       textAlign: 'center',
-      fontSize: '1.1rem',
-      color: '#e2e8f0',
-      marginBottom: '1.8rem',
+      fontSize: '0.9rem',
+      color: '#2874aa',
+      marginTop: '0.15rem',
       fontWeight: 500,
     },
     sectionTitle: {
-      fontSize: '1.6rem',
-      fontWeight: 700,
-      color: '#ffffff',
-      marginBottom: '1.5rem',
+      fontSize: '1.35rem',
+      fontWeight: 800,
+      color: '#084c9b',
+      marginBottom: '1.2rem',
       textAlign: 'center',
     },
     form: {
       display: 'flex',
       flexDirection: 'column',
-      gap: '1.2rem',
+      gap: '1rem',
     },
     inputGroup: {
       display: 'flex',
       flexDirection: 'column',
       gap: '0.4rem',
-      alignItems: 'center',
     },
     label: {
       fontSize: '0.85rem',
-      fontWeight: 600,
-      color: '#cbd5e1',
-      marginLeft: '0.25rem',
-      alignSelf: 'flex-start',
-      width: '90%',
+      fontWeight: 700,
+      color: '#084c9b',
     },
     input: {
-      width: '90%',
-      padding: '0.8rem 1.2rem',
+      width: '100%',
+      padding: '0.85rem 1rem',
       fontSize: '0.95rem',
-      border: '1.5px solid #4a5568',
-      borderRadius: '1.2rem',
-      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-      color: '#ffffff',
-      transition: 'all 0.2s',
+      border: '1px solid rgba(140,190,230,0.35)',
+      borderRadius: '13px',
+      backgroundColor: 'rgba(255,255,255,0.68)',
+      color: '#1a3a5c',
+      transition: 'border-color 0.2s, box-shadow 0.2s, background 0.2s',
       outline: 'none',
-      margin: '0 auto',
+      boxSizing: 'border-box',
+      fontFamily: 'inherit',
     },
     inputFocus: {
-      borderColor: '#b224ef',
-      boxShadow: '0 0 0 3px rgba(178, 36, 239, 0.3)',
-      backgroundColor: 'rgba(255, 255, 255, 0.2)',
+      borderColor: '#5ab3e0',
+      boxShadow: '0 0 0 3px rgba(90,179,224,0.14)',
+      backgroundColor: 'rgba(255,255,255,0.9)',
     },
     hintText: {
-      fontSize: '0.75rem',
-      color: '#fbbf24',
-      marginLeft: '0.75rem',
-      marginTop: '0.25rem',
-      display: 'flex',
-      alignItems: 'center',
-      gap: '0.3rem',
-      width: '90%',
+      fontSize: '0.78rem',
+      color: '#064979',
+      marginTop: '0.1rem',
+      fontWeight: 600,
     },
     forgotLink: {
       textAlign: 'right',
-      marginTop: '-0.5rem',
-      marginBottom: '0.5rem',
-      width: '90%',
-      marginLeft: 'auto',
-      marginRight: 'auto',
+      marginTop: '-0.2rem',
     },
     link: {
-      color: '#b224ef',
-      fontSize: '0.85rem',
-      fontWeight: 500,
+      color: '#1e9fd4',
+      fontSize: '0.86rem',
+      fontWeight: 700,
       textDecoration: 'none',
       cursor: 'pointer',
     },
     button: {
-      background: 'linear-gradient(95deg, #b224ef 0%, #7579ff 100%)',
-      border: 'none',
+      width: '100%',
+      marginTop: '0.45rem',
       padding: '0.9rem',
-      borderRadius: '2rem',
-      fontWeight: 700,
+      border: 'none',
+      borderRadius: '16px',
+      background:
+        'linear-gradient(180deg, #7fe3ff 0%, #45c8f4 35%, #1ea6df 70%, #1492cc 100%)',
+      color: '#ffffff',
       fontSize: '1rem',
-      color: 'white',
+      fontWeight: 800,
       cursor: 'pointer',
-      transition: 'transform 0.2s, box-shadow 0.2s',
-      marginTop: '0.5rem',
-      width: '90%',
-      marginLeft: 'auto',
-      marginRight: 'auto',
+      fontFamily: 'inherit',
+      boxShadow:
+        'inset 0 2px 10px rgba(255,255,255,0.50), inset 0 -5px 10px rgba(0,0,0,0.07), 0 8px 18px rgba(20,146,204,0.26)',
     },
     registerLink: {
       textAlign: 'center',
-      marginTop: '1.5rem',
+      marginTop: '1.1rem',
       paddingTop: '1rem',
-      borderTop: '1px solid #334155',
-      fontSize: '0.9rem',
-      color: '#cbd5e1',
-      width: '100%',
+      borderTop: '1px solid rgba(140,190,230,0.32)',
+      fontSize: '0.88rem',
+      color: '#2f536d',
     },
     footer: {
-      background: 'rgba(0, 0, 0, 0.5)',
+      position: 'relative',
+      zIndex: 2,
+      background: 'rgba(255,255,255,0.32)',
       padding: '1rem',
       textAlign: 'center',
-      borderTop: '1px solid #334155',
+      borderTop: '1px solid rgba(140,190,230,0.28)',
       display: 'flex',
       justifyContent: 'center',
-      gap: '1.2rem',
+      gap: '1rem',
       flexWrap: 'wrap',
-      fontSize: '0.75rem',
-      fontWeight: 500,
-      color: '#a0aec0',
+      fontSize: '0.76rem',
+      fontWeight: 700,
+      color: '#3f5579',
     },
   };
 
-  const getInputStyle = () => ({
+  const getEmailInputStyle = () => ({
     ...styles.input,
     ...(isEmailFocused ? styles.inputFocus : {}),
+  });
+
+  const getPasswordInputStyle = () => ({
+    ...styles.input,
+    ...(isPasswordFocused ? styles.inputFocus : {}),
   });
 
   return (
     <div style={styles.container}>
       <div style={styles.card}>
+        <div style={styles.shine}></div>
+        <div style={styles.bubbleOne}></div>
+        <div style={styles.bubbleTwo}></div>
+
         <div style={styles.inner}>
-          <div style={styles.logo}>
-            <h1 style={styles.logoTitle}>Lost In Music</h1>
-          </div>
-          <div style={styles.welcome}>Bienvenido/a de nuevo</div>
+          <div style={styles.logo}>♪</div>
+
+          <h1 style={styles.logoTitle}>Lost In Music</h1>
+          <div style={styles.welcome}>Tu red social musical</div>
+
           <h2 style={styles.sectionTitle}>Inicia Sesión</h2>
 
           <form style={styles.form} onSubmit={handleSubmit}>
@@ -214,7 +290,7 @@ function Login() {
               <label style={styles.label}>Correo electrónico o Usuario</label>
               <input
                 type="text"
-                style={getInputStyle()}
+                style={getEmailInputStyle()}
                 placeholder="tu@email.com"
                 value={emailUser}
                 onChange={(e) => setEmailUser(e.target.value)}
@@ -223,22 +299,73 @@ function Login() {
                 required
               />
               {isEmailFocused && (
-                <div style={styles.hintText}>
-                  <span>💡</span> Completa este campo
-                </div>
+                <div style={styles.hintText}>Usá tu email o nombre de usuario.</div>
               )}
             </div>
 
             <div style={styles.inputGroup}>
               <label style={styles.label}>Contraseña</label>
-              <input
-                type="password"
-                style={styles.input}
-                placeholder="********"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+
+              <div style={styles.passwordWrapper}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  style={{
+                    ...getPasswordInputStyle(),
+                    ...styles.passwordInput,
+                  }}
+                  placeholder="Escribe tu contraseña"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  onFocus={() => setIsPasswordFocused(true)}
+                  onBlur={() => setIsPasswordFocused(false)}
+                  required
+                />
+
+                {password && (
+                  <button
+                    type="button"
+                    style={styles.passwordToggle}
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    title={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                  >
+                    {showPassword ? (
+                      <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
+                          stroke="#7ab8d8"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                        <circle cx="12" cy="12" r="3" stroke="#7ab8d8" strokeWidth="2" />
+                      </svg>
+                    ) : (
+                      <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
+                        <path
+                          d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"
+                          stroke="#7ab8d8"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                        <path
+                          d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"
+                          stroke="#7ab8d8"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                        <line
+                          x1="1"
+                          y1="1"
+                          x2="23"
+                          y2="23"
+                          stroke="#7ab8d8"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    )}
+                  </button>
+                )}
+              </div>
             </div>
 
             <div style={styles.forgotLink}>
@@ -258,12 +385,6 @@ function Login() {
               Registrate
             </a>
           </div>
-        </div>
-
-        <div style={styles.footer}>
-          <span>🎵 Comprar música</span>
-          <span>🎤 Conecta con artistas</span>
-          <span>🔊 Descubre nuevos sonidos</span>
         </div>
       </div>
     </div>
