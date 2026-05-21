@@ -69,8 +69,38 @@ const Register = async (req, res) => {
     }
 }
 
+const { Usuario } = require('../models/Usuario')
+
+const DeleteUser = async (req, res) => {
+  try {
+    const { id } = req.params
+
+    const usuario = await Usuario.findByPk(id)
+
+    if (!usuario) {
+      return res.status(404).json({
+        message: 'Usuario no encontrado'
+      })
+    }
+
+    await usuario.update({
+      eliminado: true
+    })
+
+    res.status(200).json({
+      message: 'Usuario eliminado correctamente'
+    })
+
+  } catch (error) {
+    res.status(500).json({
+      message: 'Error al eliminar usuario',
+      error: error.message
+    })
+  }
+}
 
 module.exports = {
-    Login,
-    Register,
+Login,
+Register,
+DeleteUser
 }

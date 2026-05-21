@@ -1,5 +1,5 @@
 const express = require('express')
-const { Login, Register,} = require('./controllers/users')
+const { Login, Register, DeleteUser,} = require('./controllers/users')
 const sequelize = require('./config/db')
 const server = express()
 
@@ -19,6 +19,7 @@ server.use((req, res, next) => {
 
 server.post('/login', Login)
 server.post('/register', Register)
+server.patch('/delete', DeleteUser)
 
 
 
