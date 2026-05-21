@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 function Login() {
   const [emailUser, setEmailUser] = useState('');
   const [password, setPassword] = useState('');
-  const [isEmailFocused, setIsEmailFocused] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
 
   const [showPassword, setShowPassword] = useState(false);
@@ -45,27 +44,27 @@ function Login() {
   };
 
   const styles = {
-    
+
     passwordWrapper: {
-    position: 'relative',
-    width: '100%',
+      position: 'relative',
+      width: '100%',
     },
 
     passwordInput: {
-    paddingRight: '3rem',
+      paddingRight: '3rem',
     },
     passwordToggle: {
-    position: 'absolute',
-    right: '0.85rem',
-    top: '50%',
-    transform: 'translateY(-50%)',
-    border: 'none',
-    background: 'transparent',
-    cursor: 'pointer',
-    padding: '0.25rem',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+      position: 'absolute',
+      right: '0.85rem',
+      top: '50%',
+      transform: 'translateY(-50%)',
+      border: 'none',
+      background: 'transparent',
+      cursor: 'pointer',
+      padding: '0.25rem',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
     },
 
 
@@ -259,10 +258,8 @@ function Login() {
       color: '#3f5579',
     },
   };
-
   const getEmailInputStyle = () => ({
     ...styles.input,
-    ...(isEmailFocused ? styles.inputFocus : {}),
   });
 
   const getPasswordInputStyle = () => ({
@@ -294,13 +291,11 @@ function Login() {
                 placeholder="tu@email.com"
                 value={emailUser}
                 onChange={(e) => setEmailUser(e.target.value)}
-                onFocus={() => setIsEmailFocused(true)}
-                onBlur={() => setIsEmailFocused(false)}
                 required
               />
-              {isEmailFocused && (
-                <div style={styles.hintText}>Usá tu email o nombre de usuario.</div>
-              )}
+              <div style={styles.hintText}>
+                Usá tu email o nombre de usuario.
+              </div>
             </div>
 
             <div style={styles.inputGroup}>
@@ -366,6 +361,7 @@ function Login() {
                   </button>
                 )}
               </div>
+              <div style={styles.hintText}>Escribe tu contraseña</div>
             </div>
 
             <div style={styles.forgotLink}>
