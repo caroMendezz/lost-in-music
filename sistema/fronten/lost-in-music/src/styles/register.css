@@ -1,12 +1,7 @@
-/* Register.css — Frutiger Aero · 2-step slider */
-
-/* ════════════════════════════
-   FONDO
-════════════════════════════ */
 .register-bg {
   min-height: 100vh;
   width: 100%;
-  background-image: url('../assets/asadal_stock_208.jpg');
+  background-image: url('../assets/backgroundAcceso.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;

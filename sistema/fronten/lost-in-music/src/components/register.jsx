@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import './Register.css';
+import './register.css';
 import MusicPlayerMini from './MusicPlayerMini';
 
 const calcPasswordStrength = (pwd) => {
@@ -33,7 +33,7 @@ const currentYear = new Date().getFullYear();
 const YEARS  = Array.from({ length: 100 }, (_, i) => currentYear - 13 - i);
 const DAYS   = Array.from({ length: 31  }, (_, i) => i + 1);
 
-export default function Register({ onLoginClick }) {
+export default function register({ onLoginClick }) {
   //paso actual
   const [step, setStep] = useState(0);
   const [slideDir, setSlideDir] = useState('idle');
