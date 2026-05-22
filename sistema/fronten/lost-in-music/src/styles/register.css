@@ -21,9 +21,7 @@
   to   { opacity: 1; }
 }
 
-/* ════════════════════════════
-   BUBBLES
-════════════════════════════ */
+
 .bubble {
   position: absolute;
   border-radius: 50%;
@@ -56,9 +54,7 @@
   pointer-events: none;
 }
 
-/* ════════════════════════════
-   CARD CONTENEDOR
-════════════════════════════ */
+
 .register-card {
   width: 100%;
   max-width: 440px;
@@ -84,7 +80,7 @@
   padding: 30px 32px 28px;
 }
 
-/* Brillo superior */
+
 .register-card::before {
   content: "";
   position: absolute;
@@ -96,9 +92,7 @@
   pointer-events: none;
 }
 
-/* ════════════════════════════
-   BARRA DE PROGRESO
-════════════════════════════ */
+
 .reg-progress-wrap {
   margin-bottom: 20px;
   position: relative;
@@ -142,9 +136,7 @@
   color: #4cce8a;
 }
 
-/* ════════════════════════════
-   LOGO + TÍTULO
-════════════════════════════ */
+
 .register-logo-wrapper {
   display: flex;
   justify-content: center;
@@ -198,9 +190,7 @@
   margin: 0 0 18px;
 }
 
-/* ════════════════════════════
-   SLIDER
-════════════════════════════ */
+
 .reg-slider-viewport {
   overflow: hidden;
   position: relative;
@@ -232,10 +222,7 @@
   to   { transform: translateX(0%); }
 }
 
-/* Estado estable según paso activo: lo manejamos con clase en el padre
-   Pero como usamos setTimeout+cambio de step, hacemos:
-   cuando step=1 el slider ya está en -50% como estado por defecto
-   vía un atributo de datos */
+
 .reg-slider[data-step="1"] {
   transform: translateX(-50%);
 }
@@ -247,9 +234,7 @@
   box-sizing: border-box;
 }
 
-/* ════════════════════════════
-   CAMPOS COMUNES
-════════════════════════════ */
+
 .register-field-group { margin-bottom: 13px; }
 
 .register-label {
@@ -298,7 +283,6 @@
   box-shadow: 0 0 0 3px rgba(240,96,96,0.10);
 }
 
-/* ── Iconos estado ── */
 .input-status-icon {
   position: absolute;
   right: 12px; top: 50%;
@@ -315,7 +299,7 @@
   100% { transform: translateY(-50%) scale(1);   opacity: 1; }
 }
 
-/* ── Hint ── */
+
 .register-hint {
   margin: 5px 2px 0;
   font-size: 0.78rem;
@@ -325,7 +309,7 @@
 
 .register-hint.hint-error { color: #c0392b; font-weight: 600; }
 
-/* ── Ojito ── */
+
 .password-toggle {
   position: absolute;
   right: 11px; top: 50%;
@@ -338,9 +322,7 @@
 }
 .password-toggle:hover { background: rgba(90,179,224,0.12); }
 
-/* ════════════════════════════
-   INDICADOR FUERZA CONTRASEÑA
-════════════════════════════ */
+
 .pwd-strength-wrap {
   display: flex;
   align-items: center;
@@ -370,9 +352,6 @@
   transition: color 0.3s;
 }
 
-/* ════════════════════════════
-   BOTONES
-════════════════════════════ */
 .register-btn {
   width: 100%;
   padding: 14px;
@@ -415,7 +394,7 @@
 
 .register-btn:active { transform: translateY(0); }
 
-/* Volver */
+
 .register-btn--back {
   background: rgba(255,255,255,0.55);
   color: #1a6fa8;
@@ -432,10 +411,9 @@
   transform: translateY(-1px);
 }
 
-/* Continuar (flecha) */
+
 .register-btn--continue { justify-content: center; }
 
-/* Crear cuenta final */
 .register-btn--final {
   flex: 1;
   margin-top: 0;
@@ -448,9 +426,7 @@
   align-items: stretch;
 }
 
-/* ════════════════════════════
-   LINK LOGIN
-════════════════════════════ */
+
 .register-login-link {
   text-align: center;
   margin-top: 14px;
@@ -467,9 +443,7 @@
 
 .register-login-link a:hover { color: #1680b0; text-decoration: underline; }
 
-/* ════════════════════════════
-   SECCIÓN TÍTULOS CARD 2
-════════════════════════════ */
+
 .reg-section-title {
   font-size: 0.85rem;
   font-weight: 700;
@@ -483,9 +457,7 @@
   font-size: 0.78rem;
 }
 
-/*
-   FOTO DE PERFIL
-*/
+
 .photo-area {
   display: flex;
   align-items: center;
@@ -575,9 +547,7 @@
   margin: 0;
 }
 
-/*
-   GENERO
- */
+
 .genero-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -628,9 +598,7 @@
 
 .genero-label { line-height: 1.2; }
 
-/*
-   FECHA DE NACIMIENTO
-*/
+
 .dob-row {
   display: flex;
   gap: 8px;

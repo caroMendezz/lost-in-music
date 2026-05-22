@@ -1,9 +1,7 @@
-// Login.jsx
-
 import React, { useState, useEffect } from 'react';
-import '../styles/login.css';
+import '../styles/Login.css';
 
-function login() {
+function Login({ goToRegister }) {
   const [emailUser, setEmailUser] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -42,9 +40,8 @@ function login() {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    alert('Redirigiendo al registro de nueva cuenta...');
+    goToRegister();
   };
-
   return (
     <div className="login-container">
       {[1,2,3,4,5,6].map((n) => <div key={n} className={`bubble bubble-${n}`} />)}
@@ -198,4 +195,4 @@ function login() {
   );
 }
 
-export default login;
+export default Login;

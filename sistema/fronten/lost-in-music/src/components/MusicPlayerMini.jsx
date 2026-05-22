@@ -1,6 +1,5 @@
-// MusicPlayerMini.jsx
 import { useState, useEffect, useRef, useCallback } from 'react';
-import './MusicPlayerMini.css';
+import "../styles/MusicPlayerMini.css";
 
 export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
   const [volume, setVolume]           = useState(0.2);
