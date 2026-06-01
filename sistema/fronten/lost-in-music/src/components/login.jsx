@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import '../styles/Login.css';
+import '../styles/login.css';
 
 function Login({ goToRegister }) {
   const [emailUser, setEmailUser] = useState('');

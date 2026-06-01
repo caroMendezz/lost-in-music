@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import "../styles/Register.css";
+import "../styles/register.css";
 import MusicPlayerMini from './MusicPlayerMini';
 
 const calcPasswordStrength = (pwd) => {
@@ -61,8 +61,15 @@ export default function Register({ goToLogin }) {
   const fileInputRef = useRef(null);
   const sliderRef = useRef(null);
 
-  //Audio
   useEffect(() => {
+    const originalMargin = document.body.style.margin;
+    const originalPadding = document.body.style.padding;
+    const originalBackground = document.body.style.backgroundColor;
+
+    document.body.style.margin = '0';
+    document.body.style.padding = '0';
+    document.body.style.backgroundColor = '#ffffff';
+    
     bgMusicRef.current = new Audio('/background-music.mp3');
     bgMusicRef.current.volume = 0.2;
     bgMusicRef.current.loop = true;
