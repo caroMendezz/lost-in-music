@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import "../styles/register.css";
-import MusicPlayerMini from './MusicPlayerMini';
+
+import FondoAcceso from "./FondoAcceso";
 
 const calcPasswordStrength = (pwd) => {
   if (!pwd) return 0;
@@ -19,7 +20,7 @@ const strengthColor = ['', '#f06060', '#f0a060', '#f0d060', '#80cc60', '#4cce8a'
 const GENEROS = [
   { id: 'masculino', label: 'Masculino', icon: '♂' },
   { id: 'femenino', label: 'Femenino', icon: '♀' },
-  { id: 'no_binario', label: 'No binario', icon: '⚧' },
+
   { id: 'otro', label: 'Otro', icon: '✦' },
   { id: 'no_decir', label: 'Prefiero no decir', icon: '—' },
 ];
@@ -55,9 +56,8 @@ export default function Register({ goToLogin }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [touched, setTouched] = useState({});
-  const [isPlaying, setIsPlaying] = useState(false);
 
-  const bgMusicRef = useRef(null);
+
   const fileInputRef = useRef(null);
   const sliderRef = useRef(null);
 
@@ -70,18 +70,9 @@ export default function Register({ goToLogin }) {
     document.body.style.padding = '0';
     document.body.style.backgroundColor = '#ffffff';
     
-    bgMusicRef.current = new Audio('/background-music.mp3');
-    bgMusicRef.current.volume = 0.2;
-    bgMusicRef.current.loop = true;
-    bgMusicRef.current.preload = 'auto';
 
-    bgMusicRef.current.play()
-      .then(() => setIsPlaying(true))
-      .catch(() => setIsPlaying(false));
 
-    return () => {
-      bgMusicRef.current?.pause();
-    };
+
   }, []);
 
   const handleChange = (e) => {
@@ -149,348 +140,337 @@ export default function Register({ goToLogin }) {
   const sliderClass = `reg-slider ${slideDir !== 'idle' ? `reg-slider--${slideDir}` : ''}`;
 
   return (
-    <div className="register-bg">
+    <div className="register-card">
 
-      <MusicPlayerMini
-        audioRef={bgMusicRef}
-        isPlaying={isPlaying}
-        setIsPlaying={setIsPlaying}
-      />
-
-      {/*Burbujas*/}
-      {[1, 2, 3, 4, 5, 6].map((n) => <div key={n} className={`bubble bubble-${n}`} />)}
-
-      <div className="register-card">
-
-        {/*Barra de progreso*/}
-        <div className="reg-progress-wrap">
-          <div className="reg-progress-track">
-            <div
-              className="reg-progress-fill"
-              style={{ width: step === 0 ? '50%' : '100%' }}
-            />
-          </div>
-          <div className="reg-step-labels">
-            <span className={`reg-step-label ${step === 0 ? 'active' : 'done'}`}>
-              {step > 0 ? '✓' : '1'} Crear cuenta
-            </span>
-            <span className={`reg-step-label ${step === 1 ? 'active' : ''}`}>
-              2 Perfil
-            </span>
-          </div>
+      {/*Barra de progreso*/}
+      <div className="reg-progress-wrap">
+        <div className="reg-progress-track">
+          <div
+            className="reg-progress-fill"
+            style={{ width: step === 0 ? '50%' : '100%' }}
+          />
         </div>
-
-        {/*Logo y titulo*/}
-        <div className="register-logo-wrapper">
-          <div className="register-logo">
-            <img src="/logoo.png" alt="Logo" className="register-logo-img" />
-          </div>
+        <div className="reg-step-labels">
+          <span className={`reg-step-label ${step === 0 ? 'active' : 'done'}`}>
+            {step > 0 ? '✓' : '1'} Crear cuenta
+          </span>
+          <span className={`reg-step-label ${step === 1 ? 'active' : ''}`}>
+            2 Perfil
+          </span>
         </div>
-        <h1 className="register-title">Lost In Music</h1>
-        <p className="register-subtitle">Tu red social musical</p>
+      </div>
+
+      {/*Logo y titulo*/}
+      <div className="register-logo-wrapper">
+        <div className="register-logo">
+          <img src="/logoo.png" alt="Logo" className="register-logo-img" />
+        </div>
+      </div>
+      <h1 className="register-title">Lost In Music</h1>
+      <p className="register-subtitle">Tu red social musical</p>
 
 
-        <div className="reg-slider-viewport">
-          <div className={sliderClass} data-step={step} ref={sliderRef}>
+      <div className="reg-slider-viewport">
+        <div className={sliderClass} data-step={step} ref={sliderRef}>
 
-            {/*CARD 1 - CREAR CUENTA*/}
-            <div className="reg-panel">
-              <form onSubmit={(e) => { e.preventDefault(); goToStep2(); }}>
+          {/*CARD 1 - CREAR CUENTA*/}
+          <div className="reg-panel">
+            <form onSubmit={(e) => { e.preventDefault(); goToStep2(); }}>
 
-                {/*Nombre de usuario*/}
-                <Field
-                  label="Nombre de usuario"
-                  icon={<UserIcon />}
-                  error={touched.nombreUsuario && errors.nombreUsuario ? 'Mínimo 3 caracteres' : null}
-                  valid={!errors.nombreUsuario && !!formData.nombreUsuario}
-                >
-                  <input
-                    name="nombreUsuario"
-                    type="text"
-                    className={`register-input ${touched.nombreUsuario && errors.nombreUsuario ? 'input-error' : ''}`}
-                    placeholder="Tu nombre de usuario"
-                    value={formData.nombreUsuario}
-                    onChange={handleChange}
-                    onBlur={() => handleBlur('nombreUsuario')}
-                    autoComplete="username"
-                  />
-                </Field>
+              {/*Nombre de usuario*/}
+              <Field
+                label="Nombre de usuario"
+                icon={<UserIcon />}
+                error={touched.nombreUsuario && errors.nombreUsuario ? 'Mínimo 3 caracteres' : null}
+                valid={!errors.nombreUsuario && !!formData.nombreUsuario}
+              >
+                <input
+                  name="nombreUsuario"
+                  type="text"
+                  className={`register-input ${touched.nombreUsuario && errors.nombreUsuario ? 'input-error' : ''}`}
+                  placeholder="Tu nombre de usuario"
+                  value={formData.nombreUsuario}
+                  onChange={handleChange}
+                  onBlur={() => handleBlur('nombreUsuario')}
+                  autoComplete="username"
+                />
+              </Field>
 
-                {/*Email*/}
-                <Field
-                  label="Email"
-                  icon={<MailIcon />}
-                  error={touched.email && errors.email ? 'Email inválido' : null}
-                  valid={!errors.email && !!formData.email}
-                >
-                  <input
-                    name="email"
-                    type="email"
-                    className={`register-input ${touched.email && errors.email ? 'input-error' : ''}`}
-                    placeholder="hola@musica.com"
-                    value={formData.email}
-                    onChange={handleChange}
-                    onBlur={() => handleBlur('email')}
-                    autoComplete="email"
-                  />
-                </Field>
+              {/*Email*/}
+              <Field
+                label="Email"
+                icon={<MailIcon />}
+                error={touched.email && errors.email ? 'Email inválido' : null}
+                valid={!errors.email && !!formData.email}
+              >
+                <input
+                  name="email"
+                  type="email"
+                  className={`register-input ${touched.email && errors.email ? 'input-error' : ''}`}
+                  placeholder="hola@musica.com"
+                  value={formData.email}
+                  onChange={handleChange}
+                  onBlur={() => handleBlur('email')}
+                  autoComplete="email"
+                />
+              </Field>
 
-                {/*Contraseña*/}
-                <Field
-                  label="Contraseña"
-                  icon={<LockIcon />}
-                  error={touched.password && errors.password ? 'Usá 8+ caracteres, mayúscula, número y símbolo' : null}
-                  valid={!errors.password && !!formData.password}
-                  hasToggle={!!formData.password}
-                >
-                  <input
-                    name="password"
-                    type={showPassword ? 'text' : 'password'}
-                    className={`register-input input-with-toggle ${touched.password && errors.password ? 'input-error' : ''
-                      }`}
-                    placeholder="Crea una contraseña"
-                    value={formData.password}
-                    onChange={handleChange}
-                    onBlur={() => handleBlur('password')}
-                    autoComplete="new-password"
-                  />
+              {/*Contraseña*/}
+              <Field
+                label="Contraseña"
+                icon={<LockIcon />}
+                error={touched.password && errors.password ? 'Usá 8+ caracteres, mayúscula, número y símbolo' : null}
+                valid={!errors.password && !!formData.password}
+                hasToggle={!!formData.password}
+              >
+                <input
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  className={`register-input input-with-toggle ${touched.password && errors.password ? 'input-error' : ''
+                    }`}
+                  placeholder="Crea una contraseña"
+                  value={formData.password}
+                  onChange={handleChange}
+                  onBlur={() => handleBlur('password')}
+                  autoComplete="new-password"
+                />
 
-                  {formData.password && (
-                    <EyeBtn
-                      show={showPassword}
-                      toggle={() => setShowPassword((p) => !p)}
-                    />
-                  )}
-                </Field>
-
-                {/*Indicador fuerza*/}
                 {formData.password && (
-                  <div className="pwd-strength-wrap">
-                    <div className="pwd-strength-bars">
-                      {[1, 2, 3, 4, 5].map((i) => (
-                        <div
-                          key={i}
-                          className="pwd-bar"
-                          style={{
-                            background: i <= pwdStrength ? strengthColor[pwdStrength] : 'rgba(0,0,0,0.08)',
-                            transition: `background 0.3s ease ${i * 0.05}s`,
-                          }}
-                        />
-                      ))}
-                    </div>
-                    <span
-                      className="pwd-strength-label"
-                      style={{ color: strengthColor[pwdStrength] }}
-                    >
-                      {strengthLabel[pwdStrength]}
-                    </span>
-                  </div>
-                )}
-
-                {/*Confirmar contraseña*/}
-
-                <Field
-                  label="Confirmar contraseña"
-                  icon={<LockIcon />}
-                  error={
-                    touched.confirmPwd && errors.confirmPwd
-                      ? 'Las contraseñas no coinciden'
-                      : null
-                  }
-                  valid={!errors.confirmPwd && !!formData.confirmPwd}
-                  hasToggle={!!formData.confirmPwd}
-                >
-                  <input
-                    name="confirmPwd"
-                    type={showConfirm ? 'text' : 'password'}
-                    className={`register-input input-with-toggle ${touched.confirmPwd && errors.confirmPwd ? 'input-error' : ''
-                      }`}
-                    placeholder="Repetí la contraseña"
-                    value={formData.confirmPwd}
-                    onChange={handleChange}
-                    onBlur={() => handleBlur('confirmPwd')}
-                    autoComplete="new-password"
+                  <EyeBtn
+                    show={showPassword}
+                    toggle={() => setShowPassword((p) => !p)}
                   />
+                )}
+              </Field>
 
-                  {formData.confirmPwd && (
-                    <EyeBtn
-                      show={showConfirm}
-                      toggle={() => setShowConfirm((p) => !p)}
-                    />
-                  )}
-                </Field>
-                <button type="submit" className="register-btn register-btn--continue">
-                  Continuar
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginLeft: 8 }}>
-                    <path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </button>
-              </form>
-
-              <p className="register-login-link">
-                ¿Ya tenes cuenta?{' '}
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    goToLogin();
-                  }}
-                >
-                  Inicia sesión
-                </a>
-              </p>
-            </div>
-
-
-            {/* CARD 2 — PERFIL */}
-            <div className="reg-panel">
-              <form onSubmit={handleSubmit}>
-
-                {/* Foto de perfil */}
-                <div className="reg-section-title">Foto de perfil <span className="reg-optional">(opcional)</span></div>
-                <div className="photo-area">
-                  <div
-                    className="photo-circle"
-                    onClick={() => fileInputRef.current?.click()}
-                    title="Subir foto"
+              {/*Indicador fuerza*/}
+              {formData.password && (
+                <div className="pwd-strength-wrap">
+                  <div className="pwd-strength-bars">
+                    {[1, 2, 3, 4, 5].map((i) => (
+                      <div
+                        key={i}
+                        className="pwd-bar"
+                        style={{
+                          background: i <= pwdStrength ? strengthColor[pwdStrength] : 'rgba(0,0,0,0.08)',
+                          transition: `background 0.3s ease ${i * 0.05}s`,
+                        }}
+                      />
+                    ))}
+                  </div>
+                  <span
+                    className="pwd-strength-label"
+                    style={{ color: strengthColor[pwdStrength] }}
                   >
-                    {formData.fotoPreview ? (
-                      <img src={formData.fotoPreview} alt="preview" className="photo-preview" />
-                    ) : (
-                      <div className="photo-placeholder">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                          <circle cx="12" cy="8" r="4" stroke="#a0c8e8" strokeWidth="1.8" />
-                          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#a0c8e8" strokeWidth="1.8" strokeLinecap="round" />
-                        </svg>
-                      </div>
-                    )}
-                    <div className="photo-overlay">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    {strengthLabel[pwdStrength]}
+                  </span>
+                </div>
+              )}
+
+              {/*Confirmar contraseña*/}
+
+              <Field
+                label="Confirmar contraseña"
+                icon={<LockIcon />}
+                error={
+                  touched.confirmPwd && errors.confirmPwd
+                    ? 'Las contraseñas no coinciden'
+                    : null
+                }
+                valid={!errors.confirmPwd && !!formData.confirmPwd}
+                hasToggle={!!formData.confirmPwd}
+              >
+                <input
+                  name="confirmPwd"
+                  type={showConfirm ? 'text' : 'password'}
+                  className={`register-input input-with-toggle ${touched.confirmPwd && errors.confirmPwd ? 'input-error' : ''
+                    }`}
+                  placeholder="Repetí la contraseña"
+                  value={formData.confirmPwd}
+                  onChange={handleChange}
+                  onBlur={() => handleBlur('confirmPwd')}
+                  autoComplete="new-password"
+                />
+
+                {formData.confirmPwd && (
+                  <EyeBtn
+                    show={showConfirm}
+                    toggle={() => setShowConfirm((p) => !p)}
+                  />
+                )}
+              </Field>
+              <button type="submit" className="register-btn register-btn--continue">
+                Continuar
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginLeft: 8 }}>
+                  <path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </button>
+            </form>
+
+            <p className="register-login-link">
+              ¿Ya tenes cuenta?{' '}
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  goToLogin();
+                }}
+              >
+                Inicia sesión
+              </a>
+            </p>
+          </div>
+
+
+          {/* CARD 2 — PERFIL */}
+          <div className="reg-panel">
+            <form onSubmit={handleSubmit}>
+
+              {/* Foto de perfil */}
+              <div className="reg-section-title">Foto de perfil <span className="reg-optional">(opcional)</span></div>
+              <div className="photo-area">
+                <div
+                  className="photo-circle"
+                  onClick={() => fileInputRef.current?.click()}
+                  title="Subir foto"
+                >
+                  {formData.fotoPreview ? (
+                    <img src={formData.fotoPreview} alt="preview" className="photo-preview" />
+                  ) : (
+                    <div className="photo-placeholder">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+                        <circle cx="12" cy="8" r="4" stroke="#a0c8e8" strokeWidth="1.8" />
+                        <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#a0c8e8" strokeWidth="1.8" strokeLinecap="round" />
                       </svg>
                     </div>
-                  </div>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    style={{ display: 'none' }}
-                    onChange={handleFile}
-                  />
-                  <div className="photo-actions">
-                    <button type="button" className="photo-btn photo-btn--upload" onClick={() => fileInputRef.current?.click()}>
-                      Subir imagen
-                    </button>
-                    {formData.fotoPreview && (
-                      <button type="button" className="photo-btn photo-btn--remove" onClick={removePhoto}>
-                        Quitar
-                      </button>
-                    )}
-                    <p className="photo-hint">PNG, JPG hasta 5MB</p>
-                  </div>
-                </div>
-
-                {/* Genero*/}
-                <div className="reg-section-title" style={{ marginTop: 18 }}>Género</div>
-                <div className="genero-grid">
-                  {GENEROS.map((g) => (
-                    <button
-                      key={g.id}
-                      type="button"
-                      className={`genero-btn ${formData.genero === g.id ? 'genero-btn--active' : ''}`}
-                      onClick={() => setFormData((p) => ({ ...p, genero: g.id }))}
-                    >
-                      <span className="genero-icon">{g.icon}</span>
-                      <span className="genero-label">{g.label}</span>
-                    </button>
-                  ))}
-                </div>
-
-                {/* Fecha de nacimiento*/}
-                <div className="reg-section-title" style={{ marginTop: 18 }}>
-                  Fecha de nacimiento
-                </div>
-                <div className="dob-row">
-                  {/* Dia */}
-                  <div className="dob-select-wrap">
-                    <label className="dob-label">Día</label>
-                    <div className="custom-select-wrap">
-                      <select
-                        name="dia"
-                        className="custom-select"
-                        value={formData.dia}
-                        onChange={handleChange}
-                      >
-                        <option value="">—</option>
-                        {DAYS.map((d) => (
-                          <option key={d} value={d}>{d}</option>
-                        ))}
-                      </select>
-                      <ChevronDown />
-                    </div>
-                  </div>
-
-                  {/* Mes */}
-                  <div className="dob-select-wrap dob-select-wrap--mes">
-                    <label className="dob-label">Mes</label>
-                    <div className="custom-select-wrap">
-                      <select
-                        name="mes"
-                        className="custom-select"
-                        value={formData.mes}
-                        onChange={handleChange}
-                      >
-                        <option value="">—</option>
-                        {MONTHS.map((m, i) => (
-                          <option key={i} value={i + 1}>{m}</option>
-                        ))}
-                      </select>
-                      <ChevronDown />
-                    </div>
-                  </div>
-
-                  {/* Año */}
-                  <div className="dob-select-wrap">
-                    <label className="dob-label">Año</label>
-                    <div className="custom-select-wrap">
-                      <select
-                        name="anio"
-                        className="custom-select"
-                        value={formData.anio}
-                        onChange={handleChange}
-                      >
-                        <option value="">—</option>
-                        {YEARS.map((y) => (
-                          <option key={y} value={y}>{y}</option>
-                        ))}
-                      </select>
-                      <ChevronDown />
-                    </div>
-                  </div>
-                </div>
-
-                {/*Botones*/}
-                <div className="reg-btns-row">
-                  <button type="button" className="register-btn register-btn--back" onClick={goToStep1}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginRight: 6 }}>
-                      <path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                  )}
+                  <div className="photo-overlay">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                    Volver
+                  </div>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={handleFile}
+                />
+                <div className="photo-actions">
+                  <button type="button" className="photo-btn photo-btn--upload" onClick={() => fileInputRef.current?.click()}>
+                    Subir imagen
                   </button>
-                  <button type="submit" className="register-btn register-btn--final">
-                    Crear cuenta ✦
+                  {formData.fotoPreview && (
+                    <button type="button" className="photo-btn photo-btn--remove" onClick={removePhoto}>
+                      Quitar
+                    </button>
+                  )}
+                  <p className="photo-hint">PNG, JPG hasta 5MB</p>
+                </div>
+              </div>
+
+              {/* Genero*/}
+              <div className="reg-section-title" style={{ marginTop: 18 }}>Género</div>
+              <div className="genero-grid">
+                {GENEROS.map((g) => (
+                  <button
+                    key={g.id}
+                    type="button"
+                    className={`genero-btn ${formData.genero === g.id ? 'genero-btn--active' : ''}`}
+                    onClick={() => setFormData((p) => ({ ...p, genero: g.id }))}
+                  >
+                    <span className="genero-icon">{g.icon}</span>
+                    <span className="genero-label">{g.label}</span>
                   </button>
+                ))}
+              </div>
+
+              {/* Fecha de nacimiento*/}
+              <div className="reg-section-title" style={{ marginTop: 18 }}>
+                Fecha de nacimiento
+              </div>
+              <div className="dob-row">
+                {/* Dia */}
+                <div className="dob-select-wrap">
+                  <label className="dob-label">Día</label>
+                  <div className="custom-select-wrap">
+                    <select
+                      name="dia"
+                      className="custom-select"
+                      value={formData.dia}
+                      onChange={handleChange}
+                    >
+                      <option value="">—</option>
+                      {DAYS.map((d) => (
+                        <option key={d} value={d}>{d}</option>
+                      ))}
+                    </select>
+                    <ChevronDown />
+                  </div>
                 </div>
 
-              </form>
-            </div>
+                {/* Mes */}
+                <div className="dob-select-wrap dob-select-wrap--mes">
+                  <label className="dob-label">Mes</label>
+                  <div className="custom-select-wrap">
+                    <select
+                      name="mes"
+                      className="custom-select"
+                      value={formData.mes}
+                      onChange={handleChange}
+                    >
+                      <option value="">—</option>
+                      {MONTHS.map((m, i) => (
+                        <option key={i} value={i + 1}>{m}</option>
+                      ))}
+                    </select>
+                    <ChevronDown />
+                  </div>
+                </div>
+
+                {/* Año */}
+                <div className="dob-select-wrap">
+                  <label className="dob-label">Año</label>
+                  <div className="custom-select-wrap">
+                    <select
+                      name="anio"
+                      className="custom-select"
+                      value={formData.anio}
+                      onChange={handleChange}
+                    >
+                      <option value="">—</option>
+                      {YEARS.map((y) => (
+                        <option key={y} value={y}>{y}</option>
+                      ))}
+                    </select>
+                    <ChevronDown />
+                  </div>
+                </div>
+              </div>
+
+              {/*Botones*/}
+              <div className="reg-btns-row">
+                <button type="button" className="register-btn register-btn--back" onClick={goToStep1}>
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginRight: 6 }}>
+                    <path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  Volver
+                </button>
+                <button type="submit" className="register-btn register-btn--final">
+                  Crear cuenta ✦
+                </button>
+              </div>
+
+            </form>
+          </div>
 
 
-          </div>{/* /reg-slider */}
-        </div>{/* /reg-slider-viewport */}
+        </div>{/* /reg-slider */}
+      </div>{/* /reg-slider-viewport */}
 
-      </div>{/* /register-card */}
     </div>
+
   );
 }
 

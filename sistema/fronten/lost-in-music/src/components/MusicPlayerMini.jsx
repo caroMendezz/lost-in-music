@@ -36,7 +36,6 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
     return () => clearInterval(interval);
   }, [audioRef]);
 
-  // Sync ended
   useEffect(() => {
     const audio = audioRef?.current;
     if (!audio) return;
@@ -45,7 +44,7 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
     return () => audio.removeEventListener('ended', onEnded);
   }, [audioRef, setIsPlaying]);
 
-  // Aplicar volumen al audio
+
   useEffect(() => {
     const audio = audioRef?.current;
     if (audio) audio.volume = volume;
