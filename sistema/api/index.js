@@ -1,5 +1,5 @@
 const express = require('express')
-const { login, Register, obtainAuctions } = require('./controllers/users')
+const { login, Register,} = require('./controllers/users')
 const { isAuth } = require('./middlewares/auth')
 
 const sequelize = require('./config/db')
@@ -27,6 +27,8 @@ server.use((req, res, next) => {
 
 server.post('/logIn', login)
 server.post('/register', Register)
+server.post('/verify/send', SendVerificationCode);
+server.post('/verify/check', CheckVerificationCode);
 
 
 
