@@ -85,7 +85,7 @@ function CreatePost({ onPost }) {
       cursor: 'pointer',
       fontFamily: 'inherit',
     },
-    // Botón azul, no blanco con borde negro como estaba antes
+
     publishBtn: {
       backgroundColor: '#4a90d9',
       color: 'white',

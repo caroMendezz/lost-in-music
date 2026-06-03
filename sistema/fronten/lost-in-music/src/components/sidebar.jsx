@@ -1,5 +1,5 @@
 import React from 'react';
- 
+
 const chats = [
   {
     name: 'Carolina Mendez',
@@ -12,19 +12,22 @@ const chats = [
     message: 'enviado hace 1 minuto',
     time: '1m',
     status: 'online',   // punto verde
+
   },
 ];
- 
+
 const friends = ['Mauro Beltran', 'Alejo Guerra', 'Santino Martinez'];
- 
+
 function Sidebar() {
   const styles = {
     sidebar: {
-      width: '200px',
-      minWidth: '170px',
+      width: '240px',
+      minWidth: '240px',
       display: 'flex',
       flexDirection: 'column',
-      gap: '10px',
+      gap: '17px',
+      transform: 'translateX(-25px)',
+
     },
     card: {
       backgroundColor: 'rgba(255,255,255,0.93)',
@@ -120,10 +123,10 @@ function Sidebar() {
       flexShrink: 0,
     },
   };
- 
+
   return (
     <aside style={styles.sidebar}>
-      {/* Últimos chats */}
+
       <div style={styles.card}>
         <div style={styles.sectionTitle}>Últimos chats</div>
         {chats.map((chat, idx) => (
@@ -140,8 +143,8 @@ function Sidebar() {
           </div>
         ))}
       </div>
- 
-      {/* Lista de amig@s */}
+
+
       <div style={styles.card}>
         <div style={styles.sectionTitle}>Lista de amig@s</div>
         {friends.map((friend, idx) => (
@@ -154,5 +157,5 @@ function Sidebar() {
     </aside>
   );
 }
- 
+
 export default Sidebar;

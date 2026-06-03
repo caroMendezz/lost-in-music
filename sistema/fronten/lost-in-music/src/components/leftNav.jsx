@@ -12,8 +12,8 @@ function LeftNav() {
  
   const styles = {
     nav: {
-      width: '120px',
-      minWidth: '100px',
+      width: '230px',
+      minWidth: '230px',
       backgroundColor: 'rgba(255,255,255,0.75)',
       backdropFilter: 'blur(4px)',
       borderRight: '1px solid rgba(200,200,200,0.4)',
@@ -22,6 +22,7 @@ function LeftNav() {
       paddingTop: '8px',
       position: 'relative',
       zIndex: 10,
+
     },
     item: (isActive) => ({
       display: 'flex',
@@ -29,7 +30,7 @@ function LeftNav() {
       gap: '8px',
       padding: '10px 12px',
       cursor: 'pointer',
-      fontSize: '12px',
+      fontSize: '15px',
       color: isActive ? '#1a6fc4' : '#333',
       fontWeight: isActive ? '600' : '400',
       borderLeft: isActive ? '3px solid #4a90d9' : '3px solid transparent',

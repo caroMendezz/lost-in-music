@@ -9,6 +9,8 @@ function Post({ post, onLike }) {
       padding: '12px',
       marginBottom: '10px',
       boxShadow: '0 1px 3px rgba(0,0,0,0.07)',
+
+      
     },
     header: {
       display: 'flex',
@@ -41,7 +43,7 @@ function Post({ post, onLike }) {
       color: '#333',
       marginBottom: '10px',
     },
-    // Campo de imagen: solo se renderiza si post.image existe
+
     imageWrapper: {
       textAlign: 'center',
       marginBottom: '10px',
@@ -95,6 +97,7 @@ function Post({ post, onLike }) {
       cursor: 'pointer',
       fontFamily: 'inherit',
     },
+
   };
  
   return (

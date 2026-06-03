@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import CreatePost from './CreatePost';
 import Post from './Post';
- 
+
 // Imagen de guitarra como SVG en base64 para no depender de URLs externas
 const guitarSVG = `data:image/svg+xml;utf8,${encodeURIComponent(`
 <svg width="80" height="150" viewBox="0 0 80 150" xmlns="http://www.w3.org/2000/svg">
@@ -24,7 +24,7 @@ const guitarSVG = `data:image/svg+xml;utf8,${encodeURIComponent(`
   <ellipse cx="40" cy="133" rx="20" ry="16" fill="none" stroke="#9a5e20" stroke-width="1.2"/>
 </svg>
 `)}`;
- 
+
 const initialPosts = [
   {
     id: 1,
@@ -38,10 +38,10 @@ const initialPosts = [
     time: '1 min',
   },
 ];
- 
+
 function Feed() {
   const [posts, setPosts] = useState(initialPosts);
- 
+
   const addPost = (text) => {
     const newPost = {
       id: Date.now(),
@@ -56,36 +56,46 @@ function Feed() {
     };
     setPosts((prev) => [newPost, ...prev]);
   };
- 
+
   const handleLike = (id) => {
     setPosts((prev) =>
       prev.map((post) =>
         post.id === id
           ? {
-              ...post,
-              liked: !post.liked,
-              likes: post.liked ? post.likes - 1 : post.likes + 1,
-            }
+            ...post,
+            liked: !post.liked,
+            likes: post.liked ? post.likes - 1 : post.likes + 1,
+          }
           : post
       )
     );
   };
- 
+
   const styles = {
     feed: {
-      flex: 1,
-      minWidth: 0,   // necesario para que flex no desborde el sidebar
-    },
+      width: '100%',
+      maxWidth: '600px',
+      display: 'flex',
+      flexDirection: 'column',
+    }
   };
- 
+
   return (
-    <div style={styles.feed}>
-      <CreatePost onPost={addPost} />
-      {posts.map((post) => (
-        <Post key={post.id} post={post} onLike={handleLike} />
-      ))}
+    <div
+      style={{
+        display: 'flex',
+        justifyContent: 'center',
+        width: '100%',
+      }}
+    >
+      <div style={styles.feed}>
+        <CreatePost onPost={addPost} />
+        {posts.map((post) => (
+          <Post key={post.id} post={post} onLike={handleLike} />
+        ))}
+      </div>
     </div>
   );
 }
- 
+
 export default Feed;
