@@ -1,47 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/login.css';
-
+import { Link } from 'react-router-dom';
 import FondoAcceso from "./FondoAcceso";
 
 function Login({ goToRegister }) {
   const [emailUser, setEmailUser] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  //------------------------------------
   const [touched, setTouched] = useState({});
 
-  useEffect(() => {
-    const originalMargin = document.body.style.margin;
-    const originalPadding = document.body.style.padding;
-    const originalBackground = document.body.style.backgroundColor;
 
-    document.body.style.margin = '0';
-    document.body.style.padding = '0';
-    document.body.style.backgroundColor = '#8fd3ff';
-
-    return () => {
-      document.body.style.margin = originalMargin;
-      document.body.style.padding = originalPadding;
-      document.body.style.backgroundColor = originalBackground;
-    };
-  }, []);
-  
   const handleSubmit = (e) => {
     e.preventDefault();
-  
+
     setTouched({
       emailUser: true,
       password: true,
     });
-  
+
     if (errors.emailUser || errors.password) {
       return;
     }
-  
+
 
     console.log('Login correcto');
   };
-//------------------------------------
+
   const handleBlur = (name) => {
     setTouched((p) => ({ ...p, [name]: true }));
   };
@@ -56,13 +40,6 @@ function Login({ goToRegister }) {
     goToRegister();
   };
 
-
-
-
-
-
-
-
   const errors = {
     emailUser:
       emailUser.trim() === '' ||
@@ -70,14 +47,9 @@ function Login({ goToRegister }) {
         /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailUser) ||
         emailUser.trim().length >= 3
       ),
-  
+
     password: password.length < 8,
   };
-
-
-
-
-
 
   return (
     <div className="login-card">
@@ -110,37 +82,19 @@ function Login({ goToRegister }) {
 
             <input
               type="text"
-
-
-
-
-              className={`login-input ${
-                touched.emailUser && errors.emailUser ? 'input-error' : ''
-              }`}
+              className={`login-input ${touched.emailUser && errors.emailUser ? 'input-error' : ''
+                }`}
               onBlur={() => handleBlur('emailUser')}
-
-
-
-
 
               placeholder="tu@email.com"
               value={emailUser}
               onChange={(e) => setEmailUser(e.target.value)}
-
             />
-
-
-
-
             {touched.emailUser && errors.emailUser && (
               <div className="login-error-text">
                 Ingresá un email o usuario válido
               </div>
             )}
-
-
-
-
             <div className="login-hint-text">
               Usá tu email o nombre de usuario.
             </div>
@@ -154,31 +108,17 @@ function Login({ goToRegister }) {
             <div className="login-password-wrapper">
               <input
                 type={showPassword ? 'text' : 'password'}
-
-
-
-
                 className={`login-input login-password-input ${touched.password && errors.password ? 'input-error' : ''}`}
                 onBlur={() => handleBlur('password')}
-                
-                
-                
                 placeholder="Escribe tu contraseña"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-
               />
-
-
-
               {touched.password && errors.password && (
                 <div className="login-error-text">
                   La contraseña debe tener al menos 8 caracteres
                 </div>
               )}
-
-
-
               {password && (
                 <button
                   type="button"
@@ -241,13 +181,12 @@ function Login({ goToRegister }) {
           </div>
 
           <div className="login-forgot-link">
-            <a
-              href="#"
-              onClick={handleForgotPassword}
+            <Link
+              to="/reset-password"
               className="login-link"
             >
               ¿Olvidaste tu contraseña?
-            </a>
+            </Link>
           </div>
 
           <button type="submit" className="login-button">

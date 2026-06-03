@@ -7,12 +7,12 @@ export default function Acceso() {
   const [showLogin, setShowLogin] = useState(true);
 
   return (
-    <FondoAcceso>
+    <>
       {showLogin ? (
         <Login goToRegister={() => setShowLogin(false)} />
       ) : (
         <Register goToLogin={() => setShowLogin(true)} />
       )}
-    </FondoAcceso>
+    </>
   );
 }

@@ -35,11 +35,11 @@ const YEARS = Array.from({ length: 100 }, (_, i) => currentYear - 13 - i);
 const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
 
 export default function Register({ goToLogin }) {
-  //paso actual
+
   const [step, setStep] = useState(0);
   const [slideDir, setSlideDir] = useState('idle');
 
-  //datos
+
   const [formData, setFormData] = useState({
     nombreUsuario: '',
     email: '',
@@ -61,20 +61,6 @@ export default function Register({ goToLogin }) {
   const fileInputRef = useRef(null);
   const sliderRef = useRef(null);
 
-  useEffect(() => {
-    const originalMargin = document.body.style.margin;
-    const originalPadding = document.body.style.padding;
-    const originalBackground = document.body.style.backgroundColor;
-
-    document.body.style.margin = '0';
-    document.body.style.padding = '0';
-    document.body.style.backgroundColor = '#ffffff';
-    
-
-
-
-  }, []);
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((p) => ({ ...p, [name]: value }));
@@ -82,7 +68,7 @@ export default function Register({ goToLogin }) {
 
   const handleBlur = (name) => setTouched((p) => ({ ...p, [name]: true }));
 
-  // Foto de perfil
+
   const handleFile = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -95,7 +81,7 @@ export default function Register({ goToLogin }) {
   const removePhoto = () =>
     setFormData((p) => ({ ...p, fotoPerfil: null, fotoPreview: null }));
 
-  //Validaciones card 1
+
   const errors = {
     nombreUsuario: formData.nombreUsuario.trim().length < 3,
     email: !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email),
@@ -105,7 +91,7 @@ export default function Register({ goToLogin }) {
 
   const card1Valid = !Object.values(errors).some(Boolean);
 
-  // Pasar a paso 2
+
   const goToStep2 = () => {
     setTouched({ nombreUsuario: true, email: true, password: true, confirmPwd: true });
     if (!card1Valid) return;
@@ -117,7 +103,6 @@ export default function Register({ goToLogin }) {
     }, 420);
   };
 
-  // Volver a paso 1
   const goToStep1 = () => {
     setSlideDir('toRight');
     setTimeout(() => {
@@ -126,7 +111,7 @@ export default function Register({ goToLogin }) {
     }, 420);
   };
 
-  // Submit final
+
   const handleSubmit = (e) => {
     e.preventDefault();
     const click = new Audio('/soundClick.mp3');
@@ -142,7 +127,7 @@ export default function Register({ goToLogin }) {
   return (
     <div className="register-card">
 
-      {/*Barra de progreso*/}
+
       <div className="reg-progress-wrap">
         <div className="reg-progress-track">
           <div
@@ -160,7 +145,7 @@ export default function Register({ goToLogin }) {
         </div>
       </div>
 
-      {/*Logo y titulo*/}
+
       <div className="register-logo-wrapper">
         <div className="register-logo">
           <img src="/logoo.png" alt="Logo" className="register-logo-img" />
@@ -168,6 +153,7 @@ export default function Register({ goToLogin }) {
       </div>
       <h1 className="register-title">Lost In Music</h1>
       <p className="register-subtitle">Tu red social musical</p>
+      <h2 class= "register-section-title">Registrate</h2>
 
 
       <div className="reg-slider-viewport">
@@ -177,7 +163,7 @@ export default function Register({ goToLogin }) {
           <div className="reg-panel">
             <form onSubmit={(e) => { e.preventDefault(); goToStep2(); }}>
 
-              {/*Nombre de usuario*/}
+
               <Field
                 label="Nombre de usuario"
                 icon={<UserIcon />}
@@ -196,7 +182,7 @@ export default function Register({ goToLogin }) {
                 />
               </Field>
 
-              {/*Email*/}
+
               <Field
                 label="Email"
                 icon={<MailIcon />}
@@ -215,7 +201,7 @@ export default function Register({ goToLogin }) {
                 />
               </Field>
 
-              {/*Contraseña*/}
+
               <Field
                 label="Contraseña"
                 icon={<LockIcon />}
@@ -243,7 +229,7 @@ export default function Register({ goToLogin }) {
                 )}
               </Field>
 
-              {/*Indicador fuerza*/}
+
               {formData.password && (
                 <div className="pwd-strength-wrap">
                   <div className="pwd-strength-bars">
@@ -267,7 +253,7 @@ export default function Register({ goToLogin }) {
                 </div>
               )}
 
-              {/*Confirmar contraseña*/}
+
 
               <Field
                 label="Confirmar contraseña"
@@ -326,7 +312,7 @@ export default function Register({ goToLogin }) {
           <div className="reg-panel">
             <form onSubmit={handleSubmit}>
 
-              {/* Foto de perfil */}
+
               <div className="reg-section-title">Foto de perfil <span className="reg-optional">(opcional)</span></div>
               <div className="photo-area">
                 <div
@@ -370,7 +356,7 @@ export default function Register({ goToLogin }) {
                 </div>
               </div>
 
-              {/* Genero*/}
+
               <div className="reg-section-title" style={{ marginTop: 18 }}>Género</div>
               <div className="genero-grid">
                 {GENEROS.map((g) => (
@@ -386,12 +372,11 @@ export default function Register({ goToLogin }) {
                 ))}
               </div>
 
-              {/* Fecha de nacimiento*/}
               <div className="reg-section-title" style={{ marginTop: 18 }}>
                 Fecha de nacimiento
               </div>
               <div className="dob-row">
-                {/* Dia */}
+
                 <div className="dob-select-wrap">
                   <label className="dob-label">Día</label>
                   <div className="custom-select-wrap">
@@ -410,7 +395,7 @@ export default function Register({ goToLogin }) {
                   </div>
                 </div>
 
-                {/* Mes */}
+     
                 <div className="dob-select-wrap dob-select-wrap--mes">
                   <label className="dob-label">Mes</label>
                   <div className="custom-select-wrap">
@@ -429,7 +414,7 @@ export default function Register({ goToLogin }) {
                   </div>
                 </div>
 
-                {/* Año */}
+     
                 <div className="dob-select-wrap">
                   <label className="dob-label">Año</label>
                   <div className="custom-select-wrap">
@@ -449,7 +434,7 @@ export default function Register({ goToLogin }) {
                 </div>
               </div>
 
-              {/*Botones*/}
+
               <div className="reg-btns-row">
                 <button type="button" className="register-btn register-btn--back" onClick={goToStep1}>
                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginRight: 6 }}>
@@ -466,8 +451,8 @@ export default function Register({ goToLogin }) {
           </div>
 
 
-        </div>{/* /reg-slider */}
-      </div>{/* /reg-slider-viewport */}
+        </div>
+      </div>
 
     </div>
 

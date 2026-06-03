@@ -140,7 +140,7 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
     };
   }, [isDragging, getRatioFromEvent, seekToRatio]);
 
-  //Acciones
+
   const togglePlay = () => {
     const audio = audioRef?.current;
     if (!audio) return;
@@ -199,12 +199,10 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
     <div className="wmp-shell">
       <div className="wmp-shell-gloss" />
 
-      {/* Disco de control*/}
+
       <div className="wmp-disc-area">
         <div className="wmp-disc">
           <div className="wmp-disc-ring" />
-
-          {/* Play / Pause */}
           <button className="wmp-btn wmp-btn-center" onClick={togglePlay} title={isPlaying ? 'Pausar' : 'Reproducir'}>
             {isPlaying ? (
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -218,21 +216,21 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
             )}
           </button>
 
-          {/* Retroceder 10s */}
+
           <button className="wmp-btn wmp-btn-left" onClick={rewind} title="Retroceder 10s">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
               <path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/>
             </svg>
           </button>
 
-          {/* Avanzar 10s */}
+
           <button className="wmp-btn wmp-btn-right" onClick={forward} title="Avanzar 10s">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor">
               <path d="M18 6h-2v12h2zm-3.5 6L6 6v12z"/>
             </svg>
           </button>
 
-          {/* Volumen + */}
+
           <button
             className="wmp-btn wmp-btn-top"
             onMouseDown={() => startHoldVolume(0.05)}
@@ -247,7 +245,7 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
             </svg>
           </button>
 
-          {/* Volumen - */}
+
           <button
             className="wmp-btn wmp-btn-bottom"
             onMouseDown={() => startHoldVolume(-0.05)}
@@ -264,7 +262,7 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
         </div>
       </div>
 
-      {/* ── Pantalla LCD ── */}
+
       <div className="wmp-screen-wrap">
         <div className="wmp-screen-bezel">
           <div className="wmp-screen">
@@ -288,7 +286,7 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
               <span className="wmp-title">{songTitle}</span>
             </div>
 
-            {/* Progress track*/}
+
             <div
               className={`wmp-progress-track${isDragging ? ' wmp-progress-dragging' : ''}`}
               ref={progressRef}
