@@ -1,6 +1,6 @@
 const express = require('express')
 const { login, Register, obtainAuctions } = require('./controllers/users')
-const { isAuth } = require('./middlewares/auth')
+const { isAuth } = require('./middlewares/auth');
 
 const sequelize = require('./config/db')
 const server = express()
