@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../styles/login.css';
 import { Link } from 'react-router-dom';
 
-function PasswordRecovery() {
+function PasswordRecovery({ goToLogin }) {
   const [contact, setContact] = useState('');
 
   const handleSubmit = (e) => {
@@ -74,12 +74,16 @@ function PasswordRecovery() {
           <div className="login-register-link">
             <span>¿Recordaste tu contraseña? </span>
 
-            <Link
-              to="/acceso"
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                goToLogin();
+              }}
               className="login-link"
             >
               Iniciar sesión
-            </Link>
+            </a>
           </div>
 
         </div>

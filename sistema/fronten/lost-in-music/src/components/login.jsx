@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import '../styles/login.css';
-import { Link } from 'react-router-dom';
+
 import FondoAcceso from "./FondoAcceso";
 
-function Login({ goToRegister }) {
+function Login({ goToRegister, goToResetPassword }) {
   const [emailUser, setEmailUser] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -32,7 +32,7 @@ function Login({ goToRegister }) {
 
   const handleForgotPassword = (e) => {
     e.preventDefault();
-    alert('Redirigiendo a la recuperación de contraseña...');
+    goToResetPassword();
   };
 
   const handleRegister = (e) => {
@@ -181,12 +181,13 @@ function Login({ goToRegister }) {
           </div>
 
           <div className="login-forgot-link">
-            <Link
-              to="/reset-password"
+            <a
+              href="#"
+              onClick={handleForgotPassword}
               className="login-link"
             >
               ¿Olvidaste tu contraseña?
-            </Link>
+            </a>
           </div>
 
           <button type="submit" className="login-button">

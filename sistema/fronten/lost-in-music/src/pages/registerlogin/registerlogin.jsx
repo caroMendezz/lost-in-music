@@ -1,17 +1,30 @@
 import { useState } from 'react';
 import Login from '../../components/login';
 import Register from '../../components/register';
-import FondoAcceso from '../../components/FondoAcceso';
+import PasswordRecovery from '../../components/resetpassword';
 
 export default function Acceso() {
-  const [showLogin, setShowLogin] = useState(true);
+  const [screen, setScreen] = useState('login');
 
   return (
     <>
-      {showLogin ? (
-        <Login goToRegister={() => setShowLogin(false)} />
-      ) : (
-        <Register goToLogin={() => setShowLogin(true)} />
+      {screen === 'login' && (
+        <Login
+          goToRegister={() => setScreen('register')}
+          goToResetPassword={() => setScreen('reset')}
+        />
+      )}
+
+      {screen === 'register' && (
+        <Register
+          goToLogin={() => setScreen('login')}
+        />
+      )}
+
+      {screen === 'reset' && (
+        <PasswordRecovery
+          goToLogin={() => setScreen('login')}
+        />
       )}
     </>
   );
