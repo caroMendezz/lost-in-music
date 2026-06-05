@@ -41,13 +41,7 @@ function Login({ goToRegister, goToResetPassword }) {
   };
 
   const errors = {
-    emailUser:
-      emailUser.trim() === '' ||
-      !(
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailUser) ||
-        emailUser.trim().length >= 3
-      ),
-
+    emailUser: emailUser.trim() === '',
     password: password.trim() === '',
   };
 
@@ -93,7 +87,9 @@ function Login({ goToRegister, goToResetPassword }) {
               />
 
               {touched.emailUser && errors.emailUser && (
-                <span className="input-status-icon input-cross">
+
+                <span className="login-status-icon login-input-cross">
+
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="12" r="11" fill="#f06060" />
                     <path
@@ -109,9 +105,10 @@ function Login({ goToRegister, goToResetPassword }) {
 
             {touched.emailUser && errors.emailUser && (
               <div className="login-error-text">
-                Ingresá un email o usuario válido
+                Ingresa tu correo o usuario
               </div>
             )}
+
             <div className="login-hint-text">
               Usá tu email o nombre de usuario.
             </div>
@@ -133,7 +130,9 @@ function Login({ goToRegister, goToResetPassword }) {
               />
 
               {touched.password && errors.password && (
-                <span className="input-status-icon input-cross password-error-icon">
+
+                <span className="login-status-icon login-input-cross password-error-icon">
+                  
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="12" r="11" fill="#f06060" />
                     <path
@@ -147,7 +146,7 @@ function Login({ goToRegister, goToResetPassword }) {
               )}
               {touched.password && errors.password && (
                 <div className="login-error-text">
-                  La contraseña debe tener al menos 8 caracteres
+                  Ingresa tu contraseña
                 </div>
               )}
               {password && (

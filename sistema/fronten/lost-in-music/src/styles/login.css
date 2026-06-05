@@ -213,8 +213,7 @@
 .login-password-toggle {
   position: absolute;
   right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
+
 
   border: none;
   background: transparent;
@@ -264,12 +263,7 @@
   object-fit: contain;
 }
 
-.login-password-wrapper,
-.login-input-group > div {
-  position: relative;
-}
-
-.input-status-icon {
+.login-status-icon {
   position: absolute;
   right: 12px;
   top: 50%;
@@ -279,23 +273,11 @@
   pointer-events: none;
 }
 
-.input-cross {
+.login-input-cross {
   animation: popIn 0.2s cubic-bezier(0.34,1.56,0.64,1);
 }
 
-@keyframes popIn {
-  0% {
-    transform: translateY(-50%) scale(0.4);
-    opacity: 0;
-  }
-  100% {
-    transform: translateY(-50%) scale(1);
-    opacity: 1;
-  }
-}
-
-.password-error-icon{
+.password-error-icon {
   right: 42px;
   top: 40%;
-}
-
+} 
