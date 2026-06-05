@@ -48,7 +48,7 @@ function Login({ goToRegister, goToResetPassword }) {
         emailUser.trim().length >= 3
       ),
 
-    password: password.length < 8,
+    password: password.trim() === '',
   };
 
   return (
@@ -80,16 +80,33 @@ function Login({ goToRegister, goToResetPassword }) {
               Correo electrónico o Usuario
             </label>
 
-            <input
-              type="text"
-              className={`login-input ${touched.emailUser && errors.emailUser ? 'input-error' : ''
-                }`}
-              onBlur={() => handleBlur('emailUser')}
+            <div style={{ position: 'relative' }}>
+              <input
+                type="text"
+                className={`login-input ${touched.emailUser && errors.emailUser ? 'input-error' : ''
+                  }`}
+                onBlur={() => handleBlur('emailUser')}
 
-              placeholder="tu@email.com"
-              value={emailUser}
-              onChange={(e) => setEmailUser(e.target.value)}
-            />
+                placeholder="tu@email.com"
+                value={emailUser}
+                onChange={(e) => setEmailUser(e.target.value)}
+              />
+
+              {touched.emailUser && errors.emailUser && (
+                <span className="input-status-icon input-cross">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="11" fill="#f06060" />
+                    <path
+                      d="M8 8l8 8M16 8l-8 8"
+                      stroke="#fff"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </span>
+              )}
+            </div>
+
             {touched.emailUser && errors.emailUser && (
               <div className="login-error-text">
                 Ingresá un email o usuario válido
@@ -114,6 +131,20 @@ function Login({ goToRegister, goToResetPassword }) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
+
+              {touched.password && errors.password && (
+                <span className="input-status-icon input-cross password-error-icon">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="11" fill="#f06060" />
+                    <path
+                      d="M8 8l8 8M16 8l-8 8"
+                      stroke="#fff"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </span>
+              )}
               {touched.password && errors.password && (
                 <div className="login-error-text">
                   La contraseña debe tener al menos 8 caracteres
