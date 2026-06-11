@@ -1,5 +1,5 @@
 import React from 'react';
-import Header from './components/Header';
+import Header from './components/header';
 import LeftNav from './components/leftNav';
 import Sidebar from './components/sidebar';
 import Feed from './pages/feed';
@@ -37,12 +37,12 @@ function App() {
       flex: 1,
     },
 
-    content: {
-      display: 'flex',
+    feedWrapper: {
       flex: 1,
-      padding: '18px',
-      gap: '1px',
+      display: 'flex',
+      justifyContent: 'center',
       alignItems: 'flex-start',
+      padding: '18px',
     },
   };
 
@@ -52,16 +52,21 @@ function App() {
       <div style={styles.skyBg}>
       </div>
 
-      {/* Contenido */}
+
       <div style={styles.body}>
         <Header />
+        
         <div style={styles.main}>
           
           <LeftNav />
-          <div style={styles.content}>
+
+          <div style={styles.feedWrapper}>
             <Feed />
-            <Sidebar />
           </div>
+        
+
+          <Sidebar />
+          
         </div>
         <Footer />
       </div>

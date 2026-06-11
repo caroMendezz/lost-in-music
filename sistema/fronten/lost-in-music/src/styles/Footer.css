@@ -1,0 +1,25 @@
+.footer-container {
+    position: relative;
+    z-index: 10;
+    background-color: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(4px);
+    border-top: 1px solid rgba(200, 200, 200, 0.5);
+    padding: 8px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: #666;
+  }
+  
+  .footer-links {
+    display: flex;
+    gap: 14px;
+  }
+  
+  .footer-link {
+    color: #555;
+    text-decoration: underline;
+    cursor: pointer;
+    font-size: 11px;
+  }
