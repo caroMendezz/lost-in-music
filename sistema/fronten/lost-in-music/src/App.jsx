@@ -1,8 +1,8 @@
 import React from 'react';
 import Header from './components/Header';
-import LeftNav from './components/LeftNav';
-import Sidebar from './components/Sidebar';
-import Feed from './components/Feed';
+import LeftNav from './components/leftNav';
+import Sidebar from './components/sidebar';
+import Feed from './pages/feed';
 import Footer from './components/Footer';
 
 function App() {
