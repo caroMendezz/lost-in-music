@@ -1,6 +1,7 @@
 const express = require('express')
 const { Login, Register, DeleteUser,} = require('./controllers/users')
 const {createPost, deletePost, updatePost} = require('./controllers/posts')
+const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
 const { isAuth } = require('./middlewares/auth')
 
 const sequelize = require('./config/db')

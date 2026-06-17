@@ -31,13 +31,23 @@ const Usuario = sequelize.define('Usuario', {
     allowNull: false,
   },
 
+  fecha_nacimiento: {
+    type: DataTypes.DATE,
+    allowNull: false,
+  },
+
+  genero: {
+    type: DataTypes.ENUM('Femenino', 'Masculino', 'Otro', 'PrefieroNoDecir'),
+    allowNull: false,
+  },
+
   DVH: {
     type: DataTypes.STRING(255),
     allowNull: false
   },
 
   rol: {
-    type: DataTypes.STRING(50),
+    type: DataTypes.ENUM('Admin','User'),
     allowNull: false,
   },
   eliminado: {

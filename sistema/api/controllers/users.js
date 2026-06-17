@@ -21,8 +21,10 @@ const Login = async (req, res) => {
     //const token = jwt.sign({ idusuario: usuario.idusuario }, SECRET, { expiresIn: '8h' });
 
     //res.json({ token })
-    return res.status(400).json({ message: 'Login correcto, bienvenido a lost in music' })
+    return res.status(200).json({ message: 'Login correcto, bienvenido a lost in music' })
 }
+
+
 
 const Register = async (req, res) => {
     const { email, nombre, contraseña } = req.body
@@ -39,17 +41,19 @@ const Register = async (req, res) => {
         const usuario = await Usuario.create({
             email,
             nombre,
+            genero,
+            fecha_nacimiento,
             contraseña: Hashedcontraseña,
-            rol: 2,
+            rol: "Usuario",
             eliminado: 0,
             fecha_penalizacion: "nada",
             descripcion: "agregar descripcion",
             cant_seguidores: 0,
             cant_seguidos: 0,
-            foto_perfil: "vacio",
+            foto_perfil,
             banner: "vacio",
             id_amigo: 2,
-            ubicacion: "Argentina",
+            ubicacion: "Agregar ubicacion",
             DVH: "1234567890123456789012345678901234567890123456789012345678901234" // Por ahora no tenemos el cálculo para hacer los dígitos verificadores
         })
         return res.status(201).json(usuario)
