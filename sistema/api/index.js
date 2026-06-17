@@ -1,6 +1,8 @@
 const express = require('express')
 const { Login, Register, DeleteUser,} = require('./controllers/users')
 const {createPost, deletePost, updatePost} = require('./controllers/posts')
+const { isAuth } = require('./middlewares/auth')
+
 const sequelize = require('./config/db')
 const server = express()
 
@@ -24,6 +26,9 @@ server.patch('/delete', DeleteUser)
 server.post('/CreatePost', createPost)
 server.patch('/DeletePost', deletePost)
 server.patch('/UpdatePost', updatePost)
+server.post('/verify/send', SendVerificationCode);
+server.post('/verify/check', CheckVerificationCode);
+
 
 
 server.listen(PORT, async () => {
