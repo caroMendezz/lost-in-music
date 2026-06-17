@@ -1,0 +1,249 @@
+/* CommentPage.css */
+
+.comment-page {
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(
+    rgba(255, 255, 255, 0.25),
+    rgba(255, 255, 255, 0.18)
+  ),
+  url('/backgroundFeed.jpg') center / cover no-repeat fixed;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+}
+
+.comment-page-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 14px;
+  color: #0c447c;
+}
+
+.comment-page-error button {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(12, 68, 124, 0.4);
+  background: rgba(255, 255, 255, 0.7);
+  color: #0c447c;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+/* ── Header ──────────────────────────────────────────────────────── */
+.comment-page-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  background: linear-gradient(180deg, rgba(180, 220, 255, 0.55) 0%, rgba(255, 255, 255, 0.3) 100%);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+  flex-shrink: 0;
+  z-index: 10;
+}
+
+.comment-page-back {
+  background: transparent;
+  border: none;
+  color: #0c447c;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.comment-page-back:hover {
+  text-decoration: underline;
+}
+
+.comment-page-heading {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0c447c;
+}
+
+/* ── Cuerpo scrollable ───────────────────────────────────────────── */
+.comment-page-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 16px 40px;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(12, 68, 124, 0.25) transparent;
+}
+
+/* ── Ancestor card ───────────────────────────────────────────────── */
+.ancestor-card {
+  width: 100%;
+  max-width: 600px;
+
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  column-gap: 10px;
+
+  padding: 12px;
+
+  background: rgb(219, 244, 255);
+
+  border: 1px solid rgba(255,255,255,0.7);
+  border-radius: 12px;
+
+  margin-bottom: 8px;
+}
+.ancestor-avatar-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.ancestor-avatar {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #85b7eb 0%, #378add 60%, #0c447c 100%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.ancestor-thread-line {
+  flex: 1;
+  width: 2px;
+  background: rgba(12, 68, 124, 0.18);
+  margin-top: 6px;
+  min-height: 20px;
+}
+
+.ancestor-body {
+  padding-bottom: 14px;
+  cursor: pointer;
+}
+
+.ancestor-body:hover .ancestor-content {
+  color: #0c447c;
+}
+
+.ancestor-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.ancestor-author {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0c447c;
+}
+
+.ancestor-content {
+  font-size: 14px;
+  color: #185fa5;
+  line-height: 1.4;
+  margin: 0 0 6px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  transition: color 0.15s;
+}
+
+.ancestor-actions {
+  display: flex;
+  gap: 10px;
+}
+
+/* ── Comentario principal ────────────────────────────────────────── */
+.comment-page-main {
+  width: 100%;
+  max-width: 600px;
+  background: rgba(219, 244, 255, 0.88);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 4px 16px rgba(31, 76, 130, 0.15);
+  margin-bottom: 4px;
+}
+
+.comment-page-main-author-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.comment-page-main-avatar {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #5dcaa5 0%, #1d9e75 60%, #085041 100%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.comment-page-main-author {
+  font-size: 16px;
+  font-weight: 700;
+  color: #0c447c;
+}
+
+.comment-page-main-time {
+  font-size: 12px;
+  color: #185fa5;
+  margin-top: 2px;
+}
+
+.comment-page-main-content {
+  font-size: 20px;
+  color: #0c447c;
+  line-height: 1.45;
+  margin: 0 0 14px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.comment-page-main-stats {
+  font-size: 13px;
+  color: #185fa5;
+  border-top: 1px solid rgba(255, 255, 255, 0.7);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+  padding: 7px 0;
+  margin-bottom: 8px;
+  display: flex;
+  gap: 16px;
+}
+
+.comment-page-main-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* ── Sección de respuestas ───────────────────────────────────────── */
+.comment-page-thread {
+  width: 100%;
+  max-width: 600px;
+  background: rgba(219, 244, 255, 0.75);
+  backdrop-filter: blur(6px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(31, 76, 130, 0.1);
+  margin-top: 8px;
+}
+

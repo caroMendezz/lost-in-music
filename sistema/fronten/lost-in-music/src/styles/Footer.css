@@ -1,15 +1,15 @@
 .footer-container {
     position: relative;
     z-index: 10;
-    background-color: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(4px);
-    border-top: 1px solid rgba(200, 200, 200, 0.5);
+    background: #d9f1ff;
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255,255,255,0.7);
     padding: 8px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-size: 11px;
-    color: #666;
+    color: #185fa5;
   }
   
   .footer-links {
@@ -18,7 +18,7 @@
   }
   
   .footer-link {
-    color: #555;
+    color: #0c447c;
     text-decoration: underline;
     cursor: pointer;
     font-size: 11px;
