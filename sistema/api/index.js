@@ -1,5 +1,6 @@
 const express = require('express')
 const { Login, Register, DeleteUser,} = require('./controllers/users')
+const {createPost, deletePost, updatePost} = require('./controllers/posts')
 const sequelize = require('./config/db')
 const server = express()
 
@@ -20,7 +21,9 @@ server.use((req, res, next) => {
 server.post('/login', Login)
 server.post('/register', Register)
 server.patch('/delete', DeleteUser)
-
+server.post('/CreatePost', createPost)
+server.patch('/DeletePost', deletePost)
+server.patch('/UpdatePost', updatePost)
 
 
 server.listen(PORT, async () => {

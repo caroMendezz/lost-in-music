@@ -28,7 +28,12 @@ const PostSchema = new mongoose.Schema({
     commentsCount: {
     type: Number,
     default: 0
-    }
+    },
+
+    eliminado: {
+        type: Boolean,
+        default: false
+        }
 
 }, {
     timestamps: true
