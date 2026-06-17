@@ -9,7 +9,7 @@ const Usuario = sequelize.define('Usuario', {
     unique: true
   },
 
-  nombre: {
+  nombre: { //
     type: DataTypes.STRING(100),
     allowNull: false,
     unique: true
@@ -26,7 +26,7 @@ const Usuario = sequelize.define('Usuario', {
     allowNull: false,
   },
 
-  descripcion: {
+  descripcion: { //
     type: DataTypes.TEXT,
     allowNull: false,
   },
@@ -52,11 +52,11 @@ const Usuario = sequelize.define('Usuario', {
     type: DataTypes.INTEGER(11),
     allowNull: false,
   },
-  foto_perfil: {
+  foto_perfil: { //
     type: DataTypes.STRING(255),
     allowNull: false,
   },
-  banner: {
+  banner: { //
     type: DataTypes.STRING(255),
     allowNull: false,
   },
@@ -64,7 +64,7 @@ const Usuario = sequelize.define('Usuario', {
     type: DataTypes.INTEGER(11),
     allowNull: false,
   },
-  ubicacion: {
+  ubicacion: { //
     type: DataTypes.STRING(150),
     allowNull: false,
   },
