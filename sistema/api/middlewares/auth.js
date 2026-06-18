@@ -3,7 +3,7 @@ const User = require('../models/User');
 
 const SECRET = 'SOCRATESLEPEGOUNPUNHETAZOENLACARA';
 
-const isAuth = async (req, res, next) => {
+const checkToken = async (req, res, next) => {
     try {
         const authHeader = req.headers.authorization;
 
@@ -36,6 +36,31 @@ const isAuth = async (req, res, next) => {
     }
 };
 
+const IsAuth = async (req, res, next) => {
+    const permission = req.permission
+    const idRole = req.user.idRole
+    console.log(permission)
+
+    const [rows] = await pool.query(`SELECT p.permission FROM Permission p 
+        JOIN PermissionRole pr 
+        ON pr.idPermission = p.idPermission
+        WHERE pr.idRole = ?`, [idRole]); 
+
+    permissionList = rows.map(p => p.permission)
+
+    const hasPermission = permissionList.includes(permission)
+
+    if (!hasPermission){
+        return res.status(403).json({message : "No está autorizado"})
+    }
+    else(
+        res.send(200).json({message: "permiso concedido"})
+    )
+    
+    next()
+
+} 
+
 module.exports = {
-    isAuth
+    checkToken
 };

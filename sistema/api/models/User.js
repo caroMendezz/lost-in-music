@@ -46,8 +46,8 @@ const Usuario = sequelize.define('Usuario', {
     allowNull: false
   },
 
-  rol: {
-    type: DataTypes.ENUM('Admin','User'),
+  idrole: {
+    type: DataTypes.INTEGER,
     allowNull: false,
   },
   eliminado: {
@@ -83,6 +83,11 @@ const Usuario = sequelize.define('Usuario', {
     allowNull: false,
   },
 
+});
+
+User.belongsTo(Role, {
+  foreignKey: "idRole",
+  targetKey: "idRole", 
 });
 
 module.exports = {

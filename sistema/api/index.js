@@ -1,10 +1,8 @@
 const express = require('express')
-const { Login, Register, DeleteUser,} = require('./controllers/users')
+const { Login, Register, DeleteUser, UpdateUser} = require('./controllers/users')
 const {createPost, deletePost, updatePost} = require('./controllers/posts')
 const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
-const { isAuth } = require('./middlewares/auth')
-
-const { Login, Register, DeleteUser, UpdateUser} = require('./controllers/users')
+const { isAuth, checkToken } = require('./middlewares/auth')
 const sequelize = require('./config/db')
 const server = express()
 
@@ -24,13 +22,14 @@ server.use((req, res, next) => {
 
 server.post('/login', Login)
 server.post('/register', Register)
-server.patch('/delete', DeleteUser)
+server.patch('/deleteUser/:id',checkToken, DeleteUser)
+server.patch('/updateUser/:id',checkToken, UpdateUser)
 server.post('/CreatePost', createPost)
-server.patch('/DeletePost', deletePost)
-server.patch('/UpdatePost', updatePost)
+server.patch('/DeletePost/:id',checkToken, deletePost)
+server.patch('/UpdatePost/:id',checkToken, updatePost)
 server.post('/verify/send', SendVerificationCode);
 server.post('/verify/check', CheckVerificationCode);
-server.patch('/update', UpdateUser)
+
 
 
 
