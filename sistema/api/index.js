@@ -4,6 +4,7 @@ const {createPost, deletePost, updatePost} = require('./controllers/posts')
 const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
 const { isAuth } = require('./middlewares/auth')
 
+const { Login, Register, DeleteUser, UpdateUser} = require('./controllers/users')
 const sequelize = require('./config/db')
 const server = express()
 
@@ -29,6 +30,7 @@ server.patch('/DeletePost', deletePost)
 server.patch('/UpdatePost', updatePost)
 server.post('/verify/send', SendVerificationCode);
 server.post('/verify/check', CheckVerificationCode);
+server.patch('/update', UpdateUser)
 
 
 

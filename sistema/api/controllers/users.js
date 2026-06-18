@@ -103,8 +103,59 @@ const DeleteUser = async (req, res) => {
   }
 }
 
+const UpdateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const usuario = await Usuario.findByPk(id);
+
+    if (!usuario) {
+      return res.status(404).json({
+        message: "Usuario no encontrado"
+      });
+    }
+
+    const {
+      nombre,
+      descripcion,
+      foto_perfil,
+      banner,
+      ubicacion
+    } = req.body;
+
+    const datosActualizar = {};
+
+    if (nombre !== undefined) datosActualizar.nombre = nombre;
+    if (descripcion !== undefined) datosActualizar.descripcion = descripcion;
+    if (foto_perfil !== undefined) datosActualizar.foto_perfil = foto_perfil;
+    if (banner !== undefined) datosActualizar.banner = banner;
+    if (ubicacion !== undefined) datosActualizar.ubicacion = ubicacion;
+
+    await usuario.update(datosActualizar);
+
+    return res.status(200).json({
+      message: "Usuario actualizado correctamente",
+      usuario
+    });
+
+  } catch (error) {
+
+    if (error.name === "SequelizeUniqueConstraintError") {
+      return res.status(400).json({
+        message: "El nombre de usuario ya existe"
+      });
+    }
+
+    return res.status(500).json({
+      message: "Error al actualizar usuario",
+      error: error.message
+    });
+  }
+};
+
 module.exports = {
 Login,
 Register,
-DeleteUser
+DeleteUser,
+UpdateUser
 }
