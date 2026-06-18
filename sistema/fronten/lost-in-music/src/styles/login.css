@@ -34,6 +34,7 @@
   color: #c0392b;
   font-size: 0.78rem;
   font-weight: 600;
+
 }
 
 
@@ -173,6 +174,7 @@
 .login-input {
   width: 100%;
   padding: 0.85rem 1rem;
+  
   font-size: 0.92rem;
 
   border: 1px solid rgba(140,190,230,0.35);
@@ -213,24 +215,28 @@
 .login-password-toggle {
   position: absolute;
   right: 12px;
-
-
+  top: 50%;
+  transform: translateY(-50%);
   border: none;
   background: transparent;
-
   cursor: pointer;
-
   padding: 0.25rem;
-
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.login-error-text-pass{
+  color: #c0392b;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin-top: 8px;
 }
 
 .login-hint-text {
   font-size: 0.78rem;
   color: #064979;
   font-weight: 600;
+
 }
 
 .login-forgot-link {
@@ -266,7 +272,7 @@
 .login-status-icon {
   position: absolute;
   right: 12px;
-  top: 50%;
+  top: 52%;
   transform: translateY(-50%);
   display: flex;
   align-items: center;
@@ -278,6 +284,6 @@
 }
 
 .password-error-icon {
-  right: 42px;
+  right: 12px;
   top: 40%;
 } 

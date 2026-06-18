@@ -145,7 +145,7 @@ function Login({ goToRegister, goToResetPassword }) {
                 </span>
               )}
               {touched.password && errors.password && (
-                <div className="login-error-text">
+                <div className="login-error-text-pass">
                   Ingresa tu contraseña
                 </div>
               )}
@@ -205,9 +205,10 @@ function Login({ goToRegister, goToResetPassword }) {
               )}
             </div>
 
-            <div className="login-hint-text">
+            
+          </div>
+          <div className="login-hint-text">
               Escribe tu contraseña
-            </div>
           </div>
 
           <div className="login-forgot-link">
