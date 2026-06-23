@@ -5,17 +5,17 @@ const createPost = async (req, res) => {
 
     try {
 
-        const { idUsuario, textoPublicacion } = req.body
+        const { userId, postText } = req.body
 
-        if (!idUsuario || !textoPublicacion) {
+        if (!userId || !postText) {
             return res.status(400).json({
                 message: "Faltan datos"
             })
         }
 
-        const usuario = await User.findById(idUsuario)
+        const user = await User.findById(userId)
 
-        if (!usuario) {
+        if (!user) {
             return res.status(404).json({
                 message: "Usuario no encontrado"
             })
@@ -23,7 +23,7 @@ const createPost = async (req, res) => {
 
         const post = await Post.create({
             autor: req.user.id,
-            textoPublicacion
+            postText
         })
         return res.status(201).json(post)
 
@@ -44,7 +44,7 @@ const deletePost = async (req, res) => {
 
     try {
 
-        const { id } = req.params
+        const { postId } = req.params
 
         const post = await Post.findById(id)
 
@@ -54,13 +54,13 @@ const deletePost = async (req, res) => {
             })
         }
 
-        if (post.eliminado) {
+        if (post.eliminated) {
             return res.status(400).json({
                 message: "La publicación ya está eliminada"
             })
         }
 
-        post.eliminado = true
+        post.eliminated = true
 
         await post.save()
 
@@ -84,26 +84,25 @@ const updatePost = async (req, res) => {
 
     try {
 
-        const { id } = req.params
+        const { postId } = req.params
 
         const {
-            textoPublicacion,
-            imagenes,
+            postText,
+            image,
             videos
         } = req.body
 
-        const datosActualizar = {}
+        const dataUpdate = {}
 
-        if (textoPublicacion !== undefined)
-            datosActualizar.textoPublicacion = textoPublicacion
-
-        if (imagenes !== undefined)
-            datosActualizar.imagenes = imagenes
+        if (postText !== undefined)
+            dataUpdate.postText = postText
+        if (image !== undefined)
+            dataUpdate.image = image
 
         if (videos !== undefined)
-            datosActualizar.videos = videos
+            dataUpdate.videos = videos
 
-        if (Object.keys(datosActualizar).length === 0) {
+        if (Object.keys(dataUpdate).length === 0) {
             return res.status(400).json({
                 message: "No se enviaron datos para actualizar"
             })
@@ -111,10 +110,10 @@ const updatePost = async (req, res) => {
 
         const post = await Post.findOneAndUpdate(
             {
-                _id: id,
-                eliminado: false
+                _id: postId,
+                eliminated: false
             },
-            datosActualizar,
+            dataUpdate,
             {
                 new: true,
                 runValidators: true

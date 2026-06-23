@@ -17,7 +17,7 @@ const checkToken = async (req, res, next) => {
 
         const decoded = jwt.verify(token, SECRET);
 
-        const user = await User.findByPk(decoded.idUser);
+        const user = await User.findByPk(decoded.userId);
 
         if (!user) {
             return res.status(404).json({
@@ -43,7 +43,7 @@ const IsAuth = async (req, res, next) => {
 
     const [rows] = await pool.query(`SELECT p.permission FROM Permission p 
         JOIN PermissionRole pr 
-        ON pr.idPermission = p.idPermission
+        ON pr.permissionId = p.permissionId
         WHERE pr.idRole = ?`, [idRole]); 
 
     permissionList = rows.map(p => p.permission)
@@ -62,5 +62,6 @@ const IsAuth = async (req, res, next) => {
 } 
 
 module.exports = {
-    checkToken
+    checkToken,
+    IsAuth
 };

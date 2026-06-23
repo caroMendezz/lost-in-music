@@ -3,60 +3,60 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 
 const Login = async (req, res) => {
-    const { nombre, contraseña } = req.body
+    const { username, password } = req.body
 
-    if(contraseña) req.body.contraseña 
+    if(password) req.body.password 
 
-    if(! nombre || !contraseña) {
-        return res.status(400).json({ message: 'Nombre de usuario o contraseña faltante' })
+    if(! username || !password) {
+        return res.status(400).json({ message: 'username de usuario o password faltante' })
     }
 
-    const usuario = await Usuario.findOne({ where: {  nombre } })
+    const user = await User.findOne({ where: {  username } })
 
-    if (!usuario) return res.status(400).json({ message: 'Usuario no encontrado' })
-    const compare = await bcrypt.compare(contraseña, usuario.contraseña);
+    if (!user) return res.status(400).json({ message: 'Usuario no encontrado' })
+    const compare = await bcrypt.compare(password, user.password);
 
-    if (!compare) return res.status(400).json({ message: 'Usuario o contraseña incorrecta' })
+    if (!compare) return res.status(400).json({ message: 'Usuario o password incorrecta' })
 
-    //const token = jwt.sign({ idusuario: usuario.idusuario }, SECRET, { expiresIn: '8h' });
+    const token = jwt.sign({ userId: user.userId }, SECRET, { expiresIn: '8h' });
 
-    //res.json({ token })
+    res.json({ token })
     return res.status(200).json({ message: 'Login correcto, bienvenido a lost in music' })
 }
 
 
 
 const Register = async (req, res) => {
-    const { email, nombre, contraseña } = req.body
+    const { email, username, password } = req.body
 
-    if(contraseña) req.body.contraseña = "[REDACTED]"
+    if(password) req.body.password = "[REDACTED]"
 
-    if(! nombre || !contraseña || !email) {
-        return res.status(400).json({ message: 'Nombre de usuario o contraseña o email faltante' })
+    if(! username || !password || !email) {
+        return res.status(400).json({ message: 'username de usuario o password o email faltante' })
     }
 
 
-    const Hashedcontraseña = await bcrypt.hash(contraseña, 10)
+    const Hashedpassword = await bcrypt.hash(password, 10)
     try{
         const usuario = await Usuario.create({
             email,
-            nombre,
-            genero,
-            fecha_nacimiento,
-            contraseña: Hashedcontraseña,
-            rol: "Usuario",
-            eliminado: 0,
-            fecha_penalizacion: "nada",
-            descripcion: "agregar descripcion",
-            cant_seguidores: 0,
-            cant_seguidos: 0,
-            foto_perfil,
+            username,
+            gender,
+            birthDate,
+            password: Hashedpassword,
+            role: "User",
+            eliminated: 0,
+            penaltyDate: "nada",
+            description: "agregar descripcion",
+            followerAmount: 0,
+            followingAmount: 0,
+            profilePhoto,
             banner: "vacio",
-            id_amigo: 2,
-            ubicacion: "Agregar ubicacion",
+            friendId: 2,
+            ubication: "Agregar ubicacion",
             DVH: "1234567890123456789012345678901234567890123456789012345678901234" // Por ahora no tenemos el cálculo para hacer los dígitos verificadores
         })
-        return res.status(201).json(usuario)
+        return res.status(201).json(user)
     } catch (error) {
         if (error.name === 'SequelizeValidationError') {
             // Extrae los mensajes de error específicos
@@ -73,7 +73,6 @@ const Register = async (req, res) => {
     }
 }
 
-const { Usuario } = require('../models/Usuario')
 
 const DeleteUser = async (req, res) => {
   try {
@@ -105,44 +104,44 @@ const DeleteUser = async (req, res) => {
 
 const UpdateUser = async (req, res) => {
   try {
-    const { id } = req.params;
+    const { userId } = req.params;
 
-    const usuario = await Usuario.findByPk(id);
+    const usert = await User.findByPk(id);
 
-    if (!usuario) {
+    if (!user) {
       return res.status(404).json({
         message: "Usuario no encontrado"
       });
     }
 
     const {
-      nombre,
-      descripcion,
-      foto_perfil,
+      username,
+      description,
+      profilePhoto,
       banner,
-      ubicacion
+      ubication
     } = req.body;
 
-    const datosActualizar = {};
+    const dataUpdate = {};
 
-    if (nombre !== undefined) datosActualizar.nombre = nombre;
-    if (descripcion !== undefined) datosActualizar.descripcion = descripcion;
-    if (foto_perfil !== undefined) datosActualizar.foto_perfil = foto_perfil;
-    if (banner !== undefined) datosActualizar.banner = banner;
-    if (ubicacion !== undefined) datosActualizar.ubicacion = ubicacion;
+    if (username !== undefined) dataUpdate.username = username;
+    if (description !== undefined) dataUpdate.description = description;
+    if (profilePhoto !== undefined) dataUpdate.profilePhoto = profilePhoto;
+    if (banner !== undefined) dataUpdate.banner = banner;
+    if (ubication !== undefined) dataUpdate.ubication = ubication;
 
-    await usuario.update(datosActualizar);
+    await user.update(dataUpdate);
 
     return res.status(200).json({
       message: "Usuario actualizado correctamente",
-      usuario
+      user
     });
 
   } catch (error) {
 
     if (error.name === "SequelizeUniqueConstraintError") {
       return res.status(400).json({
-        message: "El nombre de usuario ya existe"
+        message: "El username de usuario ya existe"
       });
     }
 
