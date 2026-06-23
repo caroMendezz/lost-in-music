@@ -3,12 +3,12 @@ const { DataTypes} = require("sequelize")
 
 const Dvv = sequelize.define('dvv', {
 
-    nombre_tabla: {
+    tableName: {
     type: DataTypes.STRING(100),
     allowNull: false,
     unique: true
   },
-    valor_DVV: {
+    DVVvalue: {
     type: DataTypes.STRING(255),
     allowNull: false,
     unique: true

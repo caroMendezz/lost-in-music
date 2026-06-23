@@ -1,15 +1,15 @@
 const sequelize = require("../config/db");
 const { DataTypes} = require("sequelize")
 
-const Usuario = sequelize.define('Usuario', {
-  idusuario: {
+const User = sequelize.define('User', {
+  userId: {
     type: DataTypes.INTEGER(11),
     primaryKey: true,
     autoIncrement: true,
     unique: true
   },
 
-  nombre: { //
+  username: { //
     type: DataTypes.STRING(100),
     allowNull: false,
     unique: true
@@ -21,22 +21,22 @@ const Usuario = sequelize.define('Usuario', {
     unique: true
   },
 
-  contraseña: {
+  password: {
     type: DataTypes.STRING(100),
     allowNull: false,
   },
 
-  descripcion: { //
+  description: { //
     type: DataTypes.TEXT,
     allowNull: false,
   },
 
-  fecha_nacimiento: {
+  birthDate: {
     type: DataTypes.DATE,
     allowNull: false,
   },
 
-  genero: {
+  gender: {
     type: DataTypes.ENUM('Femenino', 'Masculino', 'Otro', 'PrefieroNoDecir'),
     allowNull: false,
   },
@@ -50,19 +50,19 @@ const Usuario = sequelize.define('Usuario', {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
-  eliminado: {
+  eliminated: {
     type: DataTypes.TINYINT(1),
     allowNull: false,
   },
-  cant_seguidores: {
+  followerAmount: {
     type: DataTypes.INTEGER(11),
     allowNull: false,
   },
-  cant_seguidos: {
+  followingAmount: {
     type: DataTypes.INTEGER(11),
     allowNull: false,
   },
-  foto_perfil: { //
+  profilePhoto: { //
     type: DataTypes.STRING(255),
     allowNull: false,
   },
@@ -70,15 +70,15 @@ const Usuario = sequelize.define('Usuario', {
     type: DataTypes.STRING(255),
     allowNull: false,
   },
-  id_amigo: {
+  friendId: {
     type: DataTypes.INTEGER(11),
     allowNull: false,
   },
-  ubicacion: { //
+  ubication: { //
     type: DataTypes.STRING(150),
     allowNull: false,
   },
-  fecha_penalizacion: {
+  penaltyDate: {
     type: DataTypes.STRING(150),
     allowNull: false,
   },
@@ -91,5 +91,5 @@ User.belongsTo(Role, {
 });
 
 module.exports = {
-  Usuario
+  User
 };

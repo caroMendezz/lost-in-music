@@ -2,7 +2,7 @@ const sequelize = require("../config/db");
 const { DataTypes} = require("sequelize")
 
 const Indexes = sequelize.define('indexes', {
-  id: {
+  indexesId: {
     type: DataTypes.INTEGER(11),
     primaryKey: true,
     autoIncrement: true,

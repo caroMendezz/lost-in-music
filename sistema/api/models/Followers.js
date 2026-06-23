@@ -1,16 +1,16 @@
 const sequelize = require("../config/db");
 const { DataTypes} = require("sequelize")
 
-const Seguidores = sequelize.define('seguidores', {
-  id_seguidor: {
+const Followers = sequelize.define('Followers', {
+  followerId: {
     type: DataTypes.INTEGER(11),
     allowNull: false,
   },
-  id_seguido: {
+  followingId: {
     type: DataTypes.INTEGER(11),
     allowNull: false,
   },
-  fecha: {
+  date: {
     type: DataTypes.DATE,
     allowNull: false,
   },
@@ -18,5 +18,5 @@ const Seguidores = sequelize.define('seguidores', {
 });
 
 module.exports = {
-    Seguidores   
+  Followers   
 }

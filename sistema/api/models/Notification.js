@@ -1,32 +1,28 @@
 const sequelize = require("../config/db");
 const { DataTypes} = require("sequelize")
 
-const Bitacora = sequelize.define('bitácora', {
-  id_bitacora_usuario: {
+const Notification = sequelize.define('Notification', {
+  NotificationId: {
     type: DataTypes.INTEGER(11),
     primaryKey: true,
     autoIncrement: true,
     unique: true
   },
-    fecha: {
+  date: {
     type: DataTypes.DATE,
     allowNull: false,
   },
-    tipo_accion: {
-    type: DataTypes.STRING(100),
+  title: {
+    type: DataTypes.STRING(150),
     allowNull: false,
   },
-    descripcion: {
+
+  description: {
     type: DataTypes.TEXT,
     allowNull: false,
-  },
-    usuario_id: {
-    type: DataTypes.INTEGER(11),
-    allowNull: false,
-    unique: true
   },
 });
 
 module.exports = {
-    Bitacora
+  Notification   
 }

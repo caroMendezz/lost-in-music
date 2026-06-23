@@ -7,12 +7,12 @@ const PostSchema = new mongoose.Schema({
         required: true
     },
 
-    textoPublicacion: {
+    postText: {
         type: String,
         maxlength: 1000
     },
 
-    imagenes: [{
+    images: [{
         type: String
     }],
 
@@ -30,7 +30,7 @@ const PostSchema = new mongoose.Schema({
     default: 0
     },
 
-    eliminado: {
+    eliminated: {
         type: Boolean,
         default: false
         }
