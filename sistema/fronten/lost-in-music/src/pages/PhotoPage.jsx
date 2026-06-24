@@ -1,26 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ThreadView from '../components/ThreadView';
+import { useLang } from '../components/LangContext';
 import '../styles/photo.css';
 
-/**
- * PhotoPage  — ruta /photo/:postId/:imageIndex
- *
- * Visor fullscreen de imagen. El panel lateral muestra
- * el contenido del post Y los comentarios (via ThreadView),
- * igual que el PostModal pero en ruta propia.
- *
- * Props heredadas desde App a través de Routes:
- *   posts, getReplies, onComment, onLike
- */
 function PhotoPage({ posts, getReplies, onComment, onLike }) {
   const navigate = useNavigate();
   const { postId, imageIndex } = useParams();
-  const [now, setNow] = useState(Date.now());
+  const { t } = useLang();
+  const pp = t.photoPage;
 
+  const [now, setNow] = useState(Date.now());
   useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 60_000);
-    return () => clearInterval(t);
+    const timer = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(timer);
   }, []);
 
   const post = posts.find((p) => String(p.id) === String(postId));
@@ -29,8 +22,8 @@ function PhotoPage({ posts, getReplies, onComment, onLike }) {
   if (!post || !post.images?.[currentIndex]) {
     return (
       <div className="photo-page-error">
-        <button onClick={() => navigate(-1)}>← Volver</button>
-        <p>No se encontró la foto.</p>
+        <button onClick={() => navigate(-1)}>{pp.back}</button>
+        <p>{pp.notFound}</p>
       </div>
     );
   }
@@ -45,15 +38,14 @@ function PhotoPage({ posts, getReplies, onComment, onLike }) {
 
   return (
     <div className="photo-page">
-      {/* ── Visor de imagen ── */}
       <div className="photo-viewer">
         <div className="photo-topbar">
-          <button onClick={() => navigate(-1)} aria-label="Cerrar">✕</button>
+          <button onClick={() => navigate(-1)} aria-label={pp.close}>✕</button>
 
           <div className="photo-header-icons">
-            <button aria-label="Notificaciones">🔔</button>
-            <button aria-label="Perfil">👤</button>
-            <button aria-label="Configuración">⚙️</button>
+            <button aria-label={pp.notifications}>🔔</button>
+            <button aria-label={pp.profile}>👤</button>
+            <button aria-label={pp.settings}>⚙️</button>
           </div>
         </div>
 
@@ -75,7 +67,6 @@ function PhotoPage({ posts, getReplies, onComment, onLike }) {
           </button>
         )}
 
-        {/* Indicador de índice */}
         {images.length > 1 && (
           <div className="photo-index-indicator">
             {images.map((_, i) => (
@@ -89,32 +80,28 @@ function PhotoPage({ posts, getReplies, onComment, onLike }) {
         )}
       </div>
 
-      {/* ── Panel lateral: post + comentarios ── */}
       <aside className="photo-comments">
-        {/* Autor y contenido del post */}
         <div className="photo-author-row">
           <div className="photo-avatar">👤</div>
           <div>
+            {/* Nombre → NO se traduce */}
             <div className="photo-author">{post.author}</div>
             <div className="photo-time">
               {new Date(post.createdAt).toLocaleDateString('es-AR', {
-                day: 'numeric',
-                month: 'long',
+                day: 'numeric', month: 'long',
               })}
             </div>
           </div>
         </div>
 
-        {post.content && (
-          <div className="photo-post-content">{post.content}</div>
-        )}
+        {/* Contenido → NO se traduce */}
+        {post.content && <div className="photo-post-content">{post.content}</div>}
 
         <div className="photo-stats">
-          <span>❤️ {post.likes} likes</span>
-          <span>💬 {post.comments} comentarios</span>
+          <span>❤️ {post.likes} {t.post.likes}</span>
+          <span>💬 {post.comments} {t.post.comments}</span>
         </div>
 
-        {/* ThreadView comparte la misma lógica que el modal */}
         <ThreadView
           parentId={post.id}
           getReplies={getReplies}

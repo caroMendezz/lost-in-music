@@ -1,5 +1,7 @@
 import React from 'react';
 import '../styles/Header.css';
+import { useLang } from './LangContext';
+import LangSelector from './LangSelector';
 
 function Header() {
   return (
@@ -9,7 +11,10 @@ function Header() {
         <span>Buscar</span>
       </div>
 
+
+
       <div className="header-icons">
+        <LangSelector />
         <button className="header-icon-btn" title="Notificaciones">
           🔔
         </button>

@@ -9,30 +9,11 @@ import PhotoPage from './pages/PhotoPage';
 import CommentPage from './pages/CommentPage';
 import PostModal from './components/PostModal';
 import { usePosts } from './hooks/usePosts';
+import { LangProvider } from './components/LangContext';
 
-function App() {
-  const { rootPosts, addPost, addComment, toggleLike, getPost, getReplies } = usePosts();
-
-  /**
-   * openPostId controla qué post está abierto en el modal.
-   * null = ningún modal visible.
-   * Es un simple useState local — no se guarda en la URL
-   * para que el feed nunca quede "fuera de ruta".
-   */
-  const [openPostId, setOpenPostId] = useState(null);
-  const [now, setNow] = useState(Date.now());
-
-  React.useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 60_000);
-    return () => clearInterval(t);
-  }, []);
-
-  const openPost = useCallback((id) => setOpenPostId(id), []);
-  const closePost = useCallback(() => setOpenPostId(null), []);
-
-  const openedPost = openPostId ? getPost(openPostId) : null;
-
-  /* ─────────── Estilos de layout (sin cambios respecto al original) ─── */
+// ─── Página principal extraída como componente ───────────────────
+// Así vive DENTRO del árbol de LangProvider y puede usar useLang()
+function FeedPage({ rootPosts, addPost, toggleLike, openPost, getReplies, addComment, openedPost, closePost, now }) {
   const styles = {
     app: {
       width: '100%',
@@ -78,7 +59,7 @@ function App() {
     },
   };
 
-  const feedPage = (
+  return (
     <div style={styles.app}>
       <div style={styles.skyBg} />
 
@@ -93,7 +74,7 @@ function App() {
               posts={rootPosts}
               onPost={addPost}
               onLike={toggleLike}
-              onOpenPost={openPost}   /* ← nuevo: abre el modal */
+              onOpenPost={openPost}
               now={now}
             />
           </div>
@@ -104,7 +85,6 @@ function App() {
         <Footer />
       </div>
 
-      {/* Modal de post — se monta fuera del flujo mediante un portal */}
       <PostModal
         post={openedPost}
         onClose={closePost}
@@ -115,36 +95,83 @@ function App() {
       />
     </div>
   );
+}
+
+// ─── App ─────────────────────────────────────────────────────────
+function App() {
+  const { rootPosts, addPost, addComment, toggleLike, getPost, getReplies } = usePosts();
+
+  const [openPostId, setOpenPostId] = useState(null);
+  const [now, setNow] = useState(Date.now());
+
+  React.useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 60_000);
+    return () => clearInterval(t);
+  }, []);
+
+  const openPost  = useCallback((id) => setOpenPostId(id), []);
+  const closePost = useCallback(() => setOpenPostId(null), []);
+  const openedPost = openPostId ? getPost(openPostId) : null;
 
   return (
-    <Routes>
-      <Route path="/" element={feedPage} />
-      <Route path="/feed" element={feedPage} />
-
-      <Route
-        path="/photo/:postId/:imageIndex"
-        element={
-          <PhotoPage
-            posts={rootPosts}
-            getReplies={getReplies}
-            onComment={addComment}
-            onLike={toggleLike}
-          />
-        }
-      />
-
-      <Route
-        path="/comment/:id"
-        element={
-          <CommentPage
-            getPost={getPost}
-            getReplies={getReplies}
-            onComment={addComment}
-            onLike={toggleLike}
-          />
-        }
-      />
-    </Routes>
+    <LangProvider>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <FeedPage
+              rootPosts={rootPosts}
+              addPost={addPost}
+              toggleLike={toggleLike}
+              openPost={openPost}
+              getReplies={getReplies}
+              addComment={addComment}
+              openedPost={openedPost}
+              closePost={closePost}
+              now={now}
+            />
+          }
+        />
+        <Route
+          path="/feed"
+          element={
+            <FeedPage
+              rootPosts={rootPosts}
+              addPost={addPost}
+              toggleLike={toggleLike}
+              openPost={openPost}
+              getReplies={getReplies}
+              addComment={addComment}
+              openedPost={openedPost}
+              closePost={closePost}
+              now={now}
+            />
+          }
+        />
+        <Route
+          path="/photo/:postId/:imageIndex"
+          element={
+            <PhotoPage
+              posts={rootPosts}
+              getReplies={getReplies}
+              onComment={addComment}
+              onLike={toggleLike}
+            />
+          }
+        />
+        <Route
+          path="/comment/:id"
+          element={
+            <CommentPage
+              getPost={getPost}
+              getReplies={getReplies}
+              onComment={addComment}
+              onLike={toggleLike}
+            />
+          }
+        />
+      </Routes>
+    </LangProvider>
   );
 }
 

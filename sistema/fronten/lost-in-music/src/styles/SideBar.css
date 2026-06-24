@@ -11,31 +11,30 @@
 
 .sidebar-card {
   position: relative;
-  background: linear-gradient(180deg,
-      #d8f0ff 0%,
-      #c4e5fb 50%,
-      #b5daf5 100%);
-  border: 1px solid rgba(255, 255, 255, 0.8);
+  background: rgba(219, 244, 255, 0.892);
+  backdrop-filter: blur(4px);
+  border: 1px solid #c7def0;
   border-radius: 8px;
   padding: 12px;
-  ;
+  margin-bottom: 10px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 6px rgba(0, 0, 0, 0.15);
   overflow: hidden;
+  margin-top: 20px;
 }
 
 .sidebar-card::before {
   content: "";
   position: absolute;
   top: 0;
-  left: 10%;
-  right: 10%;
-  height: 25%;
+  left: 0%;
+  right: 0%;
+  height: 40%;
   border-radius: 0 0 100% 100% / 0 0 60% 60%;
   background: linear-gradient(180deg,
-      rgba(255, 255, 255, 0.95) 0%,
-      rgba(255, 255, 255, 0.25) 100%
-  );
+      rgba(255, 255, 255, 0.85) 0%,
+      rgba(255, 255, 255, 0.01) 85%);
   pointer-events: none;
+
 }
 
 .sidebar-section-title,

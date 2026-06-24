@@ -1,17 +1,20 @@
 import React, { useRef, useState } from 'react';
+import { useLang } from './LangContext';
 import '../styles/CreatePost.css';
 
 const MAX_POST_LENGTH = 2000;
 
 function getTextareaSizeClass(text) {
   const length = text.trim().length;
-
-  if (length <= 40) return 'createpost-textarea-large';
+  if (length <= 40)  return 'createpost-textarea-large';
   if (length <= 120) return 'createpost-textarea-medium';
   return 'createpost-textarea-small';
 }
 
 function CreatePost({ onPost }) {
+  const { t } = useLang();
+  const cp = t.createPost;
+
   const [content, setContent] = useState('');
   const [selectedImages, setSelectedImages] = useState([]);
   const textareaRef = useRef(null);
@@ -19,17 +22,13 @@ function CreatePost({ onPost }) {
   const resizeTextarea = () => {
     const textarea = textareaRef.current;
     if (!textarea) return;
-
     textarea.style.height = 'auto';
     textarea.style.height = `${Math.min(textarea.scrollHeight, 170)}px`;
   };
 
   const handleContentChange = (e) => {
     setContent(e.target.value);
-
-    requestAnimationFrame(() => {
-      resizeTextarea();
-    });
+    requestAnimationFrame(resizeTextarea);
   };
 
   const resetTextarea = () => {
@@ -41,13 +40,8 @@ function CreatePost({ onPost }) {
 
   const handleSubmit = () => {
     const cleanContent = content.trim();
-
     if (cleanContent || selectedImages.length > 0) {
-      onPost({
-        content: cleanContent,
-        images: selectedImages,
-      });
-
+      onPost({ content: cleanContent, images: selectedImages });
       setContent('');
       setSelectedImages([]);
       resetTextarea();
@@ -61,11 +55,9 @@ function CreatePost({ onPost }) {
     }
   };
 
-  const textareaSizeClass = getTextareaSizeClass(content);
-
   return (
     <div className="createpost-container">
-      <div className="createpost-title">Crear publicación</div>
+      <div className="createpost-title">{cp.title}</div>
 
       <div className="createpost-user-row">
         <div className="createpost-avatar">👤</div>
@@ -73,9 +65,9 @@ function CreatePost({ onPost }) {
         <div className="createpost-input-wrap">
           <textarea
             ref={textareaRef}
-            className={`createpost-textarea ${textareaSizeClass}`}
+            className={`createpost-textarea ${getTextareaSizeClass(content)}`}
             rows={1}
-            placeholder="Escribir algo..."
+            placeholder={cp.placeholder}
             value={content}
             maxLength={MAX_POST_LENGTH}
             onChange={handleContentChange}
@@ -97,27 +89,19 @@ function CreatePost({ onPost }) {
           style={{ display: 'none' }}
           onChange={(e) => {
             const files = Array.from(e.target.files);
-
             if (files.length > 0) {
-              const imageUrls = files.map((file) =>
-                URL.createObjectURL(file)
-              );
-
-              setSelectedImages((prev) => [...prev, ...imageUrls]);
+              setSelectedImages((prev) => [
+                ...prev,
+                ...files.map((f) => URL.createObjectURL(f)),
+              ]);
             }
-
             e.target.value = '';
           }}
         />
       </div>
 
       {selectedImages.length > 0 && (
-        <div
-          className={`createpost-gallery createpost-gallery-${Math.min(
-            selectedImages.length,
-            5
-          )}`}
-        >
+        <div className={`createpost-gallery createpost-gallery-${Math.min(selectedImages.length, 5)}`}>
           <button
             type="button"
             className="createpost-remove-image"
@@ -129,16 +113,10 @@ function CreatePost({ onPost }) {
           {selectedImages.slice(0, 5).map((image, index) => {
             const extraCount = selectedImages.length - 5;
             const showExtra = index === 4 && extraCount > 0;
-
             return (
               <div key={image} className="createpost-gallery-item">
                 <img src={image} alt="preview" />
-
-                {showExtra && (
-                  <div className="createpost-gallery-more">
-                    +{extraCount}
-                  </div>
-                )}
+                {showExtra && <div className="createpost-gallery-more">+{extraCount}</div>}
               </div>
             );
           })}
@@ -150,24 +128,15 @@ function CreatePost({ onPost }) {
           <button
             type="button"
             className="createpost-action-btn"
-            onClick={() =>
-              document.getElementById('post-image-input').click()
-            }
+            onClick={() => document.getElementById('post-image-input').click()}
           >
-            📷 Foto/Video
+            {cp.photoVideo}
           </button>
 
-          <button type="button" className="createpost-action-btn">
-            🏷️ Etiquetar
-          </button>
         </div>
 
-        <button
-          type="button"
-          className="createpost-publish-btn"
-          onClick={handleSubmit}
-        >
-          Publicar
+        <button type="button" className="createpost-publish-btn" onClick={handleSubmit}>
+          {cp.publish}
         </button>
       </div>
     </div>

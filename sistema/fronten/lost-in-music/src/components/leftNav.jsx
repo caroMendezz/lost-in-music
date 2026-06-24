@@ -1,42 +1,40 @@
 import React, { useState } from 'react';
+import { useLang } from './LangContext';
 import '../styles/LeftNav.css';
 
-const navItems = [
-  { label: 'Principal', icon: '🏠' },
-  { label: 'Mensajes', icon: '💬' },
-  { label: 'Shop in vivo', icon: '🛍️' },
-  { label: 'Amigos', icon: '👥' },
-];
-
 function LeftNav() {
-  const [active, setActive] = useState('Principal');
+  const { t } = useLang();
+  const n = t.nav;
+
+  // Keys estables; las etiquetas vienen del diccionario
+  const navItems = [
+    { key: 'principal', label: n.principal, icon: '🏠' },
+    { key: 'mensajes',  label: n.mensajes,  icon: '💬' },
+    { key: 'shop',      label: n.shop,      icon: '🛍️' },
+    { key: 'amigos',    label: n.amigos,    icon: '👥' },
+  ];
+
+  const [active, setActive] = useState('principal');
 
   return (
     <nav className="leftnav-container">
-      {navItems.map(({ label, icon }) => (
+      {navItems.map(({ key, label, icon }) => (
         <div
-          key={label}
-          className={`leftnav-item ${
-            active === label ? 'leftnav-item-active' : ''
-          }`}
-          onClick={() => setActive(label)}
+          key={key}
+          className={`leftnav-item ${active === key ? 'leftnav-item-active' : ''}`}
+          onClick={() => setActive(key)}
         >
-          <div
-            className={`leftnav-icon ${
-              active === label ? 'leftnav-icon-active' : ''
-            }`}
-          >
+          <div className={`leftnav-icon ${active === key ? 'leftnav-icon-active' : ''}`}>
             {icon}
           </div>
-
           <span>{label}</span>
         </div>
       ))}
 
       <div className="leftnav-bottom">
-        Configuración
+        {n.settings}
         <br />
-        Condiciones y políticas
+        {n.terms}
       </div>
     </nav>
   );
