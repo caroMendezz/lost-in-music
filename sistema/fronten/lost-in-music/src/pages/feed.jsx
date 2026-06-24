@@ -4,13 +4,15 @@ import Post from '../components/post';
 
 /**
  * Props:
- *   posts       — array de posts raíz
- *   onPost      — ({ content, images }) => void
- *   onLike      — (id) => void
- *   onOpenPost  — (id) => void  ← pasa al botón Comentar de cada Post
- *   now         — timestamp reactivo (opcional, Feed puede manejarlo propio)
+ *   posts      — array de posts raíz
+ *   onPost     — ({ content, images }) => void
+ *   onLike     — (id) => void
+ *   onOpenPost — (id) => void
+ *   onDelete   — (id) => void
+ *   onEdit     — (id, newContent) => void
+ *   now        — timestamp reactivo (opcional)
  */
-function Feed({ posts = [], onPost, onLike, onOpenPost, now: externalNow }) {
+function Feed({ posts = [], onPost, onLike, onOpenPost, onDelete, onEdit, now: externalNow }) {
   const [now, setNow] = useState(externalNow ?? Date.now());
 
   useEffect(() => {
@@ -23,21 +25,8 @@ function Feed({ posts = [], onPost, onLike, onOpenPost, now: externalNow }) {
   }, [externalNow]);
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        width: '100%',
-      }}
-    >
-      <div
-        style={{
-          width: '100%',
-          maxWidth: '600px',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
+    <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+      <div style={{ width: '100%', maxWidth: '600px', display: 'flex', flexDirection: 'column' }}>
         <CreatePost onPost={onPost} />
 
         {posts.map((post) => (
@@ -46,6 +35,8 @@ function Feed({ posts = [], onPost, onLike, onOpenPost, now: externalNow }) {
             post={post}
             onLike={onLike}
             onOpenPost={onOpenPost}
+            onDelete={onDelete}
+            onEdit={onEdit}
             now={now}
           />
         ))}

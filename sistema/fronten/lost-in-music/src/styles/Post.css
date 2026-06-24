@@ -1,3 +1,5 @@
+/* ── Estilos existentes ──────────────────────────────────────────────────── */
+
 .post-container {
   position: relative;
 
@@ -10,7 +12,7 @@
   margin-bottom: 10px;
   backdrop-filter: blur(8px);
   box-shadow: 0 4px 16px rgba(31, 76, 130, 0.15);
-  overflow: hidden;
+  overflow: visible; /* cambiado de hidden a visible para que el dropdown no se corte */
 }
 
 .post-container::before {
@@ -59,7 +61,6 @@
   font-size: 14px;
   font-weight: 600;
   color: #0c447c;
-
 }
 
 .post-time {
@@ -81,7 +82,6 @@
   font-weight: 500;
   text-align: left;
   padding: 18px 8px;
-  
 }
 
 .post-content-medium {
@@ -95,7 +95,6 @@
   font-weight: 400;
   text-align: left;
 }
-
 
 .post-see-more-btn {
   border: none;
@@ -116,14 +115,13 @@
   position: relative;
   width: 100%;
   height: 450px;
-
   overflow: hidden;
   border-radius: 8px;
-
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .post-image-wrapper,
 .post-gallery-item {
   cursor: pointer;
@@ -132,23 +130,18 @@
 .post-image-background {
   position: absolute;
   inset: 0;
-
   background-size: cover;
   background-position: center;
-
   filter: blur(18px);
   transform: scale(1.2);
-
   opacity: 0.8;
 }
 
 .post-image {
   position: relative;
   z-index: 2;
-
   max-width: 100%;
   max-height: 100%;
-
   object-fit: contain;
 }
 
@@ -175,29 +168,23 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-
   padding: 6px 10px;
   font-size: 12px;
   font-family: inherit;
-
   color: white;
   font-weight: 500;
   text-shadow: 0 1px 1px rgba(0, 0, 0, 0.15);
-
   background: linear-gradient(to bottom,
       #ceecfb 0%,
       #b7dff2 45%,
       #a0d8f4 55%,
       #ceecfb 100%);
-
   border: 1px solid rgba(120, 180, 210, 0.8);
   border-radius: 999px;
-
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.9),
     inset 0 -1px 0 rgba(255, 255, 255, 0.3),
     0 1px 3px rgba(0, 0, 0, 0.12);
-
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -205,7 +192,6 @@
 .post-action-btn:hover,
 .post-liked-btn:hover {
   transform: translateY(-1px);
-
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.95),
     0 2px 6px rgba(0, 0, 0, 0.18);
@@ -214,7 +200,6 @@
 .post-action-btn:active,
 .post-liked-btn:active {
   transform: translateY(0);
-
   box-shadow:
     inset 0 2px 4px rgba(0, 0, 0, 0.12),
     0 1px 2px rgba(0, 0, 0, 0.1);
@@ -225,4 +210,232 @@
   flex-direction: column;
   gap: 6px;
   line-height: 1.1;
+}
+
+/* ── Menú ⋯ ─────────────────────────────────────────────────────────────── */
+
+.post-menu-wrapper {
+  position: relative;
+  margin-left: auto;   /* empuja el botón al extremo derecho del header */
+  z-index: 10;
+}
+
+.post-menu-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 255, 255, 0.45);
+  color: #185fa5;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+  letter-spacing: 1px;
+}
+
+.post-menu-btn:hover {
+  background: rgba(255, 255, 255, 0.75);
+}
+
+.post-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 6px);
+
+  min-width: 148px;
+
+  background: rgba(220, 243, 255, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(180, 220, 245, 0.9);
+  border-radius: 10px;
+  box-shadow:
+    0 8px 24px rgba(31, 76, 130, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.85);
+
+  overflow: hidden;
+  z-index: 100;
+
+  /* entrada suave */
+  animation: post-menu-in 0.12s ease;
+}
+
+@keyframes post-menu-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.97); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
+}
+
+.post-menu-item {
+  width: 100%;
+  padding: 9px 14px;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 500;
+  color: #0c447c;
+  cursor: pointer;
+  transition: background 0.12s;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.post-menu-item:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.post-menu-item--danger {
+  color: #c0392b;
+}
+
+.post-menu-item--danger:hover {
+  background: rgba(255, 210, 210, 0.55);
+}
+
+/* ── Confirmación de eliminación ────────────────────────────────────────── */
+
+.post-confirm-delete {
+  position: relative;
+  z-index: 1;
+  margin: 0 0 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  background: rgba(255, 220, 220, 0.55);
+  border: 1px solid rgba(220, 100, 100, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  color: #7a1a1a;
+  font-weight: 500;
+}
+
+.post-confirm-actions {
+  display: flex;
+  gap: 7px;
+  flex-shrink: 0;
+}
+
+.post-confirm-btn {
+  padding: 4px 14px;
+  border-radius: 999px;
+  border: none;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.post-confirm-btn--cancel {
+  background: rgba(255, 255, 255, 0.7);
+  color: #185fa5;
+  border: 1px solid rgba(120, 180, 210, 0.6);
+}
+
+.post-confirm-btn--cancel:hover {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.post-confirm-btn--delete {
+  background: linear-gradient(to bottom, #e57373, #c0392b);
+  color: white;
+  border: 1px solid rgba(180, 40, 40, 0.4);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.post-confirm-btn--delete:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(180, 40, 40, 0.35);
+}
+
+/* ── Editor inline ──────────────────────────────────────────────────────── */
+
+.post-edit-wrapper {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 8px;
+}
+
+.post-edit-textarea {
+  width: 100%;
+  min-height: 72px;
+  resize: none;
+  overflow: hidden;
+
+  font-size: 15px;
+  font-family: inherit;
+  color: #0c447c;
+  line-height: 1.4;
+
+  background: rgba(255, 255, 255, 0.6);
+  border: 1.5px solid rgba(100, 170, 220, 0.7);
+  border-radius: 8px;
+  padding: 9px 11px;
+  box-sizing: border-box;
+
+  box-shadow: inset 0 2px 6px rgba(100, 160, 210, 0.12);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.post-edit-textarea:focus {
+  border-color: rgba(60, 140, 200, 0.85);
+  box-shadow:
+    inset 0 2px 6px rgba(60, 140, 200, 0.15),
+    0 0 0 3px rgba(100, 180, 230, 0.2);
+}
+
+.post-edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 7px;
+  margin-top: 7px;
+}
+
+.post-edit-btn {
+  padding: 5px 16px;
+  border-radius: 999px;
+  border: none;
+  font-size: 12px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.post-edit-btn--cancel {
+  background: rgba(255, 255, 255, 0.7);
+  color: #185fa5;
+  border: 1px solid rgba(120, 180, 210, 0.6);
+}
+
+.post-edit-btn--cancel:hover {
+  background: rgba(255, 255, 255, 0.95);
+}
+
+.post-edit-btn--save {
+  background: linear-gradient(to bottom, #5cc8f5 0%, #2fa8e0 45%, #1890cc 55%, #5cc8f5 100%);
+  color: white;
+  border: 1px solid rgba(30, 120, 180, 0.5);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.post-edit-btn--save:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(30, 120, 180, 0.3);
+}
+
+.post-edit-btn--save:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }

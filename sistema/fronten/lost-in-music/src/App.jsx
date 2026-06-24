@@ -11,9 +11,7 @@ import PostModal from './components/PostModal';
 import { usePosts } from './hooks/usePosts';
 import { LangProvider } from './components/LangContext';
 
-// ─── Página principal extraída como componente ───────────────────
-// Así vive DENTRO del árbol de LangProvider y puede usar useLang()
-function FeedPage({ rootPosts, addPost, toggleLike, openPost, getReplies, addComment, openedPost, closePost, now }) {
+function FeedPage({ rootPosts, addPost, toggleLike, openPost, getReplies, addComment, openedPost, closePost, deletePost, editPost, now }) {
   const styles = {
     app: {
       width: '100%',
@@ -75,6 +73,8 @@ function FeedPage({ rootPosts, addPost, toggleLike, openPost, getReplies, addCom
               onPost={addPost}
               onLike={toggleLike}
               onOpenPost={openPost}
+              onDelete={deletePost}
+              onEdit={editPost}
               now={now}
             />
           </div>
@@ -97,9 +97,8 @@ function FeedPage({ rootPosts, addPost, toggleLike, openPost, getReplies, addCom
   );
 }
 
-// ─── App ─────────────────────────────────────────────────────────
 function App() {
-  const { rootPosts, addPost, addComment, toggleLike, getPost, getReplies } = usePosts();
+  const { rootPosts, addPost, addComment, toggleLike, getPost, getReplies, deletePost, editPost } = usePosts();
 
   const [openPostId, setOpenPostId] = useState(null);
   const [now, setNow] = useState(Date.now());
@@ -128,6 +127,8 @@ function App() {
               addComment={addComment}
               openedPost={openedPost}
               closePost={closePost}
+              deletePost={deletePost}
+              editPost={editPost}
               now={now}
             />
           }
@@ -144,6 +145,8 @@ function App() {
               addComment={addComment}
               openedPost={openedPost}
               closePost={closePost}
+              deletePost={deletePost}
+              editPost={editPost}
               now={now}
             />
           }

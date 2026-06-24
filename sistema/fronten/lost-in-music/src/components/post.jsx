@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLang } from './LangContext';
 import '../styles/Post.css';
 
 const SEE_MORE_LIMIT = 220;
@@ -23,69 +22,229 @@ function formatPostTime(createdAt, nowValue = Date.now()) {
 
 function getContentClass(content, hasImage) {
   const length = content?.length ?? 0;
-  if (hasImage)    return 'post-content-small';
+  if (hasImage)      return 'post-content-small';
   if (length <= 40)  return 'post-content-large';
   if (length <= 120) return 'post-content-medium';
   return 'post-content-small';
 }
 
-function Post({ post, onLike, onOpenPost, now }) {
+/**
+ * Props:
+ *   post        — objeto del post
+ *   onLike      — (id) => void
+ *   onOpenPost  — (id) => void
+ *   onDelete    — (id) => void          ← nuevo
+ *   onEdit      — (id, newContent) => void  ← nuevo
+ *   now         — Date.now() reactivo
+ */
+function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
   const navigate = useNavigate();
-  const { t } = useLang();
-  const p = t.post;
 
-  const [expanded, setExpanded] = useState(false);
+  const [expanded,    setExpanded]    = useState(false);
+  const [menuOpen,    setMenuOpen]    = useState(false);
+  const [editing,     setEditing]     = useState(false);
+  const [editDraft,   setEditDraft]   = useState('');
+  const [confirmDel,  setConfirmDel]  = useState(false);
 
-  const content = post.content ?? '';
-  const images  = post.images ?? (post.image ? [post.image] : []);
+  const menuRef    = useRef(null);
+  const textareaRef = useRef(null);
+
+  /* Cerrar menú al hacer click afuera */
+  useEffect(() => {
+    if (!menuOpen) return;
+    const handler = (e) => {
+      if (menuRef.current && !menuRef.current.contains(e.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [menuOpen]);
+
+  /* Auto-resize del textarea de edición */
+  useEffect(() => {
+    if (editing && textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
+      textareaRef.current.focus();
+    }
+  }, [editing]);
+
+  const content  = post.content ?? '';
+  const images   = post.images ?? (post.image ? [post.image] : []);
   const hasImage = images.length > 0;
   const shouldShowMore = content.length > SEE_MORE_LIMIT;
   const visibleContent = shouldShowMore && !expanded
     ? `${content.slice(0, SEE_MORE_LIMIT)}...`
     : content;
 
+  /* ── Handlers ── */
+  const handleEditStart = () => {
+    setEditDraft(content);
+    setEditing(true);
+    setMenuOpen(false);
+  };
+
+  const handleEditSave = () => {
+    const trimmed = editDraft.trim();
+    if (trimmed && trimmed !== content) onEdit?.(post.id, trimmed);
+    setEditing(false);
+  };
+
+  const handleEditCancel = () => {
+    setEditing(false);
+    setEditDraft('');
+  };
+
+  const handleEditKey = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleEditSave(); }
+    if (e.key === 'Escape') handleEditCancel();
+  };
+
+  const handleDeleteClick = () => {
+    setMenuOpen(false);
+    setConfirmDel(true);
+  };
+
+  const handleDeleteConfirm = () => {
+    onDelete?.(post.id);
+    setConfirmDel(false);
+  };
+
   return (
     <div className="post-container">
+
+      {/* ── Header ── */}
       <div className="post-header">
         <div className="post-avatar">👤</div>
+
         <div className="post-author-info">
-          {/* Nombre de autor → NO se traduce */}
           <div className="post-author">{post.author}</div>
           <div className="post-time">{formatPostTime(post.createdAt, now)}</div>
         </div>
+
+        {/* Botón ⋯ + menú desplegable */}
+        <div className="post-menu-wrapper" ref={menuRef}>
+          <button
+            type="button"
+            className="post-menu-btn"
+            onClick={() => { setMenuOpen((v) => !v); setConfirmDel(false); }}
+            aria-label="Opciones"
+          >
+            ⋯
+          </button>
+
+          {menuOpen && (
+            <div className="post-menu-dropdown">
+              <button
+                type="button"
+                className="post-menu-item"
+                onClick={handleEditStart}
+              >
+                ✏️ Editar
+              </button>
+              <button
+                type="button"
+                className="post-menu-item post-menu-item--danger"
+                onClick={handleDeleteClick}
+              >
+                🗑️ Eliminar
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
-      {content && (
-        <div className={`post-content ${getContentClass(content, hasImage)}`}>
-          {/* Contenido del post → NO se traduce */}
-          {visibleContent}
-
-          {shouldShowMore && (
+      {/* ── Confirmación de eliminación ── */}
+      {confirmDel && (
+        <div className="post-confirm-delete">
+          <span>¿Eliminar esta publicación?</span>
+          <div className="post-confirm-actions">
             <button
               type="button"
-              className="post-see-more-btn"
-              onClick={() => setExpanded((prev) => !prev)}
+              className="post-confirm-btn post-confirm-btn--cancel"
+              onClick={() => setConfirmDel(false)}
             >
-              {expanded ? ` ${p.seeLess}` : ` ${p.seeMore}`}
+              Cancelar
             </button>
-          )}
+            <button
+              type="button"
+              className="post-confirm-btn post-confirm-btn--delete"
+              onClick={handleDeleteConfirm}
+            >
+              Eliminar
+            </button>
+          </div>
         </div>
       )}
 
+      {/* ── Contenido (normal o modo edición) ── */}
+      {editing ? (
+        <div className="post-edit-wrapper">
+          <textarea
+            ref={textareaRef}
+            className="post-edit-textarea"
+            value={editDraft}
+            onChange={(e) => {
+              setEditDraft(e.target.value);
+              e.target.style.height = 'auto';
+              e.target.style.height = `${e.target.scrollHeight}px`;
+            }}
+            onKeyDown={handleEditKey}
+          />
+          <div className="post-edit-actions">
+            <button
+              type="button"
+              className="post-edit-btn post-edit-btn--cancel"
+              onClick={handleEditCancel}
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              className="post-edit-btn post-edit-btn--save"
+              onClick={handleEditSave}
+              disabled={!editDraft.trim() || editDraft.trim() === content}
+            >
+              Guardar
+            </button>
+          </div>
+        </div>
+      ) : (
+        content && (
+          <div className={`post-content ${getContentClass(content, hasImage)}`}>
+            {visibleContent}
+            {shouldShowMore && (
+              <button
+                type="button"
+                className="post-see-more-btn"
+                onClick={() => setExpanded((prev) => !prev)}
+              >
+                {expanded ? ' Ver menos' : ' Ver más'}
+              </button>
+            )}
+          </div>
+        )
+      )}
+
+      {/* ── Galería ── */}
       {images.length > 0 && (
         images.length === 1 ? (
           <div
             className="post-image-wrapper"
             onClick={() => navigate(`/photo/${post.id}/0`)}
           >
-            <div className="post-image-background" style={{ backgroundImage: `url(${images[0]})` }} />
+            <div
+              className="post-image-background"
+              style={{ backgroundImage: `url(${images[0]})` }}
+            />
             <img src={images[0]} alt="imagen del post" className="post-image" />
           </div>
         ) : (
           <div className={`post-gallery post-gallery-${Math.min(images.length, 5)}`}>
             {images.slice(0, 5).map((image, index) => {
               const extraCount = images.length - 5;
-              const showExtra = index === 4 && extraCount > 0;
+              const showExtra  = index === 4 && extraCount > 0;
               return (
                 <div
                   key={`${image}-${index}`}
@@ -101,19 +260,21 @@ function Post({ post, onLike, onOpenPost, now }) {
         )
       )}
 
+      {/* ── Stats ── */}
       <div className="post-stats">
-        <span>❤️ {post.likes} {p.likes}</span>
-        <span>💬 {post.comments} {p.comments}</span>
-        <span>↗ {post.shares} {p.shares}</span>
+        <span>❤️ {post.likes} likes</span>
+        <span>💬 {post.comments} comentarios</span>
+        <span>↗ {post.shares} compartido</span>
       </div>
 
+      {/* ── Acciones ── */}
       <div className="post-actions">
         <button
           type="button"
           className={post.liked ? 'post-liked-btn' : 'post-action-btn'}
           onClick={() => onLike(post.id)}
         >
-          {p.like}
+          ♪ like
         </button>
 
         <button
@@ -121,11 +282,11 @@ function Post({ post, onLike, onOpenPost, now }) {
           className="post-action-btn"
           onClick={() => onOpenPost?.(post.id)}
         >
-          {p.comment}
+          💬 comentar
         </button>
 
         <button type="button" className="post-action-btn">
-          {p.share}
+          ↗ compartir
         </button>
       </div>
     </div>

@@ -1,27 +1,8 @@
 import { useState, useCallback } from 'react';
 
-/**
- * Hook central que maneja posts Y comentarios en una sola fuente de verdad.
- * Los comentarios son simplemente posts con un campo `parentId` que apunta
- * al post o comentario al que responden.
- *
- * Estructura de un nodo (post o comentario):
- * {
- *   id:        number   — timestamp único
- *   author:    string
- *   content:   string
- *   images:    string[]
- *   likes:     number
- *   liked:     boolean
- *   shares:    number
- *   createdAt: string   — ISO
- *   parentId:  number|null — null = post raíz, number = respuesta a ese nodo
- * }
- */
 export function usePosts(initialPosts = []) {
   const [nodes, setNodes] = useState(initialPosts);
 
-  /* ── Crear post raíz ─────────────────────────────────────────── */
   const addPost = useCallback(({ content, images }) => {
     const node = {
       id: Date.now(),
@@ -38,7 +19,6 @@ export function usePosts(initialPosts = []) {
     setNodes((prev) => [node, ...prev]);
   }, []);
 
-  /* ── Crear comentario / respuesta ───────────────────────────── */
   const addComment = useCallback(({ content, parentId }) => {
     const node = {
       id: Date.now(),
@@ -54,7 +34,7 @@ export function usePosts(initialPosts = []) {
     };
 
     setNodes((prev) => {
-      // Incrementa el contador `comments` del nodo padre
+
       const updated = prev.map((n) =>
         n.id === parentId ? { ...n, comments: n.comments + 1 } : n
       );
@@ -62,7 +42,7 @@ export function usePosts(initialPosts = []) {
     });
   }, []);
 
-  /* ── Like ───────────────────────────────────────────────────── */
+
   const toggleLike = useCallback((id) => {
     setNodes((prev) =>
       prev.map((n) =>
@@ -73,13 +53,11 @@ export function usePosts(initialPosts = []) {
     );
   }, []);
 
-  /* ── Getters ────────────────────────────────────────────────── */
   const getPost = useCallback(
     (id) => nodes.find((n) => String(n.id) === String(id)) ?? null,
     [nodes]
   );
 
-  /** Devuelve los hijos directos de un nodo, ordenados del más nuevo al más viejo */
   const getReplies = useCallback(
     (parentId) =>
       nodes
@@ -88,8 +66,20 @@ export function usePosts(initialPosts = []) {
     [nodes]
   );
 
-  /** Solo posts raíz (sin padre) */
+
   const rootPosts = nodes.filter((n) => n.parentId === null);
 
-  return { nodes, rootPosts, addPost, addComment, toggleLike, getPost, getReplies };
+  const deletePost = (id) => {
+    setNodes((prev) => prev.filter((p) => p.id !== id));
+  };
+
+  const editPost = (id, newContent) => {
+    setNodes((prev) =>
+      prev.map((p) =>
+        p.id === id ? { ...p, content: newContent } : p
+      )
+    );
+  };
+
+  return { nodes, rootPosts, addPost, addComment, toggleLike, getPost, getReplies, deletePost, editPost };
 }
