@@ -1,6 +1,6 @@
 const sequelize = require("../config/db");
 const { DataTypes} = require("sequelize")
-const { Role } = require("./Role");
+const { idRole } = require("./Role");
 
 const User = sequelize.define('User', {
   userId: {
@@ -47,7 +47,7 @@ const User = sequelize.define('User', {
     allowNull: false
   },
 
-  idrole: {
+  idRole: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
@@ -86,10 +86,10 @@ const User = sequelize.define('User', {
 
 });
 
-User.belongsTo(Role, {
-  foreignKey: "idRole",
-  targetKey: "idRole", 
-});
+//User.belongsTo(Role, {
+//  foreignKey: "idRole",
+//  targetKey: "idRole", 
+//});
 
 module.exports = {
   User

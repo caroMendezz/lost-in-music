@@ -4,6 +4,7 @@ const {createPost, deletePost, updatePost} = require('./controllers/posts')
 const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
 const { IsAuth, checkToken } = require('./middlewares/auth')
 const sequelize = require('./config/db')
+const connectDB = require("./config/dbnosql")
 const server = express()
 
 const PORT = 3000
@@ -32,8 +33,9 @@ server.post('/verify/check', CheckVerificationCode);
 
 
 
-
 server.listen(PORT, async () => {
     await sequelize.sync({ force: true })
     console.log("El server esta corriendo en el puerto 3000");
 })
+server.use(express.json())
+connectDB()

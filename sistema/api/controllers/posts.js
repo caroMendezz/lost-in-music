@@ -1,5 +1,5 @@
 const Post = require("../models/Post")
-const User = require("../models/User")
+const {User} = require("../models/User")
 
 const createPost = async (req, res) => {
 
@@ -7,13 +7,7 @@ const createPost = async (req, res) => {
 
         const { userId, postText } = req.body
 
-        if (!userId || !postText) {
-            return res.status(400).json({
-                message: "Faltan datos"
-            })
-        }
-
-        const user = await User.findById(userId)
+        const user = await User.findByPk(userId)
 
         if (!user) {
             return res.status(404).json({
@@ -22,9 +16,10 @@ const createPost = async (req, res) => {
         }
 
         const post = await Post.create({
-            autor: req.user.id,
+            userId,
             postText
         })
+
         return res.status(201).json(post)
 
     } catch (error) {
@@ -32,7 +27,8 @@ const createPost = async (req, res) => {
         console.error(error)
 
         return res.status(500).json({
-            message: "Error interno"
+            message: "Error interno",
+            error: error.message
         })
 
     }

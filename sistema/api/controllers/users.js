@@ -5,6 +5,7 @@ const jwt = require('jsonwebtoken')
 const Login = async (req, res) => {
     const { username, password } = req.body
 
+    const SECRET = 'SOCRATESLEPEGOUNPUNHETAZOENLACARA';
     if(password) req.body.password 
 
     if(! username || !password) {
@@ -27,7 +28,7 @@ const Login = async (req, res) => {
 
 
 const Register = async (req, res) => {
-    const { email, username, password } = req.body
+    const { email, username, password, gender, profilePhoto, birthDate } = req.body
 
     if(password) req.body.password = "[REDACTED]"
 
@@ -38,13 +39,13 @@ const Register = async (req, res) => {
 
     const Hashedpassword = await bcrypt.hash(password, 10)
     try{
-        const usuario = await Usuario.create({
+        const user = await User.create({
             email,
             username,
             gender,
             birthDate,
             password: Hashedpassword,
-            role: "User",
+            idRole: "1",
             eliminated: 0,
             penaltyDate: "nada",
             description: "agregar descripcion",

@@ -1,8 +1,7 @@
 const mongoose = require("mongoose")
 
 const PostSchema = new mongoose.Schema({
-
-    autorId: {
+    userId: {
         type: Number, // ID del usuario en SQL
         required: true
     },
