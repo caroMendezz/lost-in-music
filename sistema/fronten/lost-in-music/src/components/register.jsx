@@ -18,11 +18,11 @@ const strengthLabel = ['', 'Muy débil', 'Débil', 'Regular', 'Buena', 'Fuerte']
 const strengthColor = ['', '#f06060', '#f0a060', '#f0d060', '#80cc60', '#4cce8a'];
 
 const GENEROS = [
-  { id: 'masculino', label: 'Masculino', icon: '♂' },
-  { id: 'femenino', label: 'Femenino', icon: '♀' },
+  { id: 'Masculino', label: 'Masculino', icon: '♂' },
+  { id: 'Femenino', label: 'Femenino', icon: '♀' },
 
-  { id: 'otro', label: 'Otro', icon: '✦' },
-  { id: 'no_decir', label: 'Prefiero no decir', icon: '—' },
+  { id: 'Otro', label: 'Otro', icon: '✦' },
+  { id: 'PrefieroNoDecir', label: 'Prefiero no decir', icon: '—' },
 ];
 
 const MONTHS = [
@@ -112,12 +112,47 @@ export default function Register({ goToLogin }) {
   };
 
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+
     const click = new Audio('/soundClick.mp3');
     click.volume = 0.1;
     click.play();
-    console.log('Registro completo:', formData);
+
+    const birthDate =
+      `${formData.anio}-${String(formData.mes).padStart(2, '0')}-${String(formData.dia).padStart(2, '0')}`;
+
+    console.log(birthDate);
+
+    try {
+      const response = await fetch("http://localhost:3000/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          username: formData.nombreUsuario,
+          email: formData.email,
+          password: formData.password,
+          gender: formData.genero,
+          birthDate
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        alert(data.message);
+        return;
+      }
+
+      alert("Usuario registrado correctamente");
+      goToLogin();
+
+    } catch (error) {
+      console.error(error);
+      alert("Error al registrar usuario");
+    }
   };
 
   const pwdStrength = calcPasswordStrength(formData.password);
@@ -153,7 +188,7 @@ export default function Register({ goToLogin }) {
       </div>
       <h1 className="register-title">Lost In Music</h1>
       <p className="register-subtitle">Tu red social musical</p>
-      <h2 class= "register-section-title">Registrate</h2>
+      <h2 class="register-section-title">Registrate</h2>
 
 
       <div className="reg-slider-viewport">
@@ -395,7 +430,7 @@ export default function Register({ goToLogin }) {
                   </div>
                 </div>
 
-     
+
                 <div className="dob-select-wrap dob-select-wrap--mes">
                   <label className="dob-label">Mes</label>
                   <div className="custom-select-wrap">
@@ -414,7 +449,7 @@ export default function Register({ goToLogin }) {
                   </div>
                 </div>
 
-     
+
                 <div className="dob-select-wrap">
                   <label className="dob-label">Año</label>
                   <div className="custom-select-wrap">
