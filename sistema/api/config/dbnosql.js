@@ -4,7 +4,7 @@ const connectDB = async () => {
 
     try {
 
-        await mongoose.connect("mongodb://admin:admin123@localhost:27018/")
+        await mongoose.connect("mongodb://localhost:27017/")
 
         console.log("MongoDB conectado")
 

@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const {User} = require('../models/User');
 
 const SECRET = 'SOCRATESLEPEGOUNPUNHETAZOENLACARA';
 
@@ -16,12 +16,16 @@ const checkToken = async (req, res, next) => {
         const token = authHeader.replace(/^Bearer\s+/i, '').trim();
 
         const decoded = jwt.verify(token, SECRET);
+        console.log(decoded)
 
         const user = await User.findByPk(decoded.userId);
+        console.log(user)
 
         if (!user) {
             return res.status(404).json({
-                message: 'Usuario no encontrado'
+                
+                message: 'Usuario no encontrado',
+                
             });
         }
 
@@ -30,6 +34,7 @@ const checkToken = async (req, res, next) => {
         next();
 
     } catch (error) {
+        console.error(error);
         return res.status(401).json({
             message: 'Token inválido o expirado'
         });

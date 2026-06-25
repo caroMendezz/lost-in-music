@@ -39,7 +39,7 @@ const createPost = async (req, res) => {
 const deletePost = async (req, res) => {
 
     try {
-
+        postId = _id
         const { postId } = req.params
 
         const post = await Post.findById(id)
