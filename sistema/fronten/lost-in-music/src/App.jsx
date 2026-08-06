@@ -7,11 +7,24 @@ import Feed from './pages/feed';
 import Footer from './components/Footer';
 import PhotoPage from './pages/PhotoPage';
 import CommentPage from './pages/CommentPage';
+import Configuracion from './pages/settings';
 import PostModal from './components/PostModal';
 import { usePosts } from './hooks/usePosts';
 import { LangProvider } from './components/LangContext';
 
-function FeedPage({ rootPosts, addPost, toggleLike, openPost, getReplies, addComment, openedPost, closePost, deletePost, editPost, now }) {
+function FeedPage({
+  rootPosts,
+  addPost,
+  toggleLike,
+  openPost,
+  getReplies,
+  addComment,
+  openedPost,
+  closePost,
+  deletePost,
+  editPost,
+  now,
+}) {
   const styles = {
     app: {
       width: '100%',
@@ -98,17 +111,26 @@ function FeedPage({ rootPosts, addPost, toggleLike, openPost, getReplies, addCom
 }
 
 function App() {
-  const { rootPosts, addPost, addComment, toggleLike, getPost, getReplies, deletePost, editPost } = usePosts();
+  const {
+    rootPosts,
+    addPost,
+    addComment,
+    toggleLike,
+    getPost,
+    getReplies,
+    deletePost,
+    editPost,
+  } = usePosts();
 
   const [openPostId, setOpenPostId] = useState(null);
   const [now, setNow] = useState(Date.now());
 
   React.useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 60_000);
+    const t = setInterval(() => setNow(Date.now()), 60000);
     return () => clearInterval(t);
   }, []);
 
-  const openPost  = useCallback((id) => setOpenPostId(id), []);
+  const openPost = useCallback((id) => setOpenPostId(id), []);
   const closePost = useCallback(() => setOpenPostId(null), []);
   const openedPost = openPostId ? getPost(openPostId) : null;
 
@@ -133,6 +155,7 @@ function App() {
             />
           }
         />
+
         <Route
           path="/feed"
           element={
@@ -151,6 +174,12 @@ function App() {
             />
           }
         />
+
+        <Route
+          path="/settings"
+          element={<Configuracion />}
+        />
+
         <Route
           path="/photo/:postId/:imageIndex"
           element={
@@ -162,6 +191,7 @@ function App() {
             />
           }
         />
+
         <Route
           path="/comment/:id"
           element={
