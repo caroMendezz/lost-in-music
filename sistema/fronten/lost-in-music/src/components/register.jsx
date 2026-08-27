@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import "../styles/register.css";
-
+//HOLA
 import FondoAcceso from "./FondoAcceso";
 
 const calcPasswordStrength = (pwd) => {
