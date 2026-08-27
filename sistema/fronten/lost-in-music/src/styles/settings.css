@@ -1,0 +1,402 @@
+/* ===========================
+   FONDO
+=========================== */
+
+body{
+    margin:0;
+    background:
+        linear-gradient(rgba(255,255,255,.20),rgba(255,255,255,.15)),
+        url("/backgroundFeed.jpg") center center / cover fixed no-repeat;
+    font-family:"Segoe UI",sans-serif;
+}
+
+/* ===========================
+   CONTENEDOR
+=========================== */
+
+.pagina-configuracion{
+    min-height:100vh;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    overflow-y:auto;
+}
+
+.config-wrapper{
+    flex:1;
+    display:flex;
+    justify-content:center;
+    padding:35px 0;
+}
+
+.config-main-card{
+
+    width:min(1200px,94%);
+
+    border-radius:35px;
+
+    overflow:hidden;
+
+    background:rgba(255,255,255,.32);
+
+    backdrop-filter:blur(18px);
+
+    border:1px solid rgba(255,255,255,.75);
+
+    box-shadow:
+        0 25px 55px rgba(0,110,220,.22),
+        inset 0 1px rgba(255,255,255,.95);
+
+    position:relative;
+}
+
+/* brillo superior */
+
+.config-main-card::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:0;
+
+    left:0;
+
+    right:0;
+
+    height:180px;
+
+    background:
+
+        radial-gradient(circle at top,
+            rgba(255,255,255,.75),
+            transparent 75%);
+
+    pointer-events:none;
+}
+
+/* ===========================
+   HEADER
+=========================== */
+
+.config-header{
+
+    padding:35px 45px;
+
+    border-bottom:1px solid rgba(255,255,255,.6);
+
+    background:
+
+        linear-gradient(
+            rgba(255,255,255,.25),
+            rgba(255,255,255,.08)
+        );
+}
+
+.config-title h1{
+
+    margin:0;
+
+    font-size:2.4rem;
+
+    color:#0b65cf;
+
+    text-shadow:0 1px white;
+}
+
+.subtitle{
+
+    color:#4d79a6;
+
+    margin-top:8px;
+}
+
+/* ===========================
+   GRID
+=========================== */
+
+.config-grid{
+
+    display:grid;
+
+    grid-template-columns:2fr 330px;
+
+    gap:30px;
+
+    padding:35px;
+}
+
+/* ===========================
+   TARJETAS
+=========================== */
+
+.config-section,
+.card{
+
+    position:relative;
+
+    overflow:hidden;
+
+    margin-bottom:25px;
+
+    padding:28px;
+
+    border-radius:25px;
+
+    background:
+
+        linear-gradient(
+            rgba(255,255,255,.55),
+            rgba(255,255,255,.30)
+        );
+
+    border:1px solid rgba(255,255,255,.9);
+
+    backdrop-filter:blur(15px);
+
+    box-shadow:
+
+        0 15px 35px rgba(0,120,220,.18),
+
+        inset 0 1px rgba(255,255,255,.95);
+}
+
+/* brillo */
+
+.config-section::before,
+.card::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:-60px;
+
+    left:-40px;
+
+    width:250px;
+
+    height:150px;
+
+    border-radius:50%;
+
+    background:rgba(255,255,255,.45);
+
+    filter:blur(10px);
+
+    transform:rotate(-10deg);
+}
+
+.config-section h3{
+
+    color:#1670d5;
+
+    margin-top:0;
+}
+
+/* ===========================
+   FORMULARIOS
+=========================== */
+
+.config-form{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:20px;
+}
+
+.config-form label{
+
+    display:flex;
+
+    flex-direction:column;
+
+    gap:8px;
+
+    color:#2b4f7f;
+
+    font-weight:600;
+}
+
+.config-form input{
+
+    padding:14px 16px;
+
+    border-radius:15px;
+
+    border:1px solid rgba(150,205,255,.9);
+
+    background:rgba(255,255,255,.75);
+
+    transition:.25s;
+
+    font-size:15px;
+}
+
+.config-form input:focus{
+
+    outline:none;
+
+    border-color:#41b6ff;
+
+    background:white;
+
+    box-shadow:
+
+        0 0 0 5px rgba(80,180,255,.20),
+
+        0 0 20px rgba(100,200,255,.45);
+}
+
+/* ===========================
+   BOTONES
+=========================== */
+
+.btn-primary{
+
+    border:none;
+
+    padding:14px 26px;
+
+    border-radius:999px;
+
+    cursor:pointer;
+
+    color:white;
+
+    font-weight:700;
+
+    font-size:15px;
+
+    background:
+
+        linear-gradient(
+            #9ce8ff,
+            #4ab0ff 50%,
+            #2b7cff
+        );
+
+    box-shadow:
+
+        0 12px 25px rgba(30,130,255,.35),
+
+        inset 0 2px rgba(255,255,255,.7);
+
+    transition:.25s;
+}
+
+.btn-primary:hover{
+
+    transform:translateY(-3px);
+
+    filter:brightness(1.08);
+}
+
+.btn-danger{
+
+    border:none;
+
+    padding:14px 26px;
+
+    border-radius:999px;
+
+    cursor:pointer;
+
+    color:white;
+
+    font-weight:700;
+
+    background:
+
+        linear-gradient(
+            #ffb4b4,
+            #ff7272,
+            #ff4c4c
+        );
+
+    box-shadow:
+
+        0 12px 25px rgba(255,90,90,.35),
+
+        inset 0 2px rgba(255,255,255,.6);
+
+    transition:.25s;
+}
+
+.btn-danger:hover{
+
+    transform:translateY(-3px);
+
+    filter:brightness(1.06);
+}
+
+/* ===========================
+   AYUDA
+=========================== */
+
+.help-card{
+
+    position:sticky;
+
+    top:25px;
+}
+
+.muted{
+
+    color:#5378a2;
+}
+
+.small{
+
+    font-size:.92rem;
+}
+
+/* ===========================
+   SCROLL
+=========================== */
+
+::-webkit-scrollbar{
+
+    width:12px;
+}
+
+::-webkit-scrollbar-track{
+
+    background:rgba(255,255,255,.25);
+}
+
+::-webkit-scrollbar-thumb{
+
+    border-radius:20px;
+
+    background:linear-gradient(#a7e7ff,#4dbdff);
+}
+
+/* ===========================
+   ANIMACIONES
+=========================== */
+
+.config-section,
+.card{
+
+    animation:fadeIn .45s ease;
+}
+
+@keyframes fadeIn{
+
+    from{
+
+        opacity:0;
+
+        transform:translateY(15px);
+    }
+
+    to{
+
+        opacity:1;
+
+        transform:translateY(0);
+    }
+}

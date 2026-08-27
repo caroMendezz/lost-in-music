@@ -2,6 +2,10 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import AccesoLayout from './pages/AccesoLayout';
 import './index.css';
+import { BrowserRouter } from 'react-router-dom';
+import App from './App.jsx';
+import { LangProvider } from './components/LangContext';
+
 
 import {
   createBrowserRouter,
@@ -50,9 +54,10 @@ const router = createBrowserRouter([
     ],
   },
 ]);
-
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <LangProvider>
+      <RouterProvider router={router} />
+    </LangProvider>
   </React.StrictMode>
 );
