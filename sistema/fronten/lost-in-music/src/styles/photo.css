@@ -1,0 +1,204 @@
+/* photo.css — actualizado */
+
+.photo-page {
+  height: 100vh;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  background: #050505;
+  color: white;
+}
+
+.photo-viewer {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photo-topbar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 64px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 18px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.65), transparent);
+}
+
+.photo-topbar button,
+.photo-header-icons button {
+  width: 38px;
+  height: 38px;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 18px;
+  background: rgba(255,255,255,0.15);
+  color: white;
+  transition: background 0.15s;
+}
+
+.photo-topbar button:hover,
+.photo-header-icons button:hover {
+  background: rgba(255,255,255,0.25);
+}
+
+.photo-header-icons {
+  display: flex;
+  gap: 10px;
+}
+
+.photo-main-img {
+  max-width: 100%;
+  max-height: 100vh;
+  object-fit: contain;
+}
+
+.photo-arrow {
+  position: absolute;
+  z-index: 4;
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  font-size: 42px;
+  line-height: 1;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.75);
+  color: #222;
+  transition: background 0.15s;
+}
+
+.photo-arrow:hover {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.photo-arrow-left  { left: 24px; }
+.photo-arrow-right { right: 24px; }
+
+/* Indicador de puntos */
+.photo-index-indicator {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 4;
+  display: flex;
+  gap: 6px;
+}
+
+.photo-index-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.45);
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s;
+}
+
+.photo-index-dot--active {
+  background: white;
+  transform: scale(1.25);
+}
+
+/* ── Panel lateral ───────────────────────────────────────────────── */
+.photo-comments {
+  background: linear-gradient(180deg, #d9f1ff 0%, #c4e7fb 100%);
+  color: #1f2933;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.photo-author-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 16px 16px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.6);
+  flex-shrink: 0;
+}
+
+.photo-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #5dcaa5 0%, #1d9e75 60%, #085041 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: white;
+  flex-shrink: 0;
+}
+
+.photo-avatar.small {
+  width: 32px;
+  height: 32px;
+  font-size: 14px;
+}
+
+.photo-author {
+  font-weight: 700;
+  color: #0c447c;
+  font-size: 14px;
+}
+
+.photo-time {
+  font-size: 12px;
+  color: #185fa5;
+}
+
+.photo-post-content {
+  padding: 10px 16px;
+  font-size: 14px;
+  color: #0c447c;
+  line-height: 1.4;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+.photo-stats {
+  display: flex;
+  gap: 14px;
+  padding: 6px 16px;
+  font-size: 12px;
+  color: #185fa5;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.5);
+  flex-shrink: 0;
+}
+
+/* ThreadView dentro del panel ocupa el resto del espacio */
+.photo-comments .thread-view {
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(12, 68, 124, 0.25) transparent;
+}
+
+/* Error state */
+.photo-page-error {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  gap: 14px;
+  background: #050505;
+  color: white;
+}
+
+.photo-page-error button {
+  padding: 8px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.1);
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+}

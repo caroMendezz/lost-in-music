@@ -1,0 +1,146 @@
+.sidebar-container {
+  width: 240px;
+  min-width: 240px;
+  display: flex;
+  flex-direction: column;
+  gap: 17px;
+  position: relative;
+  margin-top: 20px;
+  margin-right: 20px;
+}
+
+.sidebar-card {
+  position: relative;
+  background: rgba(219, 244, 255, 0.892);
+  backdrop-filter: blur(4px);
+  border: 1px solid #c7def0;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 2px 6px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  margin-top: 20px;
+}
+
+.sidebar-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0%;
+  right: 0%;
+  height: 40%;
+  border-radius: 0 0 100% 100% / 0 0 60% 60%;
+  background: linear-gradient(180deg,
+      rgba(255, 255, 255, 0.85) 0%,
+      rgba(255, 255, 255, 0.01) 85%);
+  pointer-events: none;
+
+}
+
+.sidebar-section-title,
+.sidebar-chat-item,
+.sidebar-friend-item {
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar-section-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0c447c;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+.sidebar-chat-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.sidebar-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.sidebar-avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #85b7eb 0%, #378add 60%, #0c447c 100%);
+  border: 1px solid #8bb7db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: white;
+}
+
+.sidebar-online-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #4caf50;
+  border: 2px solid white;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.sidebar-unread-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e53935;
+  border: 2px solid white;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.sidebar-chat-info {
+  min-width: 0;
+  flex: 1;
+}
+
+.sidebar-chat-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0c447c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-chat-msg {
+  font-size: 11px;
+  color: #185fa5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sidebar-chat-time {
+  font-size: 10px;
+  color: #5f5e5a;
+}
+
+.sidebar-friend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 7px;
+  font-size: 12px;
+  color: #0c447c;
+}
+
+.sidebar-friend-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #85b7eb 0%, #378add 60%, #0c447c 100%);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  flex-shrink: 0;
+}

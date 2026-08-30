@@ -1,72 +1,63 @@
-const sequelize = require("../config/db");
-const { DataTypes } = require("sequelize");
+const mongoose = require("mongoose")
 
-const Product = sequelize.define("product", {
+
+const PostSchema = new mongoose.Schema({
     productId: {
-        type: DataTypes.INTEGER(11),
-        primaryKey: true,
-        autoIncrement: true,
-        unique: true
+        type: Number, // ID del usuario en SQL
+        required: true
     },
 
     title: {
-        type: DataTypes.STRING(150),
-        allowNull: false
+        type: String,
+        maxlength: 1000
     },
 
-    category: {
-        type: DataTypes.STRING(100),
-        allowNull: false
-    },
+    image: [{
+        type: String
+    }],
 
-    condition: {
-        type: DataTypes.STRING(50),
-        allowNull: false
-    },
+    category: [{
+        type: String,
+        enum: ["Cuerda", "Viento", "Percusion", "Electronicos", "Complementos"]
+    }],
+
+    condition: [{
+        type: String,
+        enum: ["Nuevo","Usado"]
+    }],
 
     available: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: true
-    },
+        type: Boolean,
+        default: true
+        },
 
-    location: {
-        type: DataTypes.STRING(150),
-        allowNull: false
-    },
+    price: [{
+        type: String
+        }],
 
-    price: {
-        type: DataTypes.DECIMAL(10, 2),
-        allowNull: false
-    },
+    location: [{
+        type: String
+        }],
 
-    description: {
-        type: DataTypes.TEXT,
-        allowNull: false
-    },
+    description: [{
+        type: String
+        }],
 
-    image: {
-        type: DataTypes.STRING(225),
-        allowNull: false
-    },
+    rating: [{
+        type: String
+        }],
 
-    rating: {
-        type: DataTypes.FLOAT,
-        allowNull: false,
-        defaultValue: 0
-    },
-
-    deliveryType: {
-        type: DataTypes.STRING(100),
-        allowNull: false
-    },
+    deliveryType: [{
+        type: String
+        }],
 
     userId: {
-        type: DataTypes.INTEGER(11),
-        allowNull: false
-    }
-});
+        type: Number, 
+        required: true
+        },
+    
+}, {
+    timestamps: true
+})
 
-module.exports = {
-    Product
-};
+module.exports = mongoose.model("Product", ProductSchema)

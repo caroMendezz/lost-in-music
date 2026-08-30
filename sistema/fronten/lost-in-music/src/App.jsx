@@ -1,21 +1,238 @@
-import React from "react";
-import "./assets/styles/aero.css";
-import Navbar from "./assets/components/Navbar";
-import Sidebar from "./assets/components/Sidebar";
-import ProductGrid from "./assets/components/ProductGrid";
-import RightSidebar from "./assets/components/RightSidebar";
+import React, { useState, useCallback } from "react";
+import { Routes, Route } from "react-router-dom";
 
-export default function App() {
+
+import "./styles/App.css";
+import "./styles/aero.css";
+
+
+import Register from "./components/register";
+import Navbar from "./components/shopinvivo/Navbar";
+import AeroSidebar from "./components/shopinvivo/Sidebar"; 
+import ProductGrid from "./components/shopinvivo/ProductGrid";
+import RightSidebar from "./components/shopinvivo/RightSidebar";
+
+
+import Header from "./components/header";
+import LeftNav from "./components/leftNav";
+import SocialSidebar from "./components/sidebar";
+import Feed from "./pages/feed";
+import Footer from "./components/footer";
+import PhotoPage from "./pages/PhotoPage";
+import CommentPage from "./pages/CommentPage";
+import Configuracion from "./pages/settings";
+import PostModal from "./components/PostModal";
+import { usePosts } from "./hooks/UsePosts";
+import { LangProvider } from "./components/LangContext";
+
+
+function Marketplace() {
   return (
     <div className="aero-root">
       <div className="frame">
         <Navbar />
         <div className="body-grid">
-          <Sidebar />
+          <AeroSidebar />
           <ProductGrid />
           <RightSidebar />
         </div>
       </div>
     </div>
+  );
+}
+
+
+function FeedPage({
+  rootPosts,
+  addPost,
+  toggleLike,
+  openPost,
+  getReplies,
+  addComment,
+  openedPost,
+  closePost,
+  deletePost,
+  editPost,
+  now,
+}) {
+  const styles = {
+    app: {
+      width: "100%",
+      height: "100vh",
+      fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif",
+      overflow: "hidden",
+    },
+    skyBg: {
+      position: "fixed",
+      inset: 0,
+      zIndex: 0,
+      backgroundImage: `
+        linear-gradient(rgba(255,255,255,0.30), rgba(255,255,255,0.20)),
+        url('/backgroundFeed.jpg')
+      `,
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+    },
+    body: {
+      position: "relative",
+      zIndex: 10,
+      height: "100vh",
+      display: "grid",
+      gridTemplateRows: "auto minmax(0, 1fr) auto",
+      overflow: "hidden",
+    },
+    main: {
+      display: "grid",
+      gridTemplateColumns: "230px minmax(0, 1fr) 280px",
+      minHeight: 0,
+      overflow: "hidden",
+    },
+    feedWrapper: {
+      minHeight: 0,
+      overflowY: "scroll",
+      scrollbarWidth: "none",
+      msOverflowStyle: "none",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "flex-start",
+      padding: "18px",
+    },
+  };
+
+  return (
+    <div style={styles.app}>
+      <div style={styles.skyBg} />
+
+      <div style={styles.body}>
+        <Header />
+
+        <div style={styles.main}>
+          <LeftNav />
+
+          <div style={styles.feedWrapper} className="feed-scroll">
+            <Feed
+              posts={rootPosts}
+              onPost={addPost}
+              onLike={toggleLike}
+              onOpenPost={openPost}
+              onDelete={deletePost}
+              onEdit={editPost}
+              now={now}
+            />
+          </div>
+
+          <SocialSidebar />
+        </div>
+
+        <Footer />
+      </div>
+
+      <PostModal
+        post={openedPost}
+        onClose={closePost}
+        getReplies={getReplies}
+        onComment={addComment}
+        onLike={toggleLike}
+        now={now}
+      />
+    </div>
+  );
+}
+
+
+export default function App() {
+  const {
+    rootPosts,
+    addPost,
+    addComment,
+    toggleLike,
+    getPost,
+    getReplies,
+    deletePost,
+    editPost,
+  } = usePosts();
+
+  const [openPostId, setOpenPostId] = useState(null);
+  const [now, setNow] = useState(Date.now());
+
+  React.useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 60000);
+    return () => clearInterval(t);
+  }, []);
+
+  const openPost = useCallback((id) => setOpenPostId(id), []);
+  const closePost = useCallback(() => setOpenPostId(null), []);
+  const openedPost = openPostId ? getPost(openPostId) : null;
+
+  return (
+    <LangProvider>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <FeedPage
+              rootPosts={rootPosts}
+              addPost={addPost}
+              toggleLike={toggleLike}
+              openPost={openPost}
+              getReplies={getReplies}
+              addComment={addComment}
+              openedPost={openedPost}
+              closePost={closePost}
+              deletePost={deletePost}
+              editPost={editPost}
+              now={now}
+            />
+          }
+        />
+        <Route
+          path="/feed"
+          element={
+            <FeedPage
+              rootPosts={rootPosts}
+              addPost={addPost}
+              toggleLike={toggleLike}
+              openPost={openPost}
+              getReplies={getReplies}
+              addComment={addComment}
+              openedPost={openedPost}
+              closePost={closePost}
+              deletePost={deletePost}
+              editPost={editPost}
+              now={now}
+            />
+          }
+        />
+
+        {/* Registro y Aero integrados en el enrutador */}
+        <Route path="/register" element={<Register />} />
+        <Route path="/marketplace" element={<Marketplace />} />
+
+        <Route path="/settings" element={<Configuracion />} />
+        <Route
+          path="/photo/:postId/:imageIndex"
+          element={
+            <PhotoPage
+              posts={rootPosts}
+              getReplies={getReplies}
+              onComment={addComment}
+              onLike={toggleLike}
+            />
+          }
+        />
+        <Route
+          path="/comment/:id"
+          element={
+            <CommentPage
+              getPost={getPost}
+              getReplies={getReplies}
+              onComment={addComment}
+              onLike={toggleLike}
+            />
+          }
+        />
+      </Routes>
+    </LangProvider>
   );
 }
