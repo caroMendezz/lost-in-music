@@ -1,12 +1,20 @@
 const express = require('express')
+const http = require("http");
+const { Server } = require("socket.io");
+const upload = require("./middlewares/upload");
+const {uploadFile} = require("./controllers/uploads");
 const { Login, Register, DeleteUser, UpdateUser} = require('./controllers/users')
 const {createPost, deletePost, updatePost} = require('./controllers/posts')
 const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
 const { IsAuth, checkToken } = require('./middlewares/auth')
+const {deleteMessage, createMessage} = require('./controllers/messages')
 const {createProduct, deleteProduct, updateProduct} = require('./controllers/products')
+const setupChat = require("./sockets/chat");
 const sequelize = require('./config/db')
 const connectDB = require("./config/dbnosql")
 const server = express()
+
+const httpServer = http.createServer(server);
 
 const PORT = 3000
 
@@ -22,6 +30,14 @@ server.use((req, res, next) => {
   next()
 })
 
+const io = new Server(httpServer, {
+  cors: {
+      origin: "http://localhost:5173",
+      methods: ["GET", "POST"],
+      credentials: true
+  }
+});
+
 server.post('/login', Login)
 server.post('/register', Register)
 server.patch('/deleteUser/:id',checkToken, DeleteUser)
@@ -34,12 +50,20 @@ server.post('/verify/check', CheckVerificationCode);
 server.post('/DeletePost/:id', createProduct)
 server.patch('/DeletePost/:id',checkToken, updateProduct)
 server.patch('/DeletePost/:id',checkToken, deleteProduct)
+server.post("/Upload",upload.single("file"),uploadFile);
 
 
 
-server.listen(PORT, async () => {
-    await sequelize.sync({ force: true })
-    console.log("El server esta corriendo en el puerto 3000");
-})
+
+server.use("/uploads", express.static("uploads"));
+
+
+httpServer.listen(PORT, async () => {
+  await sequelize.sync();
+
+  console.log(`Server running on port ${PORT}`);
+});
+
 server.use(express.json())
 connectDB()
+setupChat(io);

@@ -1,32 +1,50 @@
-const sequelize = require("../config/db");
-const { DataTypes } = require("sequelize");
-
 const Message = sequelize.define("message", {
+
     messageId: {
-        type: DataTypes.INTEGER(11),
+        type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true,
-        unique: true
+        autoIncrement: true
     },
 
     senderId: {
-        type: DataTypes.INTEGER(11),
+        type: DataTypes.INTEGER,
         allowNull: false
     },
 
     receiverId: {
-        type: DataTypes.INTEGER(11),
+        type: DataTypes.INTEGER,
         allowNull: false
     },
 
     content: {
         type: DataTypes.TEXT,
-        allowNull: false
+        allowNull: true
+    },
+
+    messageType: {
+        type: DataTypes.ENUM(
+            "text",
+            "image",
+            "file"
+        ),
+        allowNull: false,
+        defaultValue: "text"
+    },
+
+    fileUrl: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+
+    fileName: {
+        type: DataTypes.STRING,
+        allowNull: true
     },
 
     sent_at: {
         type: DataTypes.DATE,
-        allowNull: false
+        allowNull: false,
+        defaultValue: DataTypes.NOW
     },
 
     is_read: {
@@ -35,7 +53,3 @@ const Message = sequelize.define("message", {
         defaultValue: false
     }
 });
-
-module.exports = {
-    Message
-};
