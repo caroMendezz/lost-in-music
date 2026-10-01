@@ -1,103 +1,67 @@
-const {
-    createMessage,
-    deleteMessage
-} = require("../controllers/messages");
+const jwt = require("jsonwebtoken");
+const { createMessage, deleteMessage } = require("../controllers/messages");
 
 
 function setupChat(io) {
+    io.use((socket, next) => {
+        const token = socket.handshake.auth?.token;
+
+        if (!token) {
+            return next(new Error("Authentication required"));
+        }
+
+        try {
+            const payload = jwt.verify(token, process.env.JWT_SECRET);
+            socket.userId = payload.id;
+            next();
+        } catch (error) {
+            next(new Error("Invalid token"));
+        }
+    });
 
     io.on("connection", (socket) => {
 
         console.log(
             "User connected:",
-            socket.id
+            socket.userId, socket.id
         );
+        socket.join(`user_${socket.userId}`);
 
 
-        // Join user's room
-        socket.on("joinChat", (userId) => {
-
-            socket.join(`user_${userId}`);
-
-            console.log(
-                `User ${userId} joined room`
-            );
-
-        });
-
-
-        // Send message
         socket.on("sendMessage", async (data) => {
 
             try {
+                const message = await createMessage({
+                    ...data,
+                    senderId: socket.userId
+                });
 
-                const message =
-                    await createMessage(data);
-
-
-                // Send message to receiver
-                io
-                    .to(`user_${data.receiverId}`)
-                    .emit(
-                        "newMessage",
-                        message
-                    );
-
-
-                // Confirm to sender
-                socket.emit(
-                    "messageSent",
-                    message
-                );
-
-
+                io.to(`user_${message.receiverId}`).emit("newMessage", message);
+                socket.emit("messageSent", message);
             } catch (error) {
-
                 console.error(error);
-
-                socket.emit(
-                    "messageError",
-                    {
-                        message: error.message
-                    }
-                );
-
+                socket.emit("messageError", { message: error.message });
             }
 
         });
 
 
-        // Delete message
+    
         socket.on(
             "deleteMessage",
-            async ({ messageId, userId }) => {
+            async ({ messageId }) => {
 
                 try {
 
                     const message =
                         await deleteMessage(
                             messageId,
-                            userId
+                            socket.userId
                         );
 
-
-                    io
-                        .to(`user_${message.receiverId}`)
-                        .emit(
-                            "messageDeleted",
-                            {
-                                messageId
-                            }
-                        );
-
-
-                    socket.emit(
-                        "messageDeleted",
-                        {
-                            messageId
-                        }
-                    );
-
+                    io.to(`user_${message.receiverId}`)
+                        .to(`user_${message.senderId}`)
+                        .emit("messageDeleted", { messageId });
 
                 } catch (error) {
 
@@ -109,9 +73,7 @@ function setupChat(io) {
                             message: error.message
                         }
                     );
-
-                }
-
+                }   
             }
         );
 
@@ -120,7 +82,7 @@ function setupChat(io) {
 
             console.log(
                 "User disconnected:",
-                socket.id
+                socket.id, socket.userId
             );
 
         });

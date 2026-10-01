@@ -1,5 +1,8 @@
+const { Op } = require("sequelize");    
 const { Message } = require("../models/Message");
 const { User } = require("../models/User");
+
+const VALID_TYPES = ["text", "image", "file"];
 
 const createMessage = async (data) => {
 
@@ -14,6 +17,10 @@ const createMessage = async (data) => {
             fileName
         } = data;
 
+        const messageType = data.messageType || "text";
+        if (!VALID_TYPES.includes(messageType)) {
+            throw new Error("Invalid message type");
+        } 
 
         const sender =
             await User.findByPk(senderId);
@@ -43,19 +50,8 @@ const createMessage = async (data) => {
         }
 
 
-        if (
-            messageType === "image" ||
-            messageType === "file"
-        ) {
-
-            if (!fileUrl) {
-
-                throw new Error(
-                    "File URL is required"
-                );
-
-            }
-
+        if (messageType !== "text" && !fileUrl) {
+            throw new Error("File URL is required");
         }
 
 
@@ -64,17 +60,13 @@ const createMessage = async (data) => {
             senderId,
             receiverId,
 
-            content:
-                content || null,
+            content: content || null,
 
-            messageType:
-                messageType || "text",
+            messageType,
 
-            fileUrl:
-                fileUrl || null,
+            fileUrl: fileUrl || null,
 
-            fileName:
-                fileName || null,
+            fileName: fileName || null,
 
             sent_at: new Date()
 
@@ -107,7 +99,7 @@ const deleteMessage = async (messageId, userId) => {
             throw new Error("Message not found");
         }
 
-        if (message.senderId !== userId) {
+        if (Number(message.senderId) !== Number(userId)) {
             throw new Error("You cannot delete this message");
         }
 
@@ -121,10 +113,35 @@ const deleteMessage = async (messageId, userId) => {
         throw error;
 
     }
+
+
+    const getMessages = async (req, res) => {
+    try {
+        const userId = Number(req.user.id);
+        const otherUserId = Number(req.params.otherUserId);
+
+        const messages = await Message.findAll({
+            where: {
+                [Op.or]: [
+                    { senderId: userId, receiverId: otherUserId },
+                    { senderId: otherUserId, receiverId: userId }
+                ]
+            },
+            order: [["sent_at", "ASC"]]
+        });
+
+        res.json(messages);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error fetching messages" });
+    }
+};
+
 };
 
 
 module.exports = {
     createMessage,
-    deleteMessage
+    deleteMessage,
+    getMessages
 };
