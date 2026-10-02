@@ -117,7 +117,7 @@ const deleteMessage = async (messageId, userId) => {
 
 const getMessages = async (req, res) => {
     try {
-        const userId = Number(req.user.id);
+        const userId = Number(req.user.userId);
         const otherUserId = Number(req.params.otherUserId);
 
         const messages = await Message.findAll({
