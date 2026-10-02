@@ -1,7 +1,7 @@
 import React from "react";
 import { User } from "lucide-react";
 import GlassPanel from "./GlassPanel";
-import { CHATS } from "../data/social";
+import { CHATS } from "../../assets/data/social";
 
 export default function ChatsPanel() {
   return (

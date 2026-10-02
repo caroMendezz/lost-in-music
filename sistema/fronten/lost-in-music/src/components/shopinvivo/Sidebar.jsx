@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Home, Bell, Plus, ChevronRight } from "lucide-react";
 import GlassPanel from "./GlassPanel";
-import { CATEGORIES } from "../data/categories";
+import { CATEGORIES } from "../../assets/data/categories";
 
 export default function Sidebar() {
   const [openCat, setOpenCat] = useState("Instrumentos");

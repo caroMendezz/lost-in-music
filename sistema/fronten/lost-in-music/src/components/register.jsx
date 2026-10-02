@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import './Register.css';
+import '../styles/register.css';
 import MusicPlayerMini from './MusicPlayerMini';
 
 const calcPasswordStrength = (pwd) => {

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Search } from "lucide-react";
 import GlassPanel from "./GlassPanel";
 import ProductCard from "./ProductCard";
-import { PRODUCTS } from "../data/products";
+import { PRODUCTS } from "../../assets/data/products";
 
 export default function ProductGrid() {
   const [query, setQuery] = useState("");

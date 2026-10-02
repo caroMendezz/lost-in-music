@@ -1,7 +1,7 @@
 import React from "react";
 import { User } from "lucide-react";
 import GlassPanel from "./GlassPanel";
-import { FRIENDS } from "../data/social";
+import { FRIENDS } from "../../assets/data/social";
 
 export default function FriendsPanel() {
   return (
