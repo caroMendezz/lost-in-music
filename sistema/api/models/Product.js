@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 
 
-const PostSchema = new mongoose.Schema({
+const ProductSchema = new mongoose.Schema({
     productId: {
         type: Number, // ID del usuario en SQL
         required: true

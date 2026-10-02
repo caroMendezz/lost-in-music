@@ -1,4 +1,4 @@
-const { Op } = require("sequelize");    
+const { Op } = require("sequelize");
 const { Message } = require("../models/Message");
 const { User } = require("../models/User");
 
@@ -12,15 +12,14 @@ const createMessage = async (data) => {
             senderId,
             receiverId,
             content,
-            messageType,
+            messageType = "text",
             fileUrl,
             fileName
         } = data;
 
-        const messageType = data.messageType || "text";
         if (!VALID_TYPES.includes(messageType)) {
             throw new Error("Invalid message type");
-        } 
+        }
 
         const sender =
             await User.findByPk(senderId);
@@ -114,8 +113,9 @@ const deleteMessage = async (messageId, userId) => {
 
     }
 
+};
 
-    const getMessages = async (req, res) => {
+const getMessages = async (req, res) => {
     try {
         const userId = Number(req.user.id);
         const otherUserId = Number(req.params.otherUserId);
@@ -135,8 +135,6 @@ const deleteMessage = async (messageId, userId) => {
         console.error(error);
         res.status(500).json({ message: "Error fetching messages" });
     }
-};
-
 };
 
 

@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
 const { createMessage, deleteMessage } = require("../controllers/messages");
 
+const SECRET = 'SOCRATESLEPEGOUNPUNHETAZOENLACARA';
 
 function setupChat(io) {
     io.use((socket, next) => {
@@ -11,8 +12,8 @@ function setupChat(io) {
         }
 
         try {
-            const payload = jwt.verify(token, process.env.JWT_SECRET);
-            socket.userId = payload.id;
+            const payload = jwt.verify(token, SECRET);
+            socket.userId = payload.userId;
             next();
         } catch (error) {
             next(new Error("Invalid token"));

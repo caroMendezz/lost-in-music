@@ -1,3 +1,7 @@
+const sequelize = require("../config/db")
+const { User } = require("./User");
+const { DataTypes } = require("sequelize");
+
 const Message = sequelize.define("message", {
 
     messageId: {
@@ -11,7 +15,7 @@ const Message = sequelize.define("message", {
         allowNull: false,
         references: {
             model: "users",
-            key: "id"
+            key: "userId"
         }
     },
 
@@ -20,7 +24,7 @@ const Message = sequelize.define("message", {
         allowNull: false,
         references: {
             model: "users",
-            key: "id"
+            key: "userId"
         }
     },
 
