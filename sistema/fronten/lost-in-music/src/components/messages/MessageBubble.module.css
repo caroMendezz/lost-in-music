@@ -1,0 +1,76 @@
+.bubbleRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  justify-content: flex-start;
+  margin-bottom: 6px;
+}
+
+.bubbleRowOwn {
+  justify-content: flex-end;
+}
+
+.bubble {
+  max-width: 65%;
+  padding: 8px 12px;
+  border-radius: 16px;
+  overflow-wrap: anywhere;
+}
+
+.bubbleOther {
+  background: #e9ebef;
+  color: #111;
+}
+
+.bubbleOwn {
+  background: #1b5fd9;
+  color: #fff;
+}
+
+.bubbleText {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.bubbleImage {
+  display: block;
+  max-width: 100%;
+  max-height: 260px;
+  border-radius: 10px;
+  margin-bottom: 4px;
+}
+
+.bubbleFile {
+  display: block;
+  margin-bottom: 4px;
+  color: inherit;
+  text-decoration: underline;
+}
+
+.bubbleFooter {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.bubbleTime {
+  font-size: 11px;
+  opacity: 0.75;
+}
+
+.bubbleDelete {
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 11px;
+  text-decoration: underline;
+  cursor: pointer;
+  opacity: 0.75;
+  padding: 0;
+}
+
+.bubbleDelete:hover {
+  opacity: 1;
+}

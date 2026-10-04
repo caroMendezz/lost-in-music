@@ -1,0 +1,39 @@
+/* Cambia --messages-header-offset al alto real del header general cuando hagas el merge. */
+.messagesPage {
+  --messages-header-offset: 64px;
+  width: 100%;
+  height: calc(100vh - var(--messages-header-offset));
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.messagesLayout {
+  display: grid;
+  grid-template-columns: 340px minmax(0, 1fr) 320px;
+  gap: 12px;
+  height: 100%;
+  min-height: 0;
+  padding: 12px;
+  box-sizing: border-box;
+  background: #f0f2f5;
+}
+
+.messagesPageNotice {
+  margin: 32px auto;
+  max-width: 480px;
+  padding: 16px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #a12622;
+  text-align: center;
+}
+
+@media (max-width: 1100px) {
+  .messagesLayout {
+    grid-template-columns: 300px minmax(0, 1fr);
+  }
+
+  .messagesLayout > :last-child {
+    display: none;
+  }
+}

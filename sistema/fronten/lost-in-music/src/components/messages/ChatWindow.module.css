@@ -1,0 +1,35 @@
+.chatWindow {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.chatWindowHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #dfe1e5;
+}
+
+.chatWindowName {
+  margin: 0;
+  font-size: 17px;
+}
+
+.chatWindowEmpty {
+  margin: auto;
+  color: #65676b;
+}
+
+.chatWindowError {
+  margin: 0;
+  padding: 8px 16px;
+  background: #fdecea;
+  color: #a12622;
+  font-size: 14px;
+}
