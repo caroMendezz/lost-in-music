@@ -1,4 +1,4 @@
-const Sequelize = require('sequelize')
+const Sequelize = require('sequelize');
 
 const sequelize = new Sequelize('lim', 'root', '', {
   host: 'localhost',
@@ -6,4 +6,4 @@ const sequelize = new Sequelize('lim', 'root', '', {
   logging: false
 });
 
-module.exports = sequelize
+module.exports = sequelize;
