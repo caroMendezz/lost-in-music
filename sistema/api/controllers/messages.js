@@ -150,10 +150,10 @@ const getMessages = async (req, res) => {
 };
 
 
-// ---------------------------------------------------------------
+
 // GET /conversations
 // Devuelve [{ user, lastMessage, unreadCount }] ordenado por ultimo mensaje (mas reciente primero)
-// ---------------------------------------------------------------
+
 const getConversations = async (req, res) => {
     try {
         const userId = Number(req.user.userId);
@@ -255,13 +255,44 @@ const markAsRead = async (req, res) => {
     }
 };
 
+// NUEVO: GET /users/search?q=texto
+// Busca usuarios por username para iniciar una conversacion nueva (excluye al propio usuario)
 
+const searchUsers = async (req, res) => {
+    try {
+        const userId = Number(req.user.userId);
+        const q = String(req.query.q || "").trim();
+
+        if (q.length < 2) {
+            return res.json([]);
+        }
+
+        const safeQuery = q.replace(/[\\%_]/g, "\\$&");
+
+        const users = await User.findAll({
+            where: {
+                username: { [Op.like]: `%${safeQuery}%` },
+                userId: { [Op.ne]: userId },
+                eliminated: 0
+            },
+            attributes: PUBLIC_USER_FIELDS,
+            order: [["username", "ASC"]],
+            limit: 10
+        });
+
+        res.json(users);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error searching users" });
+    }
+};
 module.exports = {
     createMessage,
     deleteMessage,
     getMessages,
     getConversations,
     getUserById,
-    markAsRead
+    markAsRead,
+    searchUsers
 };
 

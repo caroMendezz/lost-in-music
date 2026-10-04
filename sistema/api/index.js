@@ -9,7 +9,7 @@ const { Login, Register, DeleteUser, UpdateUser} = require('./controllers/users'
 const {createPost, deletePost, updatePost} = require('./controllers/posts')
 const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
 const {checkToken } = require('./middlewares/auth')
-const {getMessages, getConversations, getUserById, markAsRead} = require('./controllers/messages')
+const {getMessages, getConversations, getUserById, markAsRead, searchUsers} = require('./controllers/messages')
 const {createProduct, deleteProduct, updateProduct} = require('./controllers/products')
 const setupChat = require("./sockets/chat");
 const sequelize = require('./config/db')
@@ -57,6 +57,7 @@ server.post('/verify/check', CheckVerificationCode);
 server.get("/messages/:otherUserId", checkToken, getMessages);
 
 server.get("/conversations", checkToken, getConversations);
+server.get("/users/search", checkToken, searchUsers);
 server.get("/users/:id", checkToken, getUserById);
 server.put("/messages/read/:otherUserId", checkToken, markAsRead);
 
