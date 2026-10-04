@@ -7,6 +7,7 @@ const upload = require("./middlewares/upload");
 const {uploadFile} = require("./controllers/uploads");
 const { Login, Register, DeleteUser, UpdateUser} = require('./controllers/users')
 const {createPost, deletePost, updatePost} = require('./controllers/posts')
+const {createRole} = require('./controllers/roles')
 const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
 const {checkToken } = require('./middlewares/auth')
 const {getMessages} = require('./controllers/messages')
@@ -42,14 +43,20 @@ const io = new Server(httpServer, {
   }
 });
 
+server.post('/CreateRole', createRole);
+
 server.post('/login', Login);
 server.post('/register', Register);
 server.patch('/deleteUser/:id',checkToken, DeleteUser);
 server.patch('/updateUser/:id',checkToken, UpdateUser);
 
-server.post('/CreatePost', checkToken, createProduct);
+server.post('/CreatePost', checkToken, createPost);
 server.patch('/DeletePost/:id',checkToken, deletePost);
 server.patch('/UpdatePost/:id',checkToken, updatePost); 
+
+server.post('/CreateProduct', checkToken, createProduct);
+server.patch('/DeleteProduct/:id',checkToken, deleteProduct);
+server.patch('/UpdateProduct/:id',checkToken, updateProduct); 
 
 server.post('/verify/send', SendVerificationCode);
 server.post('/verify/check', CheckVerificationCode);

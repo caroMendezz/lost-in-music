@@ -5,7 +5,7 @@ const createPost = async (req, res) => {
 
     try {
 
-        const { userId, postText } = req.body
+        const { userId, postText, _id } = req.body
 
         const user = await User.findByPk(userId)
 
@@ -16,6 +16,7 @@ const createPost = async (req, res) => {
         }
 
         const post = await Post.create({
+            _id,
             userId,
             postText
         })
@@ -42,7 +43,7 @@ const deletePost = async (req, res) => {
         postId = _id
         const { postId } = req.params
 
-        const post = await Post.findById(id)
+        const post = await Post.findById(postId)
 
         if (!post) {
             return res.status(404).json({
