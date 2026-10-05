@@ -2,11 +2,6 @@ const mongoose = require("mongoose")
 
 
 const ProductSchema = new mongoose.Schema({
-    productId: {
-        type: Number, // ID del usuario en SQL
-        required: true
-    },
-
     title: {
         type: String,
         maxlength: 1000
@@ -55,9 +50,14 @@ const ProductSchema = new mongoose.Schema({
         type: Number, 
         required: true
         },
+
+    eliminated: {
+        type: Boolean,
+        default: false
+        },
     
 }, {
     timestamps: true
 })
 
-module.exports = mongoose.model("Product", ProductSchema)
+module.exports = mongoose.model("Product", ProductSchema, "Product")

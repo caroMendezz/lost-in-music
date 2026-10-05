@@ -5,7 +5,7 @@ const createPost = async (req, res) => {
 
     try {
 
-        const { userId, postText, _id } = req.body
+        const { userId, postText, image, videos } = req.body
 
         const user = await User.findByPk(userId)
 
@@ -16,9 +16,10 @@ const createPost = async (req, res) => {
         }
 
         const post = await Post.create({
-            _id,
             userId,
-            postText
+            postText,
+            image,
+            videos
         })
 
         return res.status(201).json(post)
@@ -40,14 +41,13 @@ const createPost = async (req, res) => {
 const deletePost = async (req, res) => {
 
     try {
-        postId = _id
-        const { postId } = req.params
+        const postId = req.params.id
 
         const post = await Post.findById(postId)
 
         if (!post) {
             return res.status(404).json({
-                message: "Publicación no encontrada"
+                message: "Publicación no encontrada", postId
             })
         }
 
@@ -107,7 +107,7 @@ const updatePost = async (req, res) => {
 
         const post = await Post.findOneAndUpdate(
             {
-                _id: postId,
+                postId: postId,
                 eliminated: false
             },
             dataUpdate,

@@ -36,11 +36,13 @@ const Register = async (req, res) => {
 
   if (password) req.body.password = "[REDACTED]"
 
+  
+
   if (!username || !password || !email) {
     return res.status(400).json({ message: 'username de usuario o password o email faltante' })
   }
 
-
+  const dvh = User.userId * 6767
   const Hashedpassword = await bcrypt.hash(password, 10)
   try {
     const user = await User.create({
@@ -59,7 +61,7 @@ const Register = async (req, res) => {
       banner: "vacio",
       friendId: 2,
       ubication: "Agregar ubicacion",
-      DVH: "1234567890123456789012345678901234567890123456789012345678901234" // Por ahora no tenemos el cálculo para hacer los dígitos verificadores
+      DVH: dvh // Por ahora no tenemos el cálculo para hacer los dígitos verificadores
     })
     return res.status(201).json(user)
   } catch (error) {
@@ -83,7 +85,7 @@ const DeleteUser = async (req, res) => {
   try {
     const { id } = req.params
 
-    const usuario = await Usuario.findByPk(id)
+    const usuario = await User.findByPk(id)
 
     if (!usuario) {
       return res.status(404).json({
@@ -111,7 +113,7 @@ const UpdateUser = async (req, res) => {
   try {
     const { userId } = req.params;
 
-    const usert = await User.findByPk(id);
+    const user = await User.findByPk(id);
 
     if (!user) {
       return res.status(404).json({
