@@ -2,11 +2,6 @@ const mongoose = require("mongoose")
 
 
 const ProductSchema = new mongoose.Schema({
-    productId: {
-        type: Number, // ID del usuario en SQL
-        required: true
-    },
-
     title: {
         type: String,
         maxlength: 1000
@@ -55,10 +50,14 @@ const ProductSchema = new mongoose.Schema({
         type: Number, 
         required: true
         },
+
+    eliminated: {
+        type: Boolean,
+        default: false
+        },
     
 }, {
     timestamps: true
 })
 
-// CORRECCIÓN: Usa PostSchema que es el nombre real de tu variable
-module.exports = mongoose.model("Product", PostSchema)
+module.exports = mongoose.model("Product", ProductSchema, "Product")

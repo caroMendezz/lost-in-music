@@ -1,6 +1,8 @@
 const mongoose = require("mongoose")
 
 const PostSchema = new mongoose.Schema({
+
+
     userId: {
         type: Number, // ID del usuario en SQL
         required: true
@@ -38,4 +40,4 @@ const PostSchema = new mongoose.Schema({
     timestamps: true
 })
 
-module.exports = mongoose.model("Post", PostSchema)
+module.exports = mongoose.model("Post", PostSchema, "Post")

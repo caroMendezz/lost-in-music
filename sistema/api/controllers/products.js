@@ -1,4 +1,4 @@
-const Post = require("../models/Product")
+const Product = require("../models/Product")
 const {User} = require("../models/User")
 
 const createProduct = async (req, res) => {
@@ -26,7 +26,7 @@ const createProduct = async (req, res) => {
             price
         })
 
-        return res.status(201).json(post)
+        return res.status(201).json(product)
 
     } catch (error) {
 
@@ -45,29 +45,30 @@ const createProduct = async (req, res) => {
 const deleteProduct = async (req, res) => {
 
     try {
-        productId = _id
-        const { productId } = req.params
 
-        const product = await Product.findById(id)
+        const productId = req.params.id
+
+
+        const product = await Product.findById(productId)
 
         if (!product) {
             return res.status(404).json({
-                message: "Publicación no encontrada"
+                message: "Publicación del producto no encontrada"
             })
         }
 
         if (product.eliminated) {
             return res.status(400).json({
-                message: "La publicación ya está eliminada"
+                message: "La publicación del producto ya está eliminada"
             })
         }
 
-        prodcut.eliminated = true
+        product.eliminated = true
 
         await product.save()
 
         return res.status(200).json({
-            message: "Publicación eliminada correctamente"
+            message: "Publicación del producto eliminada correctamente"
         })
 
     } catch (error) {
@@ -85,9 +86,9 @@ const deleteProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
 
     try {
-
-        const { productId } = req.params
-
+        console.log("1. req.params completos:", req.params);
+        const productId  = req.params.id
+        console.log("2. ID capturado:", productId);
         const {
             title,
             image,
@@ -96,7 +97,7 @@ const updateProduct = async (req, res) => {
             category,
             location
         } = req.body
-
+        console.log("3. Body recibido:", req.body);
         const dataUpdate = {}
 
         if (title !== undefined)
@@ -121,6 +122,7 @@ const updateProduct = async (req, res) => {
                 message: "No se enviaron datos para actualizar"
             })
         }
+        console.log("4. Datos a actualizar:", dataUpdate);
 
         const product = await Product.findOneAndUpdate(
             {
@@ -133,14 +135,14 @@ const updateProduct = async (req, res) => {
                 runValidators: true
             }
         )
-
+        console.log("5. Resultado de la base de datos:", product);
         if (!product) {
             return res.status(404).json({
                 message: "Publicación no encontrada"
             })
         }
 
-        res.status(200).json(post)
+        res.status(200).json(product)
 
     } catch (error) {
 
