@@ -3,6 +3,7 @@ const { Op } = require("sequelize");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+
 const Login = async (req, res) => {
   const { username, password } = req.body;
 
@@ -87,11 +88,10 @@ const Register = async (req, res) => {
       return res.status(400).json({ message: "Ya existe el email o usuario" });
     }
     console.log(error);
-    return res
-      .status(500)
-      .json({ message: "Hubo un error al ingresar el usuario" });
+    return res.status(500).json({ message: "Hubo un error al ingresar el usuario" })
   }
-};
+}
+
 
 const DeleteUser = async (req, res) => {
   try {

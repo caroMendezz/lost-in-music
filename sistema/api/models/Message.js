@@ -19,23 +19,9 @@ const Message = sequelize.define("message", {
         }
     },
 
-    receiverId: {
-        type: DataTypes.INTEGER,
-        allowNull: false,
-        references: {
-            model: "users",
-            key: "userId" // <-- CORREGIDO
-        }
-    },
-
     content: {
         type: DataTypes.TEXT,
-        allowNull: true
-    },
-
-    messageType: {
-        type: DataTypes.ENUM("text", "image", "file"),
-        allowNull: false,
+        allowNull: true,
         defaultValue: "text"
     },
 
