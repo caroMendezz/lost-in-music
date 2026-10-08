@@ -1,49 +1,47 @@
 .messageInput {
   display: flex;
+  align-items: center;
   gap: 8px;
   padding: 12px 16px;
-  border-top: 1px solid #dfe1e5;
-}
-
-.messageInputField {
-  flex: 1;
-  padding: 10px 14px;
-  border: 1px solid #dfe1e5;
-  border-radius: 20px;
-  background: #f0f2f5;
-  font: inherit;
-}
-
-.messageInputSend {
-  padding: 0 18px;
-  border: none;
-  border-radius: 20px;
-  background: #3b6fd4;
-  color: #fff;
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.messageInputSend:disabled {
-  background: #b7c4de;
-  cursor: not-allowed;
+  border-top: 1px solid #c4c9d2;
 }
 
 .messageInputFile {
   display: none;
 }
 
-.messageInputAttach {
-  padding: 0 14px;
-  border: none;
+.messageInputField {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid #c4c9d2;
   border-radius: 20px;
-  background: #e4e6eb;
+  background: #f5f6f8;
+  color: inherit;
   font: inherit;
+}
+
+.messageInputIcon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
   cursor: pointer;
 }
 
-.messageInputAttach:disabled {
-  opacity: 0.6;
+.messageInputIcon:hover:not(:disabled) {
+  background: #e9ecf1;
+}
+
+.messageInputIcon:focus-visible {
+  outline: 2px solid #1b5fd9;
+}
+
+.messageInputIcon:disabled {
+  opacity: 0.4;
   cursor: default;
 }

@@ -1,21 +1,39 @@
-/* Cambia --messages-header-offset al alto real del header general cuando hagas el merge. */
+/*
+  La pagina ocupa el 100% del ancho y todo el alto que queda bajo el header.
+  Alto del header: si tu layout principal define --messages-header-offset se usa ese valor;
+  si no, 64px. Ajusta el valor de respaldo (64px) al alto real del header de la rama principal.
+*/
 .messagesPage {
-  --messages-header-offset: 64px;
   width: 100%;
-  height: calc(100vh - var(--messages-header-offset));
+  height: calc(100vh - var(--messages-header-offset, 64px));
   min-height: 0;
+  box-sizing: border-box;
+  background: #e9ecf1;
+  /* Aisla la pagina de los estilos globales (color, alineacion y modo oscuro de index.css) */
+  color: #111;
+  color-scheme: light;
+  text-align: left;
+}
+
+/* Sin chat seleccionado: lista + area principal */
+.messagesLayout {
+  display: grid;
+  grid-template-columns: clamp(260px, 24vw, 380px) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 8px;
+  height: 100%;
+  min-height: 0;
+  padding: 8px;
   box-sizing: border-box;
 }
 
-.messagesLayout {
-  display: grid;
-  grid-template-columns: 340px minmax(0, 1fr) 320px;
-  gap: 12px;
-  height: 100%;
-  min-height: 0;
-  padding: 12px;
-  box-sizing: border-box;
-  background: #f0f2f5;
+/* Con chat seleccionado y panel de info visible: lista + chat + informacion del contacto.
+   Si el panel se oculta (boton "i") se vuelve a 2 columnas y el chat ocupa todo el ancho. */
+.messagesLayoutWithInfo {
+  grid-template-columns:
+    clamp(260px, 24vw, 380px)
+    minmax(0, 1fr)
+    clamp(240px, 22vw, 340px);
 }
 
 .messagesPageNotice {
@@ -28,12 +46,9 @@
   text-align: center;
 }
 
+/* El panel derecho se achica en ventanas medianas; el boton "i" del chat permite ocultarlo */
 @media (max-width: 1100px) {
-  .messagesLayout {
-    grid-template-columns: 300px minmax(0, 1fr);
-  }
-
-  .messagesLayout > :last-child {
-    display: none;
+  .messagesLayoutWithInfo {
+    grid-template-columns: 240px minmax(0, 1fr) 240px;
   }
 }

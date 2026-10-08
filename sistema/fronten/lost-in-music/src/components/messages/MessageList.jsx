@@ -1,17 +1,26 @@
 import { useEffect, useRef } from "react";
 import Avatar from "./Avatar";
 import MessageBubble from "./MessageBubble";
-import { formatDayLabel } from "./formatters";
+import { formatDayLabel, formatTime } from "./formatters";
 import styles from "./MessageList.module.css";
 
-export default function MessageList({ messages, contact, myId, loading, onDelete }) {
+const TIME_GAP_MS = 30 * 60 * 1000; // separador con hora si pasan 30 min entre mensajes
+
+export default function MessageList({ messages, contact, myId, loading, onRequestRevoke, onRequestDeleteForMe }) {
     const endRef = useRef(null);
 
     useEffect(() => {
         endRef.current?.scrollIntoView({ block: "end" });
     }, [messages]);
 
-    let lastDay = null;
+    // "Enviado" / "Visto" solo debajo del ultimo mensaje enviado por el usuario actual
+    let lastOwnId = null;
+    for (let i = messages.length - 1; i >= 0; i -= 1) {
+        if (Number(messages[i].senderId) === myId) {
+            lastOwnId = messages[i].messageId;
+            break;
+        }
+    }
 
     return (
         <div className={styles.messageList}>
@@ -28,20 +37,33 @@ export default function MessageList({ messages, contact, myId, loading, onDelete
                 <p className={styles.messageListStatus}>Aún no hay mensajes. Escribe el primero.</p>
             )}
 
-            {messages.map((message) => {
-                const day = new Date(message.sent_at).toDateString();
-                const showDay = day !== lastDay;
-                lastDay = day;
+            {messages.map((message, index) => {
+                const date = new Date(message.sent_at);
+                const previous = messages[index - 1];
+                const previousDate = previous ? new Date(previous.sent_at) : null;
+
+                const newDay = !previousDate || previousDate.toDateString() !== date.toDateString();
+                const longGap = previousDate && date - previousDate > TIME_GAP_MS;
 
                 return (
                     <div key={message.messageId}>
-                        {showDay && <div className={styles.messageListDay}>{formatDayLabel(message.sent_at)}</div>}
+                        {(newDay || longGap) && (
+                            <div className={styles.messageListDay}>
+                                {newDay ? `${formatDayLabel(date)}, ${formatTime(date)}` : formatTime(date)}
+                            </div>
+                        )}
+
                         <MessageBubble
                             message={message}
                             isOwn={Number(message.senderId) === myId}
                             contact={contact}
-                            onDelete={onDelete}
+                            onRequestRevoke={onRequestRevoke}
+                            onRequestDeleteForMe={onRequestDeleteForMe}
                         />
+
+                        {message.messageId === lastOwnId && !message.deletedForAll && (
+                            <div className={styles.messageListReceipt}>{message.is_read ? "Visto" : "Enviado"}</div>
+                        )}
                     </div>
                 );
             })}

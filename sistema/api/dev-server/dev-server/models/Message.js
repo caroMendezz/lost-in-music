@@ -63,6 +63,26 @@ const Message = sequelize.define("message", {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
+    },
+
+    // Anular envio para todos: el registro se conserva, solo cambia este estado
+    deletedForAll: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+
+    // Eliminar para ti: oculta el mensaje solo para quien lo elimino
+    deletedBySender: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+    },
+
+    deletedByReceiver: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
     }
 });
 

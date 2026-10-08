@@ -3,6 +3,7 @@
   flex-direction: column;
   min-width: 0;
   min-height: 0;
+  border: 1px solid #c4c9d2;
   border-radius: 8px;
   overflow: hidden;
   background: #fff;
@@ -23,7 +24,9 @@
 
 .chatWindowEmpty {
   margin: auto;
-  color: #65676b;
+  color: #4a4d52;
+  font-size: 20px;
+  text-align: center;
 }
 
 .chatWindowError {
@@ -32,4 +35,33 @@
   background: #fdecea;
   color: #a12622;
   font-size: 14px;
+}
+
+.chatWindowInfo {
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #c4c9d2;
+  border-radius: 50%;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chatWindowInfo:hover {
+  background: #e9ecf1;
+}
+
+.chatWindowInfo[aria-pressed="true"] {
+  border-color: #1b5fd9;
+  background: #e4ecfb;
+  color: #1b5fd9;
+}
+
+.chatWindowInfo:focus-visible {
+  outline: 2px solid #1b5fd9;
+  outline-offset: 1px;
 }

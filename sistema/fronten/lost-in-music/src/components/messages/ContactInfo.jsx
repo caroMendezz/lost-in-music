@@ -1,90 +1,88 @@
 import { useState } from "react";
 import Avatar from "./Avatar";
-import { resolveFileUrl } from "../../services/messageService";
+import FilterChip from "./FilterChip";
+import SharedContent from "./SharedContent";
 import styles from "./ContactInfo.module.css";
 
-export default function ContactInfo({ contact, messages }) {
-    const [mediaOpen, setMediaOpen] = useState(true);
+const NO_FILTERS = { media: false, files: false };
+
+// Se monta con key={userId}: al cambiar de conversacion vuelve a la vista inicial.
+export default function ContactInfo({ contact, messages, hidden }) {
+    const [view, setView] = useState("info"); // "info" | "content"
+    const [filters, setFilters] = useState(NO_FILTERS);
+    const [sectionOpen, setSectionOpen] = useState(false); // el desplegable arranca cerrado
 
     if (!contact) {
-        return <aside className={styles.contactInfo} />;
+        return <aside className={styles.contactInfo} hidden={hidden} />;
     }
 
-    // El backend no tiene un endpoint de multimedia: se obtiene del historial (messageType image/file)
-    const images = messages.filter((m) => m.messageType === "image" && m.fileUrl);
-    const files = messages.filter((m) => m.messageType === "file" && m.fileUrl);
+    const inContent = view === "content";
+
+    // Desde la vista inicial se entra directo al contenido con ese filtro activo
+    const openContent = (kind) => {
+        setFilters({ ...NO_FILTERS, [kind]: true });
+        setView("content");
+    };
+
+    // En la vista de contenido los filtros son independientes: pueden estar activos a la vez
+    const toggleFilter = (kind) => setFilters((prev) => ({ ...prev, [kind]: !prev[kind] }));
 
     return (
-        <aside className={styles.contactInfo}>
-            <div className={styles.contactInfoHeader}>
-                <Avatar user={contact} size={80} />
-                <h3 className={styles.contactInfoName}>{contact.username}</h3>
+        <aside className={styles.contactInfo} hidden={hidden}>
+            {/* Vista inicial */}
+            <div
+                className={`${styles.contactInfoPane} ${
+                    inContent ? styles.contactInfoPaneLeft : styles.contactInfoPaneCenter
+                }`}
+            >
+                <div className={styles.contactInfoHeader}>
+                    <Avatar user={contact} size={80} />
+                    <h3 className={styles.contactInfoName}>{contact.username}</h3>
+                </div>
+
+                <button
+                    type="button"
+                    className={styles.contactInfoToggle}
+                    onClick={() => setSectionOpen((open) => !open)}
+                    aria-expanded={sectionOpen}
+                >
+                    <span>Multimedia y archivos</span>
+                    <span aria-hidden="true">{sectionOpen ? "▾" : "▸"}</span>
+                </button>
+
+                {sectionOpen && (
+                    <div className={styles.contactInfoOptions}>
+                        <FilterChip label="Multimedia" active={false} onClick={() => openContent("media")} />
+                        <FilterChip label="Archivos" active={false} onClick={() => openContent("files")} />
+                    </div>
+                )}
             </div>
 
-            <dl className={styles.contactInfoDetails}>
-                {contact.description && (
-                    <>
-                        <dt>Descripción</dt>
-                        <dd>{contact.description}</dd>
-                    </>
-                )}
-                {contact.ubication && (
-                    <>
-                        <dt>Ubicación</dt>
-                        <dd>{contact.ubication}</dd>
-                    </>
-                )}
-                <dt>Seguidores</dt>
-                <dd>{contact.followerAmount ?? 0}</dd>
-                <dt>Siguiendo</dt>
-                <dd>{contact.followingAmount ?? 0}</dd>
-            </dl>
-
-            <button
-                type="button"
-                className={styles.contactInfoToggle}
-                onClick={() => setMediaOpen((open) => !open)}
-                aria-expanded={mediaOpen}
+            {/* Vista de contenido (entra deslizando desde la derecha) */}
+            <div
+                className={`${styles.contactInfoPane} ${
+                    inContent ? styles.contactInfoPaneCenter : styles.contactInfoPaneRight
+                }`}
             >
-                <span>Multimedia y archivos</span>
-                <span aria-hidden="true">{mediaOpen ? "▾" : "▸"}</span>
-            </button>
+                <div className={styles.contactInfoContentHeader}>
+                    <button
+                        type="button"
+                        className={styles.contactInfoBack}
+                        onClick={() => setView("info")}
+                        aria-label="Volver"
+                    >
+                        ←
+                    </button>
+                    <h3 className={styles.contactInfoContentTitle}>Contenido Multimedia y archivos</h3>
+                </div>
 
-            {mediaOpen && (
-                <section className={styles.contactInfoMedia}>
-                    <h4 className={styles.contactInfoSectionTitle}>Imágenes</h4>
-                    {images.length === 0 ? (
-                        <p className={styles.contactInfoEmpty}>Sin imágenes compartidas.</p>
-                    ) : (
-                        <div className={styles.contactInfoGrid}>
-                            {images.map((m) => (
-                                <a key={m.messageId} href={resolveFileUrl(m.fileUrl)} target="_blank" rel="noreferrer">
-                                    <img
-                                        className={styles.contactInfoThumb}
-                                        src={resolveFileUrl(m.fileUrl)}
-                                        alt={m.fileName || "Imagen"}
-                                    />
-                                </a>
-                            ))}
-                        </div>
-                    )}
+                <div className={styles.contactInfoFilters}>
+                    <FilterChip label="Multimedia" active={filters.media} onClick={() => toggleFilter("media")} />
+                    <FilterChip label="Archivos" active={filters.files} onClick={() => toggleFilter("files")} />
+                </div>
 
-                    <h4 className={styles.contactInfoSectionTitle}>Archivos</h4>
-                    {files.length === 0 ? (
-                        <p className={styles.contactInfoEmpty}>Sin archivos compartidos.</p>
-                    ) : (
-                        <ul className={styles.contactInfoFiles}>
-                            {files.map((m) => (
-                                <li key={m.messageId}>
-                                    <a href={resolveFileUrl(m.fileUrl)} target="_blank" rel="noreferrer">
-                                        {m.fileName || "Archivo"}
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                    )}
-                </section>
-            )}
+                <SharedContent contact={contact} messages={messages} filters={filters} />
+            </div>
         </aside>
     );
 }

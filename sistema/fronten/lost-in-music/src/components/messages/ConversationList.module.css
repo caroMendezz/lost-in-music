@@ -3,6 +3,7 @@
   flex-direction: column;
   min-height: 0;
   padding: 12px 8px;
+  border: 1px solid #c4c9d2;
   border-radius: 8px;
   background: #fff;
 }
@@ -17,14 +18,20 @@
 .conversationListTitle {
   margin: 0;
   font-size: 24px;
+  color: inherit;
 }
 
 .conversationListNew {
-  border: none;
-  border-radius: 16px;
-  background: #e4e6eb;
-  padding: 6px 12px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid #c4c9d2;
+  border-radius: 50%;
+  background: #fff;
+  color: inherit;
   font: inherit;
+  font-size: 22px;
+  line-height: 1;
   cursor: pointer;
 }
 
@@ -76,6 +83,7 @@
 }
 
 .conversationListStatus {
+  text-align: center;
   margin: 16px 10px;
   color: #65676b;
   font-size: 14px;

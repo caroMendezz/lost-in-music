@@ -189,6 +189,34 @@ export default function useMessages(initialUserId = null) {
             loadConversations();
         };
 
+        // Anulado para todos: el mensaje se actualiza (sin contenido) y conserva su posicion
+        const onMessageRevoked = (message) => {
+            const otherId =
+                Number(message.senderId) === myId ? Number(message.receiverId) : Number(message.senderId);
+
+            if (selectedRef.current === otherId) {
+                setMessages((prev) => mergeMessages(prev, message));
+            }
+            loadConversations();
+        };
+
+        // Eliminado para ti: deja de mostrarse solo para este usuario
+        const onMessageDeletedForMe = ({ messageId }) => {
+            setMessages((prev) => prev.filter((m) => m.messageId !== messageId));
+            loadConversations();
+        };
+
+        // El receptor leyo mis mensajes (lo emite el backend desde markAsRead): Enviado -> Visto
+        const onMessagesRead = ({ readerId }) => {
+            setMessages((prev) =>
+                prev.map((m) =>
+                    Number(m.senderId) === myId && Number(m.receiverId) === Number(readerId) && !m.is_read
+                        ? { ...m, is_read: true }
+                        : m
+                )
+            );
+        };
+
         const onMessageError = ({ message }) => setError(message || "Error al enviar el mensaje");
 
         const onConnectError = (err) => {
@@ -221,6 +249,9 @@ export default function useMessages(initialUserId = null) {
         socket.on("newMessage", onNewMessage);
         socket.on("messageSent", onMessageSent);
         socket.on("messageDeleted", onMessageDeleted);
+        socket.on("messageRevoked", onMessageRevoked);
+        socket.on("messageDeletedForMe", onMessageDeletedForMe);
+        socket.on("messagesRead", onMessagesRead);
         socket.on("messageError", onMessageError);
 
         return () => {
@@ -229,6 +260,9 @@ export default function useMessages(initialUserId = null) {
             socket.off("newMessage", onNewMessage);
             socket.off("messageSent", onMessageSent);
             socket.off("messageDeleted", onMessageDeleted);
+            socket.off("messageRevoked", onMessageRevoked);
+            socket.off("messageDeletedForMe", onMessageDeletedForMe);
+            socket.off("messagesRead", onMessagesRead);
             socket.off("messageError", onMessageError);
             disconnectSocket();
         };
@@ -293,8 +327,14 @@ export default function useMessages(initialUserId = null) {
         [handleError]
     );
 
-    const deleteMessage = useCallback((messageId) => {
-        getSocket().emit("deleteMessage", { messageId });
+    // Anular envio para todos (no borra el registro)
+    const revokeMessage = useCallback((messageId) => {
+        getSocket().emit("revokeMessage", { messageId });
+    }, []);
+
+    // Eliminar para ti (solo se oculta para este usuario)
+    const deleteMessageForMe = useCallback((messageId) => {
+        getSocket().emit("deleteMessageForMe", { messageId });
     }, []);
 
     return {
@@ -311,6 +351,7 @@ export default function useMessages(initialUserId = null) {
         selectConversation,
         sendMessage,
         sendAttachment,
-        deleteMessage
+        revokeMessage,
+        deleteMessageForMe
     };
 }

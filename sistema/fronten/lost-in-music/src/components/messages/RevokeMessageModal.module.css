@@ -1,0 +1,24 @@
+.revokeOption {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 14px;
+  cursor: pointer;
+}
+
+.revokeRadio {
+  flex-shrink: 0;
+  margin: 3px 0 0;
+  accent-color: #1b5fd9;
+}
+
+.revokeText {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.revokeDetail {
+  font-size: 13px;
+  color: #65676b;
+}

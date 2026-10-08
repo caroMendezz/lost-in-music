@@ -1,9 +1,9 @@
 .bubbleRow {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 8px;
   justify-content: flex-start;
-  margin-bottom: 6px;
+  margin-bottom: 5px;
 }
 
 .bubbleRowOwn {
@@ -27,6 +27,14 @@
   color: #fff;
 }
 
+/* Mensaje anulado para todos */
+.bubbleRevoked {
+  border: 1px solid #c4c9d2;
+  background: transparent;
+  color: #65676b;
+  font-style: italic;
+}
+
 .bubbleText {
   margin: 0;
   white-space: pre-wrap;
@@ -37,40 +45,91 @@
   max-width: 100%;
   max-height: 260px;
   border-radius: 10px;
-  margin-bottom: 4px;
 }
 
 .bubbleFile {
   display: block;
-  margin-bottom: 4px;
   color: inherit;
   text-decoration: underline;
 }
 
-.bubbleFooter {
+
+.bubbleActions {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: flex-end;
-  gap: 8px;
-  margin-top: 2px;
+  gap: 4px;
+  visibility: hidden;
 }
 
-.bubbleTime {
-  font-size: 11px;
-  opacity: 0.75;
+.bubbleRow:hover .bubbleActions,
+.bubbleRow:focus-within .bubbleActions,
+.bubbleActionsOpen {
+  visibility: visible;
 }
 
-.bubbleDelete {
+.bubbleActionsOpen {
+  z-index: 5;
+}
+
+.bubbleMore {
+  width: 28px;
+  height: 28px;
   border: none;
+  border-radius: 50%;
+  background: #e4e6eb;
+  color: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.bubbleMore:hover {
+  background: #d8dadf;
+}
+
+.bubbleMore:focus-visible {
+  outline: 2px solid #1b5fd9;
+  outline-offset: 1px;
+}
+
+.bubbleReply {
+  font-size: 16px;
+  line-height: 1;
+  user-select: none;
+}
+
+.bubbleMenu {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 6px);
+  min-width: 140px;
+  padding: 4px;
+  border: 1px solid #c4c9d2;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+
+.bubbleMenuItem {
+  display: block;
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
   background: transparent;
   color: inherit;
-  font-size: 11px;
-  text-decoration: underline;
+  font: inherit;
+  text-align: left;
   cursor: pointer;
-  opacity: 0.75;
-  padding: 0;
 }
 
-.bubbleDelete:hover {
-  opacity: 1;
+.bubbleMenuItem:hover:not(:disabled) {
+  background: #e9ecf1;
+}
+
+.bubbleMenuItem:disabled {
+  color: #9a9da3;
+  cursor: default;
 }

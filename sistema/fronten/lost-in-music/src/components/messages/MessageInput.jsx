@@ -5,6 +5,7 @@ export default function MessageInput({ onSend, onAttach, uploading, disabled }) 
     const [text, setText] = useState("");
     const fileRef = useRef(null);
 
+    // Enter dentro del campo tambien dispara el submit del formulario
     const handleSubmit = (event) => {
         event.preventDefault();
         if (onSend(text)) setText("");
@@ -22,18 +23,19 @@ export default function MessageInput({ onSend, onAttach, uploading, disabled }) 
 
             <button
                 type="button"
-                className={styles.messageInputAttach}
+                className={styles.messageInputIcon}
                 onClick={() => fileRef.current?.click()}
                 disabled={disabled || uploading}
-                aria-label="Adjuntar imagen o archivo"
+                aria-label="Adjuntar archivo"
+                title={uploading ? "Subiendo archivo..." : "Adjuntar archivo"}
             >
-                {uploading ? "Subiendo..." : "Adjuntar"}
+                {uploading ? "⏳" : "📁"}
             </button>
 
             <input
                 type="text"
                 className={styles.messageInputField}
-                placeholder="Aa"
+                placeholder="Escribir un mensaje..."
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 disabled={disabled}
@@ -42,10 +44,12 @@ export default function MessageInput({ onSend, onAttach, uploading, disabled }) 
 
             <button
                 type="submit"
-                className={styles.messageInputSend}
+                className={styles.messageInputIcon}
                 disabled={disabled || text.trim() === ""}
+                aria-label="Enviar mensaje"
+                title="Enviar mensaje"
             >
-                Enviar
+                ✈️
             </button>
         </form>
     );

@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import ChatWindow from "../../components/messages/ChatWindow";
 import ContactInfo from "../../components/messages/ContactInfo";
@@ -24,8 +25,15 @@ export default function MessagesPage() {
         selectConversation,
         sendMessage,
         sendAttachment,
-        deleteMessage
+        revokeMessage,
+        deleteMessageForMe
     } = useMessages(initialUserId);
+
+    const hasChat = selectedUserId !== null;
+
+    // Panel derecho (info del contacto): se muestra por defecto en pantallas anchas.
+    // El boton "i" del chat lo oculta/muestra sin cerrar la conversacion.
+    const [infoOpen, setInfoOpen] = useState(() => window.innerWidth >= 1000);
 
     if (authError) {
         return (
@@ -39,7 +47,7 @@ export default function MessagesPage() {
 
     return (
         <div className={styles.messagesPage}>
-            <div className={styles.messagesLayout}>
+            <div className={`${styles.messagesLayout} ${hasChat && infoOpen ? styles.messagesLayoutWithInfo : ""}`}>
                 <ConversationList
                     conversations={conversations}
                     selectedUserId={selectedUserId}
@@ -57,10 +65,20 @@ export default function MessagesPage() {
                     uploading={uploading}
                     onSend={sendMessage}
                     onAttach={sendAttachment}
-                    onDelete={deleteMessage}
+                    onRevoke={revokeMessage}
+                    onDeleteForMe={deleteMessageForMe}
+                    infoOpen={infoOpen}
+                    onToggleInfo={() => setInfoOpen((open) => !open)}
                 />
 
-                <ContactInfo contact={contact} messages={messages} />
+                {hasChat && (
+                    <ContactInfo
+                        key={selectedUserId}
+                        contact={contact}
+                        messages={messages}
+                        hidden={!infoOpen}
+                    />
+                )}
             </div>
         </div>
     );

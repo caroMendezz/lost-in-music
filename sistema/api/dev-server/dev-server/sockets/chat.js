@@ -1,5 +1,11 @@
 const jwt = require("jsonwebtoken");
-const { createMessage, deleteMessage } = require("../controllers/messages");
+const {
+    createMessage,
+    deleteMessage,
+    revokeMessage,
+    deleteMessageForUser,
+    toClientMessage
+} = require("../controllers/messages");
 
 const SECRET = 'SOCRATESLEPEGOUNPUNHETAZOENLACARA';
 
@@ -77,6 +83,40 @@ function setupChat(io) {
                 }   
             }
         );
+
+
+        // Anular envio para todos: no borra el registro, lo marca como anulado y avisa a ambos usuarios
+        socket.on("revokeMessage", async (data) => {
+
+            try {
+                const message = await revokeMessage(data?.messageId, socket.userId);
+
+                io.to(`user_${message.receiverId}`)
+                    .to(`user_${message.senderId}`)
+                    .emit("messageRevoked", toClientMessage(message));
+            } catch (error) {
+                console.error(error);
+                socket.emit("messageError", { message: error.message });
+            }
+
+        });
+
+
+        // Eliminar para ti: solo se oculta para el usuario que lo pidio (y sus otras pestañas)
+        socket.on("deleteMessageForMe", async (data) => {
+
+            try {
+                await deleteMessageForUser(data?.messageId, socket.userId);
+
+                io.to(`user_${socket.userId}`).emit("messageDeletedForMe", {
+                    messageId: data.messageId
+                });
+            } catch (error) {
+                console.error(error);
+                socket.emit("messageError", { message: error.message });
+            }
+
+        });
 
 
         socket.on("disconnect", () => {

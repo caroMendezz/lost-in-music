@@ -57,6 +57,8 @@ server.put("/messages/read/:otherUserId", checkToken, markAsRead);
 server.post("/Upload", checkToken, upload.single("file"), uploadFile);
 server.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// markAsRead usa io para avisar "Visto" al emisor en tiempo real
+server.set("io", io);
 setupChat(io);
 
 const start = async () => {

@@ -43,3 +43,7 @@ export function formatRelative(date) {
     const years = Math.floor(days / 365);
     return `${years} ${years === 1 ? "año" : "años"}`;
 }
+
+export function formatShortDate(date) {
+    return new Date(date).toLocaleDateString("es-AR");
+}

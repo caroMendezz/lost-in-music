@@ -16,6 +16,20 @@ const PUBLIC_USER_FIELDS = [
     "followingAmount"
 ];
 
+// Mensaje tal como se envia al cliente: si fue anulado para todos NO se expone su contenido
+// (en la base de datos el registro y su contenido se conservan).
+const toClientMessage = (message) => {
+    const data = typeof message.toJSON === "function" ? message.toJSON() : { ...message };
+
+    if (data.deletedForAll) {
+        data.content = null;
+        data.fileUrl = null;
+        data.fileName = null;
+    }
+
+    return data;
+};
+
 const createMessage = async (data) => {
 
     try {
@@ -127,6 +141,69 @@ const deleteMessage = async (messageId, userId) => {
 
 };
 
+// Anular envio para todos: solo el emisor. No se borra el registro.
+const revokeMessage = async (messageId, userId) => {
+
+    try {
+
+        const message = await Message.findByPk(messageId);
+
+        if (!message) {
+            throw new Error("Message not found");
+        }
+
+        if (Number(message.senderId) !== Number(userId)) {
+            throw new Error("You cannot revoke this message");
+        }
+
+        if (!message.deletedForAll) {
+            await message.update({ deletedForAll: true });
+        }
+
+        return message;
+
+    } catch (error) {
+
+        console.error(error);
+        throw error;
+
+    }
+
+};
+
+// Eliminar para ti: oculta el mensaje solo para quien lo pide (emisor o receptor).
+const deleteMessageForUser = async (messageId, userId) => {
+
+    try {
+
+        const message = await Message.findByPk(messageId);
+
+        if (!message) {
+            throw new Error("Message not found");
+        }
+
+        const isSender = Number(message.senderId) === Number(userId);
+        const isReceiver = Number(message.receiverId) === Number(userId);
+
+        if (!isSender && !isReceiver) {
+            throw new Error("You cannot delete this message");
+        }
+
+        await message.update(
+            isSender ? { deletedBySender: true } : { deletedByReceiver: true }
+        );
+
+        return message;
+
+    } catch (error) {
+
+        console.error(error);
+        throw error;
+
+    }
+
+};
+
 const getMessages = async (req, res) => {
     try {
         const userId = Number(req.user.userId);
@@ -134,15 +211,16 @@ const getMessages = async (req, res) => {
 
         const messages = await Message.findAll({
             where: {
+                // Se excluyen los mensajes que el usuario elimino "para ti"
                 [Op.or]: [
-                    { senderId: userId, receiverId: otherUserId },
-                    { senderId: otherUserId, receiverId: userId }
+                    { senderId: userId, receiverId: otherUserId, deletedBySender: false },
+                    { senderId: otherUserId, receiverId: userId, deletedByReceiver: false }
                 ]
             },
             order: [["sent_at", "ASC"]]
         });
 
-        res.json(messages);
+        res.json(messages.map(toClientMessage));
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error fetching messages" });
@@ -160,7 +238,10 @@ const getConversations = async (req, res) => {
 
         const messages = await Message.findAll({
             where: {
-                [Op.or]: [{ senderId: userId }, { receiverId: userId }]
+                [Op.or]: [
+                    { senderId: userId, deletedBySender: false },
+                    { receiverId: userId, deletedByReceiver: false }
+                ]
             },
             order: [["sent_at", "DESC"]]
         });
@@ -175,10 +256,10 @@ const getConversations = async (req, res) => {
                     : Number(m.senderId);
 
             if (!byContact.has(otherId)) {
-                byContact.set(otherId, { lastMessage: m, unreadCount: 0 });
+                byContact.set(otherId, { lastMessage: toClientMessage(m), unreadCount: 0 });
             }
 
-            if (Number(m.receiverId) === userId && !m.is_read) {
+            if (Number(m.receiverId) === userId && !m.is_read && !m.deletedForAll) {
                 byContact.get(otherId).unreadCount += 1;
             }
         }
@@ -251,6 +332,14 @@ const markAsRead = async (req, res) => {
             }
         );
 
+        // Avisa en tiempo real al emisor para que su "Enviado" pase a "Visto"
+        if (updated > 0) {
+            const io = req.app.get("io");
+            if (io) {
+                io.to(`user_${otherUserId}`).emit("messagesRead", { readerId: userId });
+            }
+        }
+
         res.json({ updated });
     } catch (error) {
         console.error(error);
@@ -300,5 +389,8 @@ module.exports = {
     getConversations,
     getUserById,
     markAsRead,
-    searchUsers
+    searchUsers,
+    revokeMessage,
+    deleteMessageForUser,
+    toClientMessage
 };

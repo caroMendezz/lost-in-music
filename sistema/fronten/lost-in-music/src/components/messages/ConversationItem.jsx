@@ -2,10 +2,12 @@ import Avatar from "./Avatar";
 import { formatRelative } from "./formatters";
 import styles from "./ConversationItem.module.css";
 
-function getPreview(lastMessage, myId) {
+function getPreview(lastMessage, myId, username) {
     if (!lastMessage) return "Nueva conversación";
 
     const isOwn = Number(lastMessage.senderId) === myId;
+
+    if (lastMessage.deletedForAll) return isOwn ? "Eliminaste un mensaje" : `${username} eliminó un mensaje`;
 
     if (lastMessage.messageType === "image") return isOwn ? "Enviaste una imagen" : "Te envió una imagen";
     if (lastMessage.messageType === "file") return isOwn ? "Enviaste un archivo" : "Te envió un archivo";
@@ -31,7 +33,7 @@ export default function ConversationItem({ conversation, isActive, myId, onSelec
                     <span className={`${styles.conversationName} ${strong}`}>{user.username}</span>
                     <span className={styles.conversationLine}>
                         <span className={`${styles.conversationPreview} ${strong}`}>
-                            {getPreview(lastMessage, myId)}
+                            {getPreview(lastMessage, myId, user.username)}
                         </span>
                         {lastMessage && (
                             <span className={styles.conversationDate}>· {formatRelative(lastMessage.sent_at)}</span>

@@ -31,8 +31,10 @@ export default function ConversationList({ conversations, selectedUserId, myId, 
                     className={styles.conversationListNew}
                     onClick={() => setNewChatOpen(true)}
                     disabled={newChatOpen}
+                    aria-label="Nuevo chat"
+                    title="Nuevo chat"
                 >
-                    Nuevo chat
+                    +
                 </button>
             </div>
 
@@ -43,7 +45,7 @@ export default function ConversationList({ conversations, selectedUserId, myId, 
                     <input
                         type="search"
                         className={styles.conversationListSearch}
-                        placeholder="Buscar en tus chats"
+                        placeholder="Buscar chats"
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
                         aria-label="Buscar conversaciones"
@@ -71,7 +73,7 @@ export default function ConversationList({ conversations, selectedUserId, myId, 
 
                         {!loading && conversations.length === 0 && (
                             <p className={styles.conversationListStatus}>
-                                Todavía no tienes conversaciones. Usa "Nuevo chat" para escribirle a alguien.
+                                Todavía no tienes conversaciones. Haz clic en "+" para escribirle a alguien.
                             </p>
                         )}
 
