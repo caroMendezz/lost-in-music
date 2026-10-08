@@ -1,5 +1,5 @@
 const sequelize = require("../config/db");
-const { DataTypes } = require('sequelize')
+const { DataTypes } = require('sequelize');
 
 const Role = sequelize.define('Role', {
     idRole: {
@@ -14,7 +14,18 @@ const Role = sequelize.define('Role', {
     },
 }, {
     timestamps: false,
-    modelName: 'Role'
-})
+    modelName: 'Role',
+    hooks: {
+        afterSync: async () => {
+            const count = await Role.count();
+            if (count === 0) {
+                await Role.bulkCreate([
+                    { role: 'User' },
+                    { role: 'Admin' }
+                ]);
+            }
+        }
+    }
+});
 
-module.exports = Role
+module.exports = Role;

@@ -1,6 +1,6 @@
 const sequelize = require("../config/db");
 const { DataTypes} = require("sequelize")
-const { idRole } = require("./Role");
+const Role = require("./Role");
 
 const User = sequelize.define('User', {
   userId: {
@@ -38,10 +38,9 @@ const User = sequelize.define('User', {
   },
 
   gender: {
-    type: DataTypes.ENUM('Femenino', 'Masculino', 'Otro', 'PrefieroNoDecir'),
-    allowNull: false,
+  type: DataTypes.ENUM('Femenino', 'Masculino', 'Otro', 'PrefieroNoDecir', 'NoBinario'),
+  allowNull: false,
   },
-
   DVH: {
     type: DataTypes.STRING(255),
     allowNull: false
@@ -64,7 +63,7 @@ const User = sequelize.define('User', {
     allowNull: false,
   },
   profilePhoto: { //
-    type: DataTypes.STRING(255),
+    type: DataTypes.TEXT('long'), // Permite guardar cadenas Base64 muy grandes
     allowNull: false,
   },
   banner: { //

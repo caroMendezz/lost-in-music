@@ -60,4 +60,5 @@ const PostSchema = new mongoose.Schema({
     timestamps: true
 })
 
-module.exports = mongoose.model("Product", ProductSchema)
+// CORRECCIÓN: Usa PostSchema que es el nombre real de tu variable
+module.exports = mongoose.model("Product", PostSchema)

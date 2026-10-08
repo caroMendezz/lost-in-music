@@ -1,29 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import '../styles/login.css';
+import React, { useState, useEffect } from "react";
+import "../styles/login.css";
 
 import FondoAcceso from "./FondoAcceso";
 
 function Login({ goToRegister, goToResetPassword }) {
-  const [emailUser, setEmailUser] = useState('');
-  const [password, setPassword] = useState('');
+  const [emailUser, setEmailUser] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [touched, setTouched] = useState({});
 
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    setTouched({
-      emailUser: true,
-      password: true,
-    });
-
-    if (errors.emailUser || errors.password) {
-      return;
+  useEffect(() => {
+    if (localStorage.getItem("token")) {
+      window.location.href = "/inicio";
     }
+  }, []);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setTouched({ emailUser: true, password: true });
+    if (errors.emailUser || errors.password) return;
 
-    console.log('Login correcto');
+    setSubmitting(true);
+    setSubmitError("");
+
+    try {
+      const res = await fetch("http://localhost:3000/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username: emailUser, password }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        setSubmitError(data.message || "Credenciales inválidas");
+        return;
+      }
+
+      localStorage.setItem("token", data.token);
+      if (data.idRole) localStorage.setItem("idRole", data.idRole);
+      window.location.href = "/inicio"; // ← tu ruta real de la página principal
+    } catch {
+      setSubmitError("No se pudo conectar con el servidor");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleBlur = (name) => {
@@ -41,8 +65,8 @@ function Login({ goToRegister, goToResetPassword }) {
   };
 
   const errors = {
-    emailUser: emailUser.trim() === '',
-    password: password.trim() === '',
+    emailUser: emailUser.trim() === "",
+    password: password.trim() === "",
   };
 
   return (
@@ -60,36 +84,28 @@ function Login({ goToRegister, goToResetPassword }) {
 
         <h1 className="login-logo-title">Lost In Music</h1>
 
-        <div className="login-welcome">
-          Tu red social musical
-        </div>
+        <div className="login-welcome">Tu red social musical</div>
 
-        <h2 className="login-section-title">
-          Inicia Sesión
-        </h2>
+        <h2 className="login-section-title">Inicia Sesión</h2>
 
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="login-input-group">
-            <label className="login-label">
-              Correo electrónico o Usuario
-            </label>
+            <label className="login-label">Correo electrónico o Usuario</label>
 
-            <div style={{ position: 'relative' }}>
+            <div style={{ position: "relative" }}>
               <input
                 type="text"
-                className={`login-input ${touched.emailUser && errors.emailUser ? 'input-error' : ''
-                  }`}
-                onBlur={() => handleBlur('emailUser')}
-
+                className={`login-input ${
+                  touched.emailUser && errors.emailUser ? "input-error" : ""
+                }`}
+                onBlur={() => handleBlur("emailUser")}
                 placeholder="tu@email.com"
                 value={emailUser}
                 onChange={(e) => setEmailUser(e.target.value)}
               />
 
               {touched.emailUser && errors.emailUser && (
-
                 <span className="login-status-icon login-input-cross">
-
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="12" r="11" fill="#f06060" />
                     <path
@@ -115,24 +131,20 @@ function Login({ goToRegister, goToResetPassword }) {
           </div>
 
           <div className="login-input-group">
-            <label className="login-label">
-              Contraseña
-            </label>
+            <label className="login-label">Contraseña</label>
 
             <div className="login-password-wrapper">
               <input
-                type={showPassword ? 'text' : 'password'}
-                className={`login-input login-password-input ${touched.password && errors.password ? 'input-error' : ''}`}
-                onBlur={() => handleBlur('password')}
+                type={showPassword ? "text" : "password"}
+                className={`login-input login-password-input ${touched.password && errors.password ? "input-error" : ""}`}
+                onBlur={() => handleBlur("password")}
                 placeholder="Escribe tu contraseña"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
 
               {touched.password && errors.password && (
-
                 <span className="login-status-icon login-input-cross password-error-icon">
-                  
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="12" r="11" fill="#f06060" />
                     <path
@@ -155,9 +167,7 @@ function Login({ goToRegister, goToResetPassword }) {
                   className="login-password-toggle"
                   onClick={() => setShowPassword((prev) => !prev)}
                   title={
-                    showPassword
-                      ? 'Ocultar contraseña'
-                      : 'Mostrar contraseña'
+                    showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
                   }
                 >
                   {showPassword ? (
@@ -204,42 +214,38 @@ function Login({ goToRegister, goToResetPassword }) {
                 </button>
               )}
             </div>
-
-            
           </div>
-          <div className="login-hint-text">
-              Escribe tu contraseña
-          </div>
+          <div className="login-hint-text">Escribe tu contraseña</div>
 
           <div className="login-forgot-link">
-            <a
-              href="#"
-              onClick={handleForgotPassword}
-              className="login-link"
-            >
+            <a href="#" onClick={handleForgotPassword} className="login-link">
               ¿Olvidaste tu contraseña?
             </a>
           </div>
 
-          <button type="submit" className="login-button">
-            Iniciar Sesión
+          <button type="submit" className="login-button" disabled={submitting}>
+            {submitting ? "Ingresando…" : "Iniciar Sesión"}
           </button>
+
+          {submitError && (
+            <div
+              className="login-error-text"
+              style={{ textAlign: "center", marginTop: 10 }}
+            >
+              {submitError}
+            </div>
+          )}
         </form>
 
         <div className="login-register-link">
           <span>¿No tenes cuenta? </span>
 
-          <a
-            href="#"
-            onClick={handleRegister}
-            className="login-link"
-          >
+          <a href="#" onClick={handleRegister} className="login-link">
             Registrate
           </a>
         </div>
       </div>
     </div>
-
   );
 }
 

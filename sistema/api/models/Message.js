@@ -1,3 +1,7 @@
+const sequelize = require("../config/db"); 
+const { DataTypes } = require("sequelize"); 
+const { User } = require("./User"); 
+
 const Message = sequelize.define("message", {
 
     messageId: {
@@ -11,7 +15,7 @@ const Message = sequelize.define("message", {
         allowNull: false,
         references: {
             model: "users",
-            key: "id"
+            key: "userId" // <-- CORREGIDO
         }
     },
 
@@ -20,7 +24,7 @@ const Message = sequelize.define("message", {
         allowNull: false,
         references: {
             model: "users",
-            key: "id"
+            key: "userId" // <-- CORREGIDO
         }
     },
 
@@ -30,11 +34,7 @@ const Message = sequelize.define("message", {
     },
 
     messageType: {
-        type: DataTypes.ENUM(
-            "text",
-            "image",
-            "file"
-        ),
+        type: DataTypes.ENUM("text", "image", "file"),
         allowNull: false,
         defaultValue: "text"
     },
@@ -63,26 +63,25 @@ const Message = sequelize.define("message", {
 });
 
 User.hasMany(Message, {
-    foreignKey: "senderId",
-    as: "sentMessages"
+  foreignKey: "senderId",
+  sourceKey: "userId" 
 });
 
 User.hasMany(Message, {
-    foreignKey: "receiverId",
-    as: "receivedMessages"
+  foreignKey: "receiverId",
+  sourceKey: "userId" 
 });
 
 Message.belongsTo(User, {
-    foreignKey: "senderId",
-    as: "sender"
+  foreignKey: "senderId",
+  targetKey: "userId" 
 });
 
 Message.belongsTo(User, {
-    foreignKey: "receiverId",
-    as: "receiver"
+  foreignKey: "receiverId",
+  targetKey: "userId" 
 });
-
 
 module.exports = {
     Message
-}
+};

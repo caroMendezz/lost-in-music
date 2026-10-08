@@ -1,3 +1,4 @@
+require('dotenv').config()
 const express = require('express')
 const http = require("http");
 const path = require("path");
@@ -21,7 +22,7 @@ const httpServer = http.createServer(server);
 const PORT = 3000
 const CLIENT_URL = "http://localhost:5173";
 
-server.use(express.json())
+server.use(express.json({ limit: '10mb' }))
 
 server.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', CLIENT_URL)

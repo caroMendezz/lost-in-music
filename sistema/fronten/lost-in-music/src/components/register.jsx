@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from 'react';
-import '../styles/register.css';
-import MusicPlayerMini from './MusicPlayerMini';
+import { useState, useRef, useEffect } from "react";
+import "../styles/register.css";
+import MusicPlayerMini from "./MusicPlayerMini";
 
 const calcPasswordStrength = (pwd) => {
   if (!pwd) return 0;
   let score = 0;
-  if (pwd.length >= 8)  score++;
+  if (pwd.length >= 8) score++;
   if (pwd.length >= 12) score++;
   if (/[A-Z]/.test(pwd)) score++;
   if (/[0-9]/.test(pwd)) score++;
@@ -13,62 +13,80 @@ const calcPasswordStrength = (pwd) => {
   return score;
 };
 
-const strengthLabel = ['', 'Muy débil', 'Débil', 'Regular', 'Buena', 'Fuerte'];
-const strengthColor = ['', '#f06060', '#f0a060', '#f0d060', '#80cc60', '#4cce8a'];
+const strengthLabel = ["", "Muy débil", "Débil", "Regular", "Buena", "Fuerte"];
+const strengthColor = [
+  "",
+  "#f06060",
+  "#f0a060",
+  "#f0d060",
+  "#80cc60",
+  "#4cce8a",
+];
 
 const GENEROS = [
-  { id: 'masculino',      label: 'Masculino',         icon: '♂' },
-  { id: 'femenino',       label: 'Femenino',           icon: '♀' },
-  { id: 'no_binario',     label: 'No binario',         icon: '⚧' },
-  { id: 'otro',           label: 'Otro',               icon: '✦' },
-  { id: 'no_decir',       label: 'Prefiero no decir',  icon: '—' },
+  { id: 'Masculino',       label: 'Masculino',        icon: '♂' },
+  { id: 'Femenino',        label: 'Femenino',         icon: '♀' },
+  { id: 'NoBinario',       label: 'No binario',       icon: '⚧' },
+  { id: 'Otro',            label: 'Otro',             icon: '✦' },
+  { id: 'PrefieroNoDecir', label: 'Prefiero no decir', icon: '—' },
 ];
 
 const MONTHS = [
-  'Enero','Febrero','Marzo','Abril','Mayo','Junio',
-  'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
+  "Enero",
+  "Febrero",
+  "Marzo",
+  "Abril",
+  "Mayo",
+  "Junio",
+  "Julio",
+  "Agosto",
+  "Septiembre",
+  "Octubre",
+  "Noviembre",
+  "Diciembre",
 ];
 
 const currentYear = new Date().getFullYear();
-const YEARS  = Array.from({ length: 100 }, (_, i) => currentYear - 13 - i);
-const DAYS   = Array.from({ length: 31  }, (_, i) => i + 1);
+const YEARS = Array.from({ length: 100 }, (_, i) => currentYear - 13 - i);
+const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
 
-export default function Register({ onLoginClick }) {
+export default function Register({ goToLogin }) {
   //paso actual
   const [step, setStep] = useState(0);
-  const [slideDir, setSlideDir] = useState('idle');
+  const [slideDir, setSlideDir] = useState("idle");
 
   //datos
   const [formData, setFormData] = useState({
-    nombreUsuario : '',
-    email         : '',
-    password      : '',
-    confirmPwd    : '',
-    genero        : '',
-    dia           : '',
-    mes           : '',
-    anio          : '',
-    fotoPerfil    : null,
-    fotoPreview   : null,
+    nombreUsuario: "",
+    email: "",
+    password: "",
+    confirmPwd: "",
+    genero: "",
+    dia: "",
+    mes: "",
+    anio: "",
+    fotoPerfil: null,
+    fotoPreview: null,
   });
 
-  const [showPassword,setShowPassword] = useState(false);
-  const [showConfirm,setShowConfirm]= useState(false);
-  const [touched,setTouched] = useState({});
-  const [isPlaying,setIsPlaying] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [touched, setTouched] = useState({});
+  const [isPlaying, setIsPlaying] = useState(false);
 
-  const bgMusicRef= useRef(null);
-  const fileInputRef= useRef(null);
+  const bgMusicRef = useRef(null);
+  const fileInputRef = useRef(null);
   const sliderRef = useRef(null);
 
   //Audio
   useEffect(() => {
-    bgMusicRef.current = new Audio('/background-music.mp3');
+    bgMusicRef.current = new Audio("/background-music.mp3");
     bgMusicRef.current.volume = 0.2;
-    bgMusicRef.current.loop   = true;
-    bgMusicRef.current.preload = 'auto';
+    bgMusicRef.current.loop = true;
+    bgMusicRef.current.preload = "auto";
 
-    bgMusicRef.current.play()
+    bgMusicRef.current
+      .play()
       .then(() => setIsPlaying(true))
       .catch(() => setIsPlaying(false));
 
@@ -90,7 +108,11 @@ export default function Register({ onLoginClick }) {
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) =>
-      setFormData((p) => ({ ...p, fotoPerfil: file, fotoPreview: ev.target.result }));
+      setFormData((p) => ({
+        ...p,
+        fotoPerfil: file,
+        fotoPreview: ev.target.result,
+      }));
     reader.readAsDataURL(file);
   };
 
@@ -99,51 +121,104 @@ export default function Register({ onLoginClick }) {
 
   //Validaciones card 1
   const errors = {
-    nombreUsuario : formData.nombreUsuario.trim().length < 3,
-    email         : !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email),
-    password      : formData.password.length < 8,
-    confirmPwd    : formData.password !== formData.confirmPwd || !formData.confirmPwd,
+    nombreUsuario: formData.nombreUsuario.trim().length < 3,
+    email: !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email),
+    password: formData.password.length < 8,
+    confirmPwd:
+      formData.password !== formData.confirmPwd || !formData.confirmPwd,
   };
 
   const card1Valid = !Object.values(errors).some(Boolean);
 
   // Pasar a paso 2
   const goToStep2 = () => {
-    setTouched({ nombreUsuario: true, email: true, password: true, confirmPwd: true });
+    setTouched({
+      nombreUsuario: true,
+      email: true,
+      password: true,
+      confirmPwd: true,
+    });
     if (!card1Valid) return;
 
-    setSlideDir('toLeft');
+    setSlideDir("toLeft");
     setTimeout(() => {
       setStep(1);
-      setSlideDir('idle');
+      setSlideDir("idle");
     }, 420);
   };
 
   // Volver a paso 1
   const goToStep1 = () => {
-    setSlideDir('toRight');
+    setSlideDir("toRight");
     setTimeout(() => {
       setStep(0);
-      setSlideDir('idle');
+      setSlideDir("idle");
     }, 420);
   };
 
-  // Submit final
-  const handleSubmit = (e) => {
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+
+  // Fecha en formato YYYY-MM-DD para el backend
+  const birthDate =
+    formData.dia && formData.mes && formData.anio
+      ? `${formData.anio}-${String(formData.mes).padStart(2, "0")}-${String(formData.dia).padStart(2, "0")}`
+      : null;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const click = new Audio('/soundClick.mp3');
+
+    const click = new Audio("/soundClick.mp3");
     click.volume = 0.1;
-    click.play();
-    console.log('Registro completo:', formData);
+    click.play().catch(() => {});
+
+    setSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      const res = await fetch("http://localhost:3000/register", {
+        // ← ajustá a tu ruta real
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: formData.nombreUsuario.trim(),
+          email: formData.email.trim(),
+          password: formData.password,
+          gender: formData.genero || null,
+          birthDate,
+          profilePhoto: formData.fotoPreview || null, // data URL base64
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.status === 201) {
+        goToLogin?.(); // registro OK → volvemos al login
+        return;
+      }
+
+      if (res.status === 400) {
+        setSubmitError(
+          data.details?.length
+            ? data.details.join(" • ")
+            : data.message || "Datos inválidos",
+        );
+      } else {
+        setSubmitError(data.message || "Error del servidor, intentá de nuevo");
+      }
+    } catch {
+      setSubmitError("No se pudo conectar con el servidor");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const pwdStrength = calcPasswordStrength(formData.password);
 
-  const sliderClass = `reg-slider ${slideDir !== 'idle' ? `reg-slider--${slideDir}` : ''}`;
+  const sliderClass = `reg-slider ${slideDir !== "idle" ? `reg-slider--${slideDir}` : ""}`;
 
   return (
     <div className="register-bg">
-
       <MusicPlayerMini
         audioRef={bgMusicRef}
         isPlaying={isPlaying}
@@ -151,23 +226,26 @@ export default function Register({ onLoginClick }) {
       />
 
       {/*Burbujas*/}
-      {[1,2,3,4,5,6].map((n) => <div key={n} className={`bubble bubble-${n}`} />)}
+      {[1, 2, 3, 4, 5, 6].map((n) => (
+        <div key={n} className={`bubble bubble-${n}`} />
+      ))}
 
       <div className="register-card">
-
         {/*Barra de progreso*/}
         <div className="reg-progress-wrap">
           <div className="reg-progress-track">
             <div
               className="reg-progress-fill"
-              style={{ width: step === 0 ? '50%' : '100%' }}
+              style={{ width: step === 0 ? "50%" : "100%" }}
             />
           </div>
           <div className="reg-step-labels">
-            <span className={`reg-step-label ${step === 0 ? 'active' : 'done'}`}>
-              {step > 0 ? '✓' : '1'} Crear cuenta
+            <span
+              className={`reg-step-label ${step === 0 ? "active" : "done"}`}
+            >
+              {step > 0 ? "✓" : "1"} Crear cuenta
             </span>
-            <span className={`reg-step-label ${step === 1 ? 'active' : ''}`}>
+            <span className={`reg-step-label ${step === 1 ? "active" : ""}`}>
               2 Perfil
             </span>
           </div>
@@ -182,29 +260,35 @@ export default function Register({ onLoginClick }) {
         <h1 className="register-title">Lost In Music</h1>
         <p className="register-subtitle">Tu red social musical</p>
 
-
         <div className="reg-slider-viewport">
           <div className={sliderClass} data-step={step} ref={sliderRef}>
-
             {/*CARD 1 - CREAR CUENTA*/}
             <div className="reg-panel">
-              <form onSubmit={(e) => { e.preventDefault(); goToStep2(); }}>
-
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  goToStep2();
+                }}
+              >
                 {/*Nombre de usuario*/}
                 <Field
                   label="Nombre de usuario"
                   icon={<UserIcon />}
-                  error={touched.nombreUsuario && errors.nombreUsuario ? 'Mínimo 3 caracteres' : null}
+                  error={
+                    touched.nombreUsuario && errors.nombreUsuario
+                      ? "Mínimo 3 caracteres"
+                      : null
+                  }
                   valid={!errors.nombreUsuario && !!formData.nombreUsuario}
                 >
                   <input
                     name="nombreUsuario"
                     type="text"
-                    className={`register-input ${touched.nombreUsuario && errors.nombreUsuario ? 'input-error' : ''}`}
+                    className={`register-input ${touched.nombreUsuario && errors.nombreUsuario ? "input-error" : ""}`}
                     placeholder="Tu nombre de usuario"
                     value={formData.nombreUsuario}
                     onChange={handleChange}
-                    onBlur={() => handleBlur('nombreUsuario')}
+                    onBlur={() => handleBlur("nombreUsuario")}
                     autoComplete="username"
                   />
                 </Field>
@@ -213,17 +297,19 @@ export default function Register({ onLoginClick }) {
                 <Field
                   label="Email"
                   icon={<MailIcon />}
-                  error={touched.email && errors.email ? 'Email inválido' : null}
+                  error={
+                    touched.email && errors.email ? "Email inválido" : null
+                  }
                   valid={!errors.email && !!formData.email}
                 >
                   <input
                     name="email"
                     type="email"
-                    className={`register-input ${touched.email && errors.email ? 'input-error' : ''}`}
+                    className={`register-input ${touched.email && errors.email ? "input-error" : ""}`}
                     placeholder="hola@musica.com"
                     value={formData.email}
                     onChange={handleChange}
-                    onBlur={() => handleBlur('email')}
+                    onBlur={() => handleBlur("email")}
                     autoComplete="email"
                   />
                 </Field>
@@ -232,20 +318,24 @@ export default function Register({ onLoginClick }) {
                 <Field
                   label="Contraseña"
                   icon={<LockIcon />}
-                  error={touched.password && errors.password ? 'Usá 8+ caracteres, mayúscula, número y símbolo' : null}
+                  error={
+                    touched.password && errors.password
+                      ? "Usá 8+ caracteres, mayúscula, número y símbolo"
+                      : null
+                  }
                   valid={!errors.password && !!formData.password}
                   hasToggle={!!formData.password}
                 >
                   <input
                     name="password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     className={`register-input input-with-toggle ${
-                      touched.password && errors.password ? 'input-error' : ''
+                      touched.password && errors.password ? "input-error" : ""
                     }`}
                     placeholder="Crea una contraseña"
                     value={formData.password}
                     onChange={handleChange}
-                    onBlur={() => handleBlur('password')}
+                    onBlur={() => handleBlur("password")}
                     autoComplete="new-password"
                   />
 
@@ -256,17 +346,20 @@ export default function Register({ onLoginClick }) {
                     />
                   )}
                 </Field>
-            
+
                 {/*Indicador fuerza*/}
                 {formData.password && (
                   <div className="pwd-strength-wrap">
                     <div className="pwd-strength-bars">
-                      {[1,2,3,4,5].map((i) => (
+                      {[1, 2, 3, 4, 5].map((i) => (
                         <div
                           key={i}
                           className="pwd-bar"
                           style={{
-                            background: i <= pwdStrength ? strengthColor[pwdStrength] : 'rgba(0,0,0,0.08)',
+                            background:
+                              i <= pwdStrength
+                                ? strengthColor[pwdStrength]
+                                : "rgba(0,0,0,0.08)",
                             transition: `background 0.3s ease ${i * 0.05}s`,
                           }}
                         />
@@ -288,7 +381,7 @@ export default function Register({ onLoginClick }) {
                   icon={<LockIcon />}
                   error={
                     touched.confirmPwd && errors.confirmPwd
-                      ? 'Las contraseñas no coinciden'
+                      ? "Las contraseñas no coinciden"
                       : null
                   }
                   valid={!errors.confirmPwd && !!formData.confirmPwd}
@@ -296,14 +389,16 @@ export default function Register({ onLoginClick }) {
                 >
                   <input
                     name="confirmPwd"
-                    type={showConfirm ? 'text' : 'password'}
+                    type={showConfirm ? "text" : "password"}
                     className={`register-input input-with-toggle ${
-                      touched.confirmPwd && errors.confirmPwd ? 'input-error' : ''
+                      touched.confirmPwd && errors.confirmPwd
+                        ? "input-error"
+                        : ""
                     }`}
                     placeholder="Repetí la contraseña"
                     value={formData.confirmPwd}
                     onChange={handleChange}
-                    onBlur={() => handleBlur('confirmPwd')}
+                    onBlur={() => handleBlur("confirmPwd")}
                     autoComplete="new-password"
                   />
 
@@ -314,29 +409,51 @@ export default function Register({ onLoginClick }) {
                     />
                   )}
                 </Field>
-                <button type="submit" className="register-btn register-btn--continue">
+                <button
+                  type="submit"
+                  className="register-btn register-btn--continue"
+                >
                   Continuar
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginLeft: 8 }}>
-                    <path d="M5 12h14M13 6l6 6-6 6" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <svg
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    style={{ marginLeft: 8 }}
+                  >
+                    <path
+                      d="M5 12h14M13 6l6 6-6 6"
+                      stroke="#fff"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </button>
               </form>
 
               <p className="register-login-link">
-                ¿Ya tenes cuenta?{' '}
-                <a href="#" onClick={(e) => { e.preventDefault(); onLoginClick?.(); }}>
+                ¿Ya tenes cuenta?{" "}
+                <a
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    goToLogin?.();
+                  }}
+                >
                   Inicia sesión
                 </a>
               </p>
             </div>
 
-
             {/* CARD 2 — PERFIL */}
             <div className="reg-panel">
               <form onSubmit={handleSubmit}>
-
                 {/* Foto de perfil */}
-                <div className="reg-section-title">Foto de perfil <span className="reg-optional">(opcional)</span></div>
+                <div className="reg-section-title">
+                  Foto de perfil{" "}
+                  <span className="reg-optional">(opcional)</span>
+                </div>
                 <div className="photo-area">
                   <div
                     className="photo-circle"
@@ -344,18 +461,49 @@ export default function Register({ onLoginClick }) {
                     title="Subir foto"
                   >
                     {formData.fotoPreview ? (
-                      <img src={formData.fotoPreview} alt="preview" className="photo-preview" />
+                      <img
+                        src={formData.fotoPreview}
+                        alt="preview"
+                        className="photo-preview"
+                      />
                     ) : (
                       <div className="photo-placeholder">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                          <circle cx="12" cy="8" r="4" stroke="#a0c8e8" strokeWidth="1.8"/>
-                          <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#a0c8e8" strokeWidth="1.8" strokeLinecap="round"/>
+                        <svg
+                          width="32"
+                          height="32"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                        >
+                          <circle
+                            cx="12"
+                            cy="8"
+                            r="4"
+                            stroke="#a0c8e8"
+                            strokeWidth="1.8"
+                          />
+                          <path
+                            d="M4 20c0-4 3.6-7 8-7s8 3 8 7"
+                            stroke="#a0c8e8"
+                            strokeWidth="1.8"
+                            strokeLinecap="round"
+                          />
                         </svg>
                       </div>
                     )}
                     <div className="photo-overlay">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                      >
+                        <path
+                          d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"
+                          stroke="#fff"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     </div>
                   </div>
@@ -363,15 +511,23 @@ export default function Register({ onLoginClick }) {
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
-                    style={{ display: 'none' }}
+                    style={{ display: "none" }}
                     onChange={handleFile}
                   />
                   <div className="photo-actions">
-                    <button type="button" className="photo-btn photo-btn--upload" onClick={() => fileInputRef.current?.click()}>
+                    <button
+                      type="button"
+                      className="photo-btn photo-btn--upload"
+                      onClick={() => fileInputRef.current?.click()}
+                    >
                       Subir imagen
                     </button>
                     {formData.fotoPreview && (
-                      <button type="button" className="photo-btn photo-btn--remove" onClick={removePhoto}>
+                      <button
+                        type="button"
+                        className="photo-btn photo-btn--remove"
+                        onClick={removePhoto}
+                      >
                         Quitar
                       </button>
                     )}
@@ -380,14 +536,18 @@ export default function Register({ onLoginClick }) {
                 </div>
 
                 {/* Genero*/}
-                <div className="reg-section-title" style={{ marginTop: 18 }}>Género</div>
+                <div className="reg-section-title" style={{ marginTop: 18 }}>
+                  Género
+                </div>
                 <div className="genero-grid">
                   {GENEROS.map((g) => (
                     <button
                       key={g.id}
                       type="button"
-                      className={`genero-btn ${formData.genero === g.id ? 'genero-btn--active' : ''}`}
-                      onClick={() => setFormData((p) => ({ ...p, genero: g.id }))}
+                      className={`genero-btn ${formData.genero === g.id ? "genero-btn--active" : ""}`}
+                      onClick={() =>
+                        setFormData((p) => ({ ...p, genero: g.id }))
+                      }
                     >
                       <span className="genero-icon">{g.icon}</span>
                       <span className="genero-label">{g.label}</span>
@@ -412,7 +572,9 @@ export default function Register({ onLoginClick }) {
                       >
                         <option value="">—</option>
                         {DAYS.map((d) => (
-                          <option key={d} value={d}>{d}</option>
+                          <option key={d} value={d}>
+                            {d}
+                          </option>
                         ))}
                       </select>
                       <ChevronDown />
@@ -431,7 +593,9 @@ export default function Register({ onLoginClick }) {
                       >
                         <option value="">—</option>
                         {MONTHS.map((m, i) => (
-                          <option key={i} value={i + 1}>{m}</option>
+                          <option key={i} value={i + 1}>
+                            {m}
+                          </option>
                         ))}
                       </select>
                       <ChevronDown />
@@ -450,7 +614,9 @@ export default function Register({ onLoginClick }) {
                       >
                         <option value="">—</option>
                         {YEARS.map((y) => (
-                          <option key={y} value={y}>{y}</option>
+                          <option key={y} value={y}>
+                            {y}
+                          </option>
                         ))}
                       </select>
                       <ChevronDown />
@@ -460,25 +626,53 @@ export default function Register({ onLoginClick }) {
 
                 {/*Botones*/}
                 <div className="reg-btns-row">
-                  <button type="button" className="register-btn register-btn--back" onClick={goToStep1}>
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginRight: 6 }}>
-                      <path d="M19 12H5M11 6l-6 6 6 6" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <button
+                    type="button"
+                    className="register-btn register-btn--back"
+                    onClick={goToStep1}
+                  >
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      style={{ marginRight: 6 }}
+                    >
+                      <path
+                        d="M19 12H5M11 6l-6 6 6 6"
+                        stroke="currentColor"
+                        strokeWidth="2.2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </svg>
                     Volver
                   </button>
-                  <button type="submit" className="register-btn register-btn--final">
-                    Crear cuenta ✦
+                  <button
+                    type="submit"
+                    className="register-btn register-btn--final"
+                    disabled={submitting}
+                  >
+                    {submitting ? "Creando cuenta…" : "Crear cuenta ✦"}
                   </button>
-                </div>
 
+                  {submitError && (
+                    <p
+                      className="register-hint hint-error"
+                      style={{ textAlign: "center", marginTop: 12 }}
+                    >
+                      {submitError}
+                    </p>
+                  )}
+                </div>
               </form>
             </div>
-
-
-          </div>{/* /reg-slider */}
-        </div>{/* /reg-slider-viewport */}
-
-      </div>{/* /register-card */}
+          </div>
+          {/* /reg-slider */}
+        </div>
+        {/* /reg-slider-viewport */}
+      </div>
+      {/* /register-card */}
     </div>
   );
 }
@@ -488,7 +682,9 @@ function Field({ label, icon, error, valid, children, hasToggle }) {
     <div className="register-field-group">
       <label className="register-label">{label}</label>
 
-      <div className={`register-input-wrapper ${hasToggle ? 'has-toggle' : ''}`}>
+      <div
+        className={`register-input-wrapper ${hasToggle ? "has-toggle" : ""}`}
+      >
         <span className="register-input-icon">{icon}</span>
 
         {children}
@@ -496,7 +692,7 @@ function Field({ label, icon, error, valid, children, hasToggle }) {
         {valid && (
           <span className="input-status-icon input-check">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="11" fill="#4cce8a"/>
+              <circle cx="12" cy="12" r="11" fill="#4cce8a" />
               <path
                 d="M7 12.5l3.5 3.5 6.5-7"
                 stroke="#fff"
@@ -511,7 +707,7 @@ function Field({ label, icon, error, valid, children, hasToggle }) {
         {error && (
           <span className="input-status-icon input-cross">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-              <circle cx="12" cy="12" r="11" fill="#f06060"/>
+              <circle cx="12" cy="12" r="11" fill="#f06060" />
               <path
                 d="M8 8l8 8M16 8l-8 8"
                 stroke="#fff"
@@ -530,18 +726,46 @@ function Field({ label, icon, error, valid, children, hasToggle }) {
 
 function EyeBtn({ show, toggle }) {
   return (
-    <button type="button" className="password-toggle" onClick={toggle} tabIndex={-1}
-      title={show ? 'Ocultar' : 'Mostrar'}>
+    <button
+      type="button"
+      className="password-toggle"
+      onClick={toggle}
+      tabIndex={-1}
+      title={show ? "Ocultar" : "Mostrar"}
+    >
       {show ? (
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
-          <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round"/>
-          <circle cx="12" cy="12" r="3" stroke="#7ab8d8" strokeWidth="2"/>
+          <path
+            d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
+            stroke="#7ab8d8"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <circle cx="12" cy="12" r="3" stroke="#7ab8d8" strokeWidth="2" />
         </svg>
       ) : (
         <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
-          <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round"/>
-          <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round"/>
-          <line x1="1" y1="1" x2="23" y2="23" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round"/>
+          <path
+            d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"
+            stroke="#7ab8d8"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <path
+            d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"
+            stroke="#7ab8d8"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
+          <line
+            x1="1"
+            y1="1"
+            x2="23"
+            y2="23"
+            stroke="#7ab8d8"
+            strokeWidth="2"
+            strokeLinecap="round"
+          />
         </svg>
       )}
     </button>
@@ -552,7 +776,13 @@ function ChevronDown() {
   return (
     <span className="select-chevron">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
-        <path d="M6 9l6 6 6-6" stroke="#5a90b8" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path
+          d="M6 9l6 6 6-6"
+          stroke="#5a90b8"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        />
       </svg>
     </span>
   );
@@ -561,8 +791,13 @@ function ChevronDown() {
 function UserIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <circle cx="12" cy="8" r="4" stroke="#7ab8d8" strokeWidth="2"/>
-      <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round"/>
+      <circle cx="12" cy="8" r="4" stroke="#7ab8d8" strokeWidth="2" />
+      <path
+        d="M4 20c0-4 3.6-7 8-7s8 3 8 7"
+        stroke="#7ab8d8"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -570,8 +805,21 @@ function UserIcon() {
 function MailIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <rect x="3" y="5" width="18" height="14" rx="2" stroke="#7ab8d8" strokeWidth="2"/>
-      <path d="M3 7l9 6 9-6" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round"/>
+      <rect
+        x="3"
+        y="5"
+        width="18"
+        height="14"
+        rx="2"
+        stroke="#7ab8d8"
+        strokeWidth="2"
+      />
+      <path
+        d="M3 7l9 6 9-6"
+        stroke="#7ab8d8"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
@@ -579,8 +827,21 @@ function MailIcon() {
 function LockIcon() {
   return (
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-      <rect x="5" y="11" width="14" height="10" rx="2" stroke="#7ab8d8" strokeWidth="2"/>
-      <path d="M8 11V7a4 4 0 118 0v4" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round"/>
+      <rect
+        x="5"
+        y="11"
+        width="14"
+        height="10"
+        rx="2"
+        stroke="#7ab8d8"
+        strokeWidth="2"
+      />
+      <path
+        d="M8 11V7a4 4 0 118 0v4"
+        stroke="#7ab8d8"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }
