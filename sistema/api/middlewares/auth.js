@@ -15,7 +15,7 @@ const checkToken = async (req, res, next) => {
 
         const token = authHeader.replace(/^Bearer\s+/i, '').trim();
 
-        const decoded = jwt.verify(token, SECRET);
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
         console.log(decoded)
 
         const user = await User.findByPk(decoded.userId);
