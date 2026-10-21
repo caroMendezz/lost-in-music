@@ -44,7 +44,7 @@ const Login = async (req, res) => {
 };
 
 const Register = async (req, res) => {
-  const { email, username, password, gender, profilePhoto, birthDate, idRole } =
+  const { email, username, password, gender, profilePhoto, birthDate} =
     req.body;
 
   if (password) req.body.password = "[REDACTED]";
@@ -65,7 +65,7 @@ const Register = async (req, res) => {
       gender,
       birthDate,
       password: Hashedpassword,
-      idRole,
+      idRole: 1,
       eliminated: 0,
       penaltyDate: "nada",
       description: "agregar descripcion",

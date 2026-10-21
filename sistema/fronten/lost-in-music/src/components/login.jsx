@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/login.css";
 
 import FondoAcceso from "./FondoAcceso";
 
 function Login({ goToRegister, goToResetPassword }) {
+  const navigate = useNavigate();
+
   const [emailUser, setEmailUser] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -14,9 +17,9 @@ function Login({ goToRegister, goToResetPassword }) {
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
-      window.location.href = "/inicio";
+      window.location.href = "/feed";
     }
-  }, []);
+  }, [navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,7 +45,7 @@ function Login({ goToRegister, goToResetPassword }) {
 
       localStorage.setItem("token", data.token);
       if (data.idRole) localStorage.setItem("idRole", data.idRole);
-      window.location.href = "/inicio"; // ← tu ruta real de la página principal
+      navigate("/feed", { replace: true });
     } catch {
       setSubmitError("No se pudo conectar con el servidor");
     } finally {

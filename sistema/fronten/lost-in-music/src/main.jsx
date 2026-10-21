@@ -6,7 +6,6 @@ import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import { LangProvider } from './components/LangContext';
 
-
 import {
   createBrowserRouter,
   RouterProvider,
@@ -51,6 +50,10 @@ const router = createBrowserRouter([
           },
         ],
       },
+      {
+        path: '/*',
+        element: <App />
+      }
     ],
   },
 ]);
