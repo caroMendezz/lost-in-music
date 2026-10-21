@@ -4,6 +4,7 @@ const {
     deleteMessage,
     revokeMessage,
     deleteMessageForUser,
+    editMessage,
     toClientMessage
 } = require("../controllers/messages");
 
@@ -111,6 +112,23 @@ function setupChat(io) {
                 io.to(`user_${socket.userId}`).emit("messageDeletedForMe", {
                     messageId: data.messageId
                 });
+            } catch (error) {
+                console.error(error);
+                socket.emit("messageError", { message: error.message });
+            }
+
+        });
+
+
+        // Editar mensaje: actualiza el registro existente y avisa a ambos usuarios
+        socket.on("editMessage", async (data) => {
+
+            try {
+                const message = await editMessage(data?.messageId, socket.userId, data?.content);
+
+                io.to(`user_${message.receiverId}`)
+                    .to(`user_${message.senderId}`)
+                    .emit("messageEdited", toClientMessage(message));
             } catch (error) {
                 console.error(error);
                 socket.emit("messageError", { message: error.message });

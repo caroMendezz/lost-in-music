@@ -4,7 +4,10 @@
   "private": true,
   "description": "Servidor de prueba (SQLite) para probar el frontend de mensajeria",
   "main": "index.js",
-  "scripts": { "start": "node index.js" },
+  "scripts": {
+    "start": "node index.js",
+    "test": "node test-backend.js"
+  },
   "dependencies": {
     "bcrypt": "^5.1.1",
     "express": "^4.19.2",
@@ -13,5 +16,8 @@
     "socket.io": "^4.7.5",
     "sequelize": "^6.37.3",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "socket.io-client": "^4.7.5"
   }
 }

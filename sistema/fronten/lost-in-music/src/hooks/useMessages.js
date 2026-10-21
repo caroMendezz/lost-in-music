@@ -217,6 +217,14 @@ export default function useMessages(initialUserId = null) {
             );
         };
 
+        // Mensaje editado: se actualiza el MISMO mensaje (no se agrega uno nuevo)
+        const onMessageEdited = (message) => {
+            setMessages((prev) => prev.map((m) => (m.messageId === message.messageId ? message : m)));
+            setConversations((prev) =>
+                prev.map((c) => (c.lastMessage?.messageId === message.messageId ? { ...c, lastMessage: message } : c))
+            );
+        };
+
         const onMessageError = ({ message }) => setError(message || "Error al enviar el mensaje");
 
         const onConnectError = (err) => {
@@ -252,6 +260,7 @@ export default function useMessages(initialUserId = null) {
         socket.on("messageRevoked", onMessageRevoked);
         socket.on("messageDeletedForMe", onMessageDeletedForMe);
         socket.on("messagesRead", onMessagesRead);
+        socket.on("messageEdited", onMessageEdited);
         socket.on("messageError", onMessageError);
 
         return () => {
@@ -263,6 +272,7 @@ export default function useMessages(initialUserId = null) {
             socket.off("messageRevoked", onMessageRevoked);
             socket.off("messageDeletedForMe", onMessageDeletedForMe);
             socket.off("messagesRead", onMessagesRead);
+            socket.off("messageEdited", onMessageEdited);
             socket.off("messageError", onMessageError);
             disconnectSocket();
         };
@@ -327,6 +337,23 @@ export default function useMessages(initialUserId = null) {
         [handleError]
     );
 
+    // Editar el texto de un mensaje propio (actualiza el registro existente en el backend).
+    // Devuelve false si no se pudo enviar (por ejemplo, sin conexion).
+    const editMessage = useCallback((messageId, content) => {
+        const text = content.trim();
+        if (!text) return false;
+
+        const socket = getSocket();
+        if (!socket.connected) {
+            setError("Sin conexion con el servidor. Intenta de nuevo en unos segundos.");
+            return false;
+        }
+
+        setError("");
+        socket.emit("editMessage", { messageId, content: text });
+        return true;
+    }, []);
+
     // Anular envio para todos (no borra el registro)
     const revokeMessage = useCallback((messageId) => {
         getSocket().emit("revokeMessage", { messageId });
@@ -351,6 +378,7 @@ export default function useMessages(initialUserId = null) {
         selectConversation,
         sendMessage,
         sendAttachment,
+        editMessage,
         revokeMessage,
         deleteMessageForMe
     };

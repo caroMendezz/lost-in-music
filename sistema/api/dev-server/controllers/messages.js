@@ -141,6 +141,53 @@ const deleteMessage = async (messageId, userId) => {
 
 };
 
+// Editar: solo el emisor, solo mensajes de texto no anulados. Actualiza el MISMO registro.
+const editMessage = async (messageId, userId, content) => {
+
+    try {
+
+        const message = await Message.findByPk(messageId);
+
+        if (!message || message.deletedBySender) {
+            throw new Error("Message not found");
+        }
+
+        if (Number(message.senderId) !== Number(userId)) {
+            throw new Error("You cannot edit this message");
+        }
+
+        if (message.deletedForAll) {
+            throw new Error("You cannot edit a deleted message");
+        }
+
+        if (message.messageType !== "text") {
+            throw new Error("Only text messages can be edited");
+        }
+
+        const newContent = typeof content === "string" ? content.trim() : "";
+
+        if (newContent === "") {
+            throw new Error("Message content cannot be empty");
+        }
+
+        // Sin cambios: no se marca como editado
+        if (newContent === message.content) {
+            return message;
+        }
+
+        await message.update({ content: newContent, editedAt: new Date() });
+
+        return message;
+
+    } catch (error) {
+
+        console.error(error);
+        throw error;
+
+    }
+
+};
+
 // Anular envio para todos: solo el emisor. No se borra el registro.
 const revokeMessage = async (messageId, userId) => {
 
@@ -392,5 +439,6 @@ module.exports = {
     searchUsers,
     revokeMessage,
     deleteMessageForUser,
+    editMessage,
     toClientMessage
 };

@@ -25,6 +25,7 @@ export default function MessagesPage() {
         selectConversation,
         sendMessage,
         sendAttachment,
+        editMessage,
         revokeMessage,
         deleteMessageForMe
     } = useMessages(initialUserId);
@@ -65,6 +66,7 @@ export default function MessagesPage() {
                     uploading={uploading}
                     onSend={sendMessage}
                     onAttach={sendAttachment}
+                    onEdit={editMessage}
                     onRevoke={revokeMessage}
                     onDeleteForMe={deleteMessageForMe}
                     infoOpen={infoOpen}

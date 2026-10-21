@@ -6,7 +6,15 @@ import styles from "./MessageList.module.css";
 
 const TIME_GAP_MS = 30 * 60 * 1000; // separador con hora si pasan 30 min entre mensajes
 
-export default function MessageList({ messages, contact, myId, loading, onRequestRevoke, onRequestDeleteForMe }) {
+export default function MessageList({
+    messages,
+    contact,
+    myId,
+    loading,
+    onRequestEdit,
+    onRequestRevoke,
+    onRequestDeleteForMe
+}) {
     const endRef = useRef(null);
 
     useEffect(() => {
@@ -57,6 +65,7 @@ export default function MessageList({ messages, contact, myId, loading, onReques
                             message={message}
                             isOwn={Number(message.senderId) === myId}
                             contact={contact}
+                            onRequestEdit={onRequestEdit}
                             onRequestRevoke={onRequestRevoke}
                             onRequestDeleteForMe={onRequestDeleteForMe}
                         />

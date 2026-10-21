@@ -83,6 +83,12 @@ const Message = sequelize.define("message", {
         type: DataTypes.BOOLEAN,
         allowNull: false,
         defaultValue: false
+    },
+
+    // Fecha de la ultima edicion del texto (null = nunca fue editado)
+    editedAt: {
+        type: DataTypes.DATE,
+        allowNull: true
     }
 });
 

@@ -17,17 +17,28 @@ export default function ChatWindow({
     onToggleInfo,
     onSend,
     onAttach,
+    onEdit,
     onRevoke,
     onDeleteForMe
 }) {
     // Ventana abierta: { type: "revoke" | "deleteForMe", message }
     const [dialog, setDialog] = useState(null);
+    // Mensaje que se esta editando (null = campo de escritura normal)
+    const [editing, setEditing] = useState(null);
 
-    // Al cambiar de conversacion se cierra cualquier ventana pendiente
+    // Al cambiar de conversacion se cierra cualquier ventana o edicion pendiente
     const contactId = contact?.userId;
     useEffect(() => {
         setDialog(null);
+        setEditing(null);
     }, [contactId]);
+
+    // Si el mensaje en edicion desaparece o es anulado, se sale del modo edicion
+    useEffect(() => {
+        if (editing && !messages.some((m) => m.messageId === editing.messageId && !m.deletedForAll)) {
+            setEditing(null);
+        }
+    }, [messages, editing]);
 
     if (!contact) {
         return (
@@ -39,6 +50,20 @@ export default function ChatWindow({
 
     const infoLabel = infoOpen ? "Ocultar información del contacto" : "Mostrar información del contacto";
     const closeDialog = () => setDialog(null);
+
+    // Guarda la edicion sobre el mensaje existente. Devuelve false si no se pudo (sigue en modo edicion).
+    const saveEdit = (content) => {
+        const text = content.trim();
+        if (!text) return false;
+
+        // Sin cambios: se cierra la edicion sin tocar el mensaje
+        if (text !== (editing.content || "") && !onEdit(editing.messageId, text)) {
+            return false;
+        }
+
+        setEditing(null);
+        return true;
+    };
 
     return (
         <section className={styles.chatWindow}>
@@ -64,6 +89,7 @@ export default function ChatWindow({
                 contact={contact}
                 myId={myId}
                 loading={loading}
+                onRequestEdit={(message) => setEditing(message)}
                 onRequestRevoke={(message) => setDialog({ type: "revoke", message })}
                 onRequestDeleteForMe={(message) => setDialog({ type: "deleteForMe", message })}
             />
@@ -74,7 +100,15 @@ export default function ChatWindow({
                 </p>
             )}
 
-            <MessageInput onSend={onSend} onAttach={onAttach} uploading={uploading} disabled={loading} />
+            <MessageInput
+                onSend={onSend}
+                onAttach={onAttach}
+                uploading={uploading}
+                disabled={loading}
+                editing={editing}
+                onSaveEdit={saveEdit}
+                onCancelEdit={() => setEditing(null)}
+            />
 
             {dialog?.type === "revoke" && (
                 <RevokeMessageModal

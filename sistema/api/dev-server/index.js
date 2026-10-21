@@ -4,6 +4,7 @@ const express = require("express");
 const http = require("http");
 const path = require("path");
 const bcrypt = require("bcrypt");
+const { DataTypes } = require("sequelize");
 const { Server } = require("socket.io");
 
 const upload = require("./middlewares/upload");
@@ -63,6 +64,26 @@ setupChat(io);
 
 const start = async () => {
   await sequelize.sync();
+
+  // Solo para el servidor de prueba: si dev.sqlite es de una version anterior, agrega las columnas que falten
+  try {
+    const queryInterface = sequelize.getQueryInterface();
+    const table = await queryInterface.describeTable("messages");
+    const extraColumns = {
+      deletedForAll: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+      deletedBySender: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+      deletedByReceiver: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
+      editedAt: { type: DataTypes.DATE, allowNull: true }
+    };
+    for (const [name, definition] of Object.entries(extraColumns)) {
+      if (!table[name]) {
+        await queryInterface.addColumn("messages", name, definition);
+        console.log(`Columna agregada a messages: ${name}`);
+      }
+    }
+  } catch (err) {
+    console.warn("No se pudieron actualizar las columnas (borra dev.sqlite y reinicia):", err.message);
+  }
 
   // Datos de prueba
   await Role.findOrCreate({ where: { idRole: 1 }, defaults: { name: "user" } });
