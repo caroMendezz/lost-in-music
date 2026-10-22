@@ -1,17 +1,14 @@
 import React, { useState, useCallback } from "react";
 import { Routes, Route } from "react-router-dom";
 
-
 import "./styles/App.css";
 import "./styles/aero.css";
-
 
 import Register from "./components/register";
 import Navbar from "./components/shopinvivo/Navbar";
 import AeroSidebar from "./components/shopinvivo/Sidebar"; 
 import ProductGrid from "./components/shopinvivo/ProductGrid";
 import RightSidebar from "./components/shopinvivo/RightSidebar";
-
 
 import Header from "./components/header";
 import LeftNav from "./components/leftNav";
@@ -25,6 +22,8 @@ import PostModal from "./components/PostModal";
 import { usePosts } from "./hooks/UsePosts";
 import { LangProvider } from "./components/LangContext";
 
+// 👇 IMPORT NUEVO DEL PERFIL 👇
+import UserProfile from "./pages/userProfile";
 
 function Marketplace() {
   return (
@@ -40,7 +39,6 @@ function Marketplace() {
     </div>
   );
 }
-
 
 function FeedPage({
   rootPosts,
@@ -140,7 +138,6 @@ function FeedPage({
   );
 }
 
-
 export default function App() {
   const {
     rootPosts,
@@ -210,6 +207,11 @@ export default function App() {
         <Route path="/marketplace" element={<Marketplace />} />
 
         <Route path="/settings" element={<Configuracion />} />
+        
+        {/* 👇 RUTA NUEVA DEL PERFIL 👇 */}
+        <Route path="/profile" element={<UserProfile />} />
+        {/* Si querés que sea por username, cambialo a: path="/:username" */}
+
         <Route
           path="/photo/:postId/:imageIndex"
           element={
