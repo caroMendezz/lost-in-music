@@ -46,8 +46,26 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
   const [editDraft,   setEditDraft]   = useState('');
   const [confirmDel,  setConfirmDel]  = useState(false);
 
-  const menuRef    = useRef(null);
+  const menuRef     = useRef(null);
   const textareaRef = useRef(null);
+
+  // === ADAPTACIÓN PARA EL BACKEND (MongoDB / Sequelize) ===
+  const postId = post._id || post.id; // Soporta _id de NoSQL o id normal
+  const content = post.postText ?? post.content ?? ''; // Lee postText del backend o content local
+  const rawImages = post.images ?? (post.image ? [post.image] : []);
+  const images = rawImages.filter(img => 
+    img && 
+    typeof img === 'string' && 
+    img !== 'vacio' && 
+    img !== 'null' && 
+    img.trim() !== ''
+  );
+  const hasImage = images.length > 0;
+  const shouldShowMore = content.length > SEE_MORE_LIMIT;
+  const visibleContent = shouldShowMore && !expanded
+    ? `${content.slice(0, SEE_MORE_LIMIT)}...`
+    : content;
+  // ========================================================
 
   /* Cerrar menú al hacer click afuera */
   useEffect(() => {
@@ -70,14 +88,6 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
     }
   }, [editing]);
 
-  const content  = post.content ?? '';
-  const images   = post.images ?? (post.image ? [post.image] : []);
-  const hasImage = images.length > 0;
-  const shouldShowMore = content.length > SEE_MORE_LIMIT;
-  const visibleContent = shouldShowMore && !expanded
-    ? `${content.slice(0, SEE_MORE_LIMIT)}...`
-    : content;
-
   /* ── Handlers ── */
   const handleEditStart = () => {
     setEditDraft(content);
@@ -87,7 +97,7 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
 
   const handleEditSave = () => {
     const trimmed = editDraft.trim();
-    if (trimmed && trimmed !== content) onEdit?.(post.id, trimmed);
+    if (trimmed && trimmed !== content) onEdit?.(postId, trimmed);
     setEditing(false);
   };
 
@@ -116,7 +126,17 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
 
       {/* ── Header ── */}
       <div className="post-header">
-        <div className="post-avatar">👤</div>
+        <div className="post-avatar">
+          {post.profilePhoto ? (
+            <img 
+              src={post.profilePhoto} 
+              alt={post.author || 'Avatar'} 
+              style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} 
+            />
+          ) : (
+            '👤'
+          )}
+        </div>
 
         <div className="post-author-info">
           <div className="post-author">{post.author}</div>

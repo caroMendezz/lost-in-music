@@ -7,7 +7,7 @@ const { Server } = require("socket.io");
 const upload = require("./middlewares/upload");
 const {uploadFile} = require("./controllers/uploads");
 const { Login, Register, DeleteUser, UpdateUser} = require('./controllers/users')
-const {createPost, deletePost, updatePost} = require('./controllers/posts')
+const {createPost, deletePost, updatePost, getPosts} = require('./controllers/posts')
 const {createRole} = require('./controllers/roles')
 const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
 const {checkToken } = require('./middlewares/auth')
@@ -53,7 +53,8 @@ server.patch('/updateUser/:id',checkToken, UpdateUser);
 
 server.post('/CreatePost', checkToken, createPost);
 server.patch('/DeletePost/:id',checkToken, deletePost);
-server.patch('/UpdatePost/:id',checkToken, updatePost); 
+server.patch('/UpdatePost/:id',checkToken, updatePost);
+server.get('/GetPost', checkToken, getPosts); 
 
 server.post('/CreateProduct', checkToken, createProduct);
 server.patch('/DeleteProduct/:id',checkToken, deleteProduct);

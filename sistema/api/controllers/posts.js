@@ -1,45 +1,35 @@
 const Post = require("../models/Post")
-const {User} = require("../models/User")
+const { User } = require("../models/User")
 
 const createPost = async (req, res) => {
-
     try {
+        // Obtenemos el userId directamente desde el usuario autenticado por 'checkToken'
+        // (Dependiendo de cómo esté definido tu modelo Sequelize, el ID puede ser .userId o .id)
+        const userId = req.user.userId || req.user.id; 
+        const { postText, image, videos } = req.body;
 
-        const { userId, postText, image, videos } = req.body
-
-        const user = await User.findByPk(userId)
-
-        if (!user) {
-            return res.status(404).json({
-                message: "Usuario no encontrado"
-            })
-        }
-
+        // Como 'checkToken' ya validó que el usuario existe en la base de datos, 
+        // podemos proceder a crear el post en la base de datos NoSQL directamente.
         const post = await Post.create({
             userId,
             postText,
             image,
-            videos
-        })
+            videos,
+            eliminated: false
+        });
 
-        return res.status(201).json(post)
+        return res.status(201).json(post);
 
     } catch (error) {
-
-        console.error(error)
-
+        console.error(error);
         return res.status(500).json({
             message: "Error interno",
             error: error.message
-        })
-
+        });
     }
-
 }
 
-
 const deletePost = async (req, res) => {
-
     try {
         const postId = req.params.id
 
@@ -66,28 +56,17 @@ const deletePost = async (req, res) => {
         })
 
     } catch (error) {
-
         console.error(error)
-
         return res.status(500).json({
             message: "Error interno del servidor"
         })
-
     }
-
 }
 
 const updatePost = async (req, res) => {
-
     try {
-
         const { postId } = req.params
-
-        const {
-            postText,
-            image,
-            videos
-        } = req.body
+        const { postText, image, videos } = req.body
 
         const dataUpdate = {}
 
@@ -95,7 +74,6 @@ const updatePost = async (req, res) => {
             dataUpdate.postText = postText
         if (image !== undefined)
             dataUpdate.image = image
-
         if (videos !== undefined)
             dataUpdate.videos = videos
 
@@ -126,20 +104,43 @@ const updatePost = async (req, res) => {
         res.status(200).json(post)
 
     } catch (error) {
-
         console.error(error)
-
         res.status(500).json({
             message: "Error interno"
         })
-
     }
-
 }
 
+const getPosts = async (req, res) => {
+    try {
+        // Obtenemos los posts de MongoDB que no estén eliminados
+        const posts = await Post.find({ eliminated: false }).lean().sort({ createdAt: -1 });
+
+        // Unimos cada post con los datos del usuario correspondiente en Sequelize (MySQL)
+        const postsWithUser = await Promise.all(posts.map(async (post) => {
+            const user = await User.findByPk(post.userId);
+            
+            return {
+                ...post,
+                author: user ? user.username : 'Usuario desconocido',
+                profilePhoto: user ? user.profilePhoto : ''
+            };
+        }));
+
+        return res.status(200).json(postsWithUser);
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "Error al obtener las publicaciones",
+            error: error.message
+        });
+    }
+};
 
 module.exports = {
     createPost,
     deletePost,
-    updatePost
+    updatePost,
+    getPosts
 }
