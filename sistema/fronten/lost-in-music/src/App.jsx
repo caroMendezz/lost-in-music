@@ -1,19 +1,19 @@
 import React from "react";
-import "./assets/styles/aero.css";
-import Navbar from "./assets/components/Navbar";
-import Sidebar from "./assets/components/Sidebar";
-import ProductGrid from "./assets/components/ProductGrid";
-import RightSidebar from "./assets/components/RightSidebar";
+import aero from "./assets/styles/aero.module.css";
+import Navbar from "./assets/components/shopinvivo/Navbar";
+import Sidebar from "./assets/components/shopinvivo/Sidebar";
+import ProductGrid from "./assets/components/shopinvivo/ProductGrid";
+import RightSidebar from "./assets/components/shopinvivo/RightSidebar";
 
-export default function App() {
+export default function Shopinvivo() {
   return (
-    <div className="aero-root">
-      <div className="frame">
-        <Navbar />
-        <div className="body-grid">
-          <Sidebar />
-          <ProductGrid />
-          <RightSidebar />
+    <div className={aero["aero-root"]}>
+      <div className={aero.frame}>
+        <Navbar/>
+        <div className={aero["body-grid"]}>
+          <Sidebar/>
+          <ProductGrid/>
+          <RightSidebar/>
         </div>
       </div>
     </div>

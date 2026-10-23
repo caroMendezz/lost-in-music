@@ -5,9 +5,13 @@
 }
 
 
-html,
-body,
-#root {
+:global(*) {
+  box-sizing: border-box;
+}
+
+:global(html),
+:global(body),
+:global(#root) {
   margin: 0;
   padding: 0;
   width: 100%;
@@ -15,7 +19,7 @@ body,
   overflow: hidden;
 }
 
-.aero-root {
+:global(.aero-root) {
   --sky-top: #bfe4fb;
   --sky-mid: #7fc2ec;
   --sky-deep: #3f8fd6;
@@ -42,6 +46,16 @@ body,
   background-position: center;
   background-repeat: no-repeat;
 }
+
+:global(.frame) {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-height: 100vh;
+}
+
 
 .cloud {
   position: absolute;
@@ -91,14 +105,6 @@ body,
   }
 }
 
-.frame {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  min-height: 100vh;
-}
 
 .navbar {
   position: relative;
