@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Home, Bell, Plus, ChevronRight } from "lucide-react";
 import GlassPanel from "./GlassPanel";
 import { CATEGORIES } from "../../data/categories";
-import aero from "../../styles/aero.module.css"; // Verifica que la ruta relativa sea correcta
+import aero from "../../styles/aero.module.css";
 
 export default function Sidebar() {
   const [openCat, setOpenCat] = useState("Instrumentos");

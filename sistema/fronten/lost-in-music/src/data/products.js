@@ -1,0 +1,135 @@
+import { Guitar, Piano, Radio, Mic2, Disc3, Speaker, Headphones } from "lucide-react";
+
+const HOUR = 60 * 60 * 1000;
+const NOW = Date.now();
+
+// images queda vacia a proposito: cuando se suba un producto con foto real,
+// se cargan las URLs aca y el modal las muestra.
+export const PRODUCTS = [
+  {
+    id: 1,
+    name: "Guitarra épica",
+    price: "$100.000",
+    place: "Villa Urquiza, BA",
+    icon: Guitar,
+    tone: ["#8a5a3a", "#c9905c"],
+    images: [],
+    state: "Usado",
+    seller: "Carolina Méndez",
+    postedAt: new Date(NOW - 2 * HOUR).toISOString(),
+    description:
+      "Clásica de cuerda acústica con tapa de abeto macizo y fondo de arce. Se entrega con funda rígida, cuerdas puestas hace apenas una semana y un set de repuesto sin estrenar.\n\nEl mástil está recto, el alma se ajustó hace un mes y la acción queda cómoda tanto para acordes abiertos como para punteo rápido. Tiene dos marcas de uso chicas en la tapa, nada profundas, que ni se sientan al tocar y no afectan en absoluto el sonido ni la resonancia de la caja.\n\nIdeal para quien está empezando o para quien busca un instrumento confiable para ensayar sin complicaciones todos los días. Se puede probar antes de comprar en Villa Urquiza, cualquier día de semana a la tarde, y si querés la llevas probada un par de días antes de decidirte.",
+  },
+  {
+    id: 2,
+    name: "Guitarra banana",
+    price: "$100.000",
+    place: "Saavedra, BA",
+    icon: Guitar,
+    tone: ["#f4d13d", "#f7e98e"],
+    images: [],
+    state: "Como nuevo",
+    seller: "Diego Sosa",
+    postedAt: new Date(NOW - 5 * HOUR).toISOString(),
+    description:
+      "Cuerpo amarillo con acabado brillante, humbucker en el puente y mástil de maple de 22 trastes. Sonido brillante y mucho volumen, perfecta para rock y blues.\n\nSe usó en dos recitales nomás y en ensayos de fin de semana, así que está impecable: sin rayones en el diapason, sin golpes en el cuerpo y con las clavijas ajustadas. Las cuerdas son nuevas y el trasteo quedó parejo después de la última puesta a punto.\n\nViene con cable de 5 metros y correa. La entrega en Saavedra a cualquier hora de la tarde o la noche, y si querés la acerco yo mismo dentro de la zona sin cargo adicional porque me queda de camino a casa.",
+  },
+  {
+    id: 3,
+    name: "Teclado neón",
+    price: "$100.000",
+    place: "Palermo, BA",
+    icon: Piano,
+    tone: ["#e05a97", "#f6a6c9"],
+    images: [],
+    state: "Nuevo",
+    seller: "Lucía Peralta",
+    postedAt: new Date(NOW - 26 * HOUR).toISOString(),
+    description:
+      "61 teclas con luz LED, 8 voces polifónicas y salida USB para conectarse a la compu. Incluye soporte plegable y fuente de alimentación.",
+  },
+  {
+    id: 4,
+    name: "Radio grabadora retro",
+    price: "$100.000",
+    place: "Belgrano, BA",
+    icon: Radio,
+    tone: ["#dcdfe3", "#f2c9dd"],
+    images: [],
+    state: "Usado",
+    seller: "Martín Gómez",
+    postedAt: new Date(NOW - 3 * HOUR).toISOString(),
+    description:
+      "Receptor AM/FM con bandeja de casetes y altavoz integrado. Funciona con baterías o corriente. Estética ochentas total.",
+  },
+  {
+    id: 5,
+    name: "Micrófono vintage",
+    price: "$85.000",
+    place: "Caballito, BA",
+    icon: Mic2,
+    tone: ["#5c6570", "#9aa4ad"],
+    images: [],
+    state: "Usado",
+    seller: "Sofía Rivas",
+    postedAt: new Date(NOW - 49 * HOUR).toISOString(),
+    description:
+      "Dinámico con cápsula de 32 mm y patrón polar cardioide. Cuerpo metálico con rejilla cromada. Incluye soporte de mesa y cable de 3 metros, todo probado y funcionando perfecto.",
+  },
+  {
+    id: 6,
+    name: "Vinilo mixer",
+    price: "$120.000",
+    place: "Flores, BA",
+    icon: Disc3,
+    tone: ["#3a3f8a", "#7b82d6"],
+    images: [],
+    state: "Usado",
+    seller: "Nicolás Ferreyra",
+    postedAt: new Date(NOW - 12 * HOUR).toISOString(),
+    description:
+      "Mezclador de 4 canales con efectos integrados, entradas RCA, salida master balanceada y dos salidas de auriculares independientes.\n\nFunciona perfecto: los potenciópios no se escuchan, los canales de canal derecho e izquierdo responden parejo y el ecualizador de tres bandas trabaja bien en todos los canales. Tiene mezcla crossfade, botón de cue para los auriculares y entrada de micrófono con jack y XLR.\n\nIdeal para principiantes que quieren empezar a mezclar en casa sin gastar una fortuna en equipamiento profesional. Se vende porque lo cambié por uno de más canales, no por problema alguno. Acepto probarlo antes de comprarlo en Flores.",
+  },
+  {
+    id: 7,
+    name: "Parlante burbuja",
+    price: "$60.000",
+    place: "Núñez, BA",
+    icon: Speaker,
+    tone: ["#3fb6c9", "#a4ecf2"],
+    images: [],
+    state: "Nuevo",
+    seller: "Valentina Duarte",
+    postedAt: new Date(NOW - 72 * HOUR).toISOString(),
+    description:
+      "Altavoz portátil con 20 W de potencia, Bluetooth 5.0 con emparejamiento rápido y batería de 12 horas de uso continuo.\n\nDiseño esférico con luz ambiental regulable en nueve niveles y colores, control de volumen y reproducción en el propio cuerpo. Tiene entrada auxiliar de 3,5 mm para conectarlo a cualquier equipo y resistencia IPX5, así que aguanta salpicaduras sin problema.\n\nLo mejor es que el sonido se escucha parejo desde cualquier ángulo de la habitación, sin esa meseta rara que tienen los parlantes cuadrados. Está sin estrenar, con su caja y cable originales. Entrego en Núñez o lo mando por encomienda a todo el país.",
+  },
+  {
+    id: 8,
+    name: "Auriculares aero",
+    price: "$45.000",
+    place: "Recoleta, BA",
+    icon: Headphones,
+    tone: ["#7fc24c", "#c9f7a0"],
+    images: [],
+    state: "Nuevo",
+    seller: "Facundo Leiva",
+    postedAt: new Date(NOW - 1 * HOUR).toISOString(),
+    description:
+      "Circumaurales con cancelación de ruido activa, 30 horas de batería y almohadillas de espuma viscoelástica. Cable reemplazable y funda rígida incluidas en la compra.",
+  },
+  {
+    id: 9,
+    name: "Teclado percusión",
+    price: "$95.000",
+    place: "San Telmo, BA",
+    icon: Piano,
+    tone: ["#e0824a", "#f7c08e"],
+    images: [],
+    state: "Usado",
+    seller: "Camila Ortega",
+    postedAt: new Date(NOW - 8 * HOUR).toISOString(),
+    description:
+      "Teclado de 2 octavas con pads sensibles a la velocidad, 12 voces y conexión MIDI por USB. Se usa como controlador o como instrumento independiente con sus propios sonidos.",
+  },
+];

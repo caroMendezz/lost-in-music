@@ -1,16 +1,11 @@
 import React from "react";
-import aero from "../../styles/aero.module.css"; // Asegúrate de ajustar la ruta relativa según dónde esté este archivo
-
-export default function ProductCard({ product }) {
+import aero from "../../styles/aero.module.css";
+export default function ProductCard({ product, onSelect }) {
   const Icon = product.icon;
   return (
     <div 
       className={aero["product-card"]}
-      onClick={() => {
-        if (product.name === "Guitarra épica") {
-          alert("Abriendo producto...");
-        }
-      }}
+      onClick={onSelect}
     >
       <span className={aero.sheen} />
       <div

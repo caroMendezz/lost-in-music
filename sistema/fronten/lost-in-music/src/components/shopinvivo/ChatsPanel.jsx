@@ -2,7 +2,7 @@ import React from "react";
 import { User } from "lucide-react";
 import GlassPanel from "./GlassPanel";
 import { CHATS } from "../../data/social";
-import aero from "../../styles/aero.module.css"; // Asegúrate de verificar que la ruta sea correcta
+import aero from "../../styles/aero.module.css";
 
 export default function ChatsPanel() {
   return (

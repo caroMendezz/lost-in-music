@@ -1,5 +1,5 @@
 import React from "react";
-import aero from "../../styles/aero.module.css"; // Verifica que la ruta relativa sea correcta
+import aero from "../../styles/aero.module.css";
 
 export default function GlassPanel({ children, className = "", style = {} }) {
   return (

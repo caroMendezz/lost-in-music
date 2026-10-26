@@ -1,5 +1,5 @@
 import React from "react";
-import aero from "../../styles/aero.module.css"; // Ojo con la ruta relativa hacia la carpeta styles
+import aero from "../../styles/aero.module.css";
 import {
   Search,
   Home,
