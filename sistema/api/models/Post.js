@@ -10,15 +10,15 @@ const PostSchema = new mongoose.Schema({
 
     postText: {
         type: String,
-        maxlength: 1000
+        maxlength: 2000
     },
 
     image: [{
-        type: String
+        type: String, default: []
     }],
 
     videos: [{
-        type: String
+        type: String, default: []
     }],
 
     likesCount: {

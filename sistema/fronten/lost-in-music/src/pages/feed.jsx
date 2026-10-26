@@ -3,46 +3,75 @@ import CreatePost from '../components/CreatePost';
 import Post from '../components/post';
 
 function Feed({ posts: externalPosts = [], onLike, onOpenPost, onDelete, onEdit, now: externalNow }) {
-  // 1. Creamos un estado local para manejar los posts que se cargan y los nuevos creados
+  // Estado local con los posts cargados desde el backend y los nuevos creados
   const [posts, setPosts] = useState(externalPosts);
   const [now, setNow] = useState(externalNow ?? Date.now());
 
-  // 2. Opcional: Cargar los posts desde el backend al iniciar la página
+  const handleDeletePost = async (postId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3000/DeletePost/${postId}`, {
+        method: 'PATCH',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.ok) {
+        // Quitamos el post del estado local para que desaparezca al instante
+        setPosts((prev) => prev.filter((p) => (p._id || p.id) !== postId));
+      } else {
+        const data = await response.json();
+        alert(data.message || "No se pudo eliminar el post");
+      }
+    } catch (error) {
+      console.error("Error al eliminar el post:", error);
+    }
+  };
+
+  const handleEditPost = async (postId, newContent) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3000/UpdatePost/${postId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ postText: newContent })
+      });
+
+      if (response.ok) {
+        const updatedPost = await response.json();
+        // Actualizamos el post editado en el estado local del Feed
+        setPosts((prev) =>
+          prev.map((p) => ((p._id || p.id) === postId ? { ...p, postText: updatedPost.postText } : p))
+        );
+      } else {
+        const data = await response.json();
+        alert(data.message || "No se pudo actualizar el post");
+      }
+    } catch (error) {
+      console.error("Error al actualizar el post:", error);
+    }
+  };
+
   useEffect(() => {
     const fetchPosts = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await fetch('http://localhost:3000/Posts', {
+        const response = await fetch('http://localhost:3000/GetPost', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (response.ok) {
           const data = await response.json();
-          setPosts(data);
+          setPosts(data); // Carga los posts existentes con su autor y foto
         }
       } catch (error) {
         console.error("Error al cargar posts:", error);
       }
     };
     fetchPosts();
-  }, []);
-
-  useEffect(() => {
-  const fetchPosts = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      // Apuntamos a la nueva ruta que creaste en el index.js
-      const response = await fetch('http://localhost:3000/GetPost', {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
-      if (response.ok) {
-        const data = await response.json();
-        setPosts(data); // Carga los posts existentes con su autor y foto
-      }
-    } catch (error) {
-      console.error("Error al cargar posts:", error);
-    }
-  };
-  fetchPosts();
   }, []);
 
   useEffect(() => {
@@ -54,49 +83,39 @@ function Feed({ posts: externalPosts = [], onLike, onOpenPost, onDelete, onEdit,
     return () => clearInterval(interval);
   }, [externalNow]);
 
-const handlePost = async ({ content, images }) => {
-  try {
-    const token = localStorage.getItem('token'); 
+  const handlePost = async ({ content, image = [], videos = [] }) => {
+    try {
+      const token = localStorage.getItem('token');
+      console.log('Feed -> image:', image, 'videos:', videos);
 
-    const response = await fetch('http://localhost:3000/CreatePost', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        postText: content || '',
-        image: images && images.length > 0 ? images[0] : '',
-        videos: ''
-      })
-    });
+      // multipart/form-data: texto + archivos reales (no Base64)
+      const formData = new FormData();
+      formData.append('postText', content || '');
+      image.forEach((file) => formData.append('image', file));
+      videos.forEach((file) => formData.append('videos', file));
 
-    const data = await response.json();
+      const response = await fetch('http://localhost:3000/CreatePost', {
+        method: 'POST',
+        // NO poner Content-Type: el navegador lo arma con el boundary
+        headers: { 'Authorization': `Bearer ${token}` },
+        body: formData
+      });
 
-    if (!response.ok) {
-      throw new Error(data.message || 'Error al crear la publicación');
+      if (response.ok) {
+        const newPost = await response.json();
+        setPosts((prev) => [newPost, ...prev]);
+      } else {
+        const data = await response.json();
+        alert(data.message || "Error al crear la publicación");
+      }
+    } catch (error) {
+      console.error("Error al crear el post:", error);
     }
-
-    // ADAPTABILIDAD: Creamos un objeto adaptado si el backend devuelve nombres distintos
-    const formattedPost = {
-      ...data,
-      content: data.postText || data.content, // Asegura que funcione con ambos nombres
-      images: data.image ? [data.image] : (data.images || [])
-    };
-
-    setPosts([formattedPost, ...posts]);
-
-  } catch (error) {
-    console.error("Error:", error);
-    alert(error.message);
-  }
-};
-
+  };
 
   return (
     <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
       <div style={{ width: '100%', maxWidth: '600px', display: 'flex', flexDirection: 'column' }}>
-        {/* Pasamos nuestra función handlePost al componente CreatePost */}
         <CreatePost onPost={handlePost} />
 
         {posts.map((post) => (
@@ -105,8 +124,8 @@ const handlePost = async ({ content, images }) => {
             post={post}
             onLike={onLike}
             onOpenPost={onOpenPost}
-            onDelete={onDelete}
-            onEdit={onEdit}
+            onDelete={handleDeletePost}
+            onEdit={handleEditPost}
             now={now}
           />
         ))}

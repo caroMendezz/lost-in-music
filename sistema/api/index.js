@@ -5,6 +5,7 @@ const path = require("path");
 const { Server } = require("socket.io");
 
 const upload = require("./middlewares/upload");
+const uploadPostMedia = require("./middlewares/uploadPostMedia");
 const {uploadFile} = require("./controllers/uploads");
 const { Login, Register, DeleteUser, UpdateUser} = require('./controllers/users')
 const {createPost, deletePost, updatePost, getPosts} = require('./controllers/posts')
@@ -27,7 +28,7 @@ server.use(express.json({ limit: '10mb' }))
 
 server.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', CLIENT_URL)
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS, PATCH')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   res.setHeader('Access-Control-Allow-Credentials', 'true')
   if (req.method === 'OPTIONS') {
@@ -51,7 +52,7 @@ server.post('/register', Register);
 server.patch('/deleteUser/:id',checkToken, DeleteUser);
 server.patch('/updateUser/:id',checkToken, UpdateUser);
 
-server.post('/CreatePost', checkToken, createPost);
+server.post('/CreatePost', checkToken, uploadPostMedia, createPost);
 server.patch('/DeletePost/:id',checkToken, deletePost);
 server.patch('/UpdatePost/:id',checkToken, updatePost);
 server.get('/GetPost', checkToken, getPosts); 

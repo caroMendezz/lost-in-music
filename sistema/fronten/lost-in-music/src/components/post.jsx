@@ -3,6 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/Post.css';
 
 const SEE_MORE_LIMIT = 220;
+const API_URL = 'http://localhost:3000';
+const mediaUrl = (src) =>
+  !src || /^(data:|https?:|blob:)/.test(src) ? src : `${API_URL}${src}`;
 
 function formatPostTime(createdAt, nowValue = Date.now()) {
   if (!createdAt) return 'Ahora';
@@ -33,8 +36,8 @@ function getContentClass(content, hasImage) {
  *   post        — objeto del post
  *   onLike      — (id) => void
  *   onOpenPost  — (id) => void
- *   onDelete    — (id) => void          ← nuevo
- *   onEdit      — (id, newContent) => void  ← nuevo
+ *   onDelete    — (id) => void
+ *   onEdit      — (id, newContent) => void
  *   now         — Date.now() reactivo
  */
 function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
@@ -50,17 +53,28 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
   const textareaRef = useRef(null);
 
   // === ADAPTACIÓN PARA EL BACKEND (MongoDB / Sequelize) ===
-  const postId = post._id || post.id; // Soporta _id de NoSQL o id normal
-  const content = post.postText ?? post.content ?? ''; // Lee postText del backend o content local
-  const rawImages = post.images ?? (post.image ? [post.image] : []);
-  const images = rawImages.filter(img => 
-    img && 
-    typeof img === 'string' && 
-    img !== 'vacio' && 
-    img !== 'null' && 
-    img.trim() !== ''
-  );
-  const hasImage = images.length > 0;
+  const postId = post._id || post.id; 
+  const content = post.postText ?? post.content ?? ''; 
+  
+  // Limpiamos y aseguramos que 'image' sea un array válido de strings (Base64 o URLs)
+  const rawImages = post.image ?? [];
+  const imageList = Array.isArray(rawImages) ? rawImages : [rawImages];
+  
+  const validImages = imageList
+    .filter(img =>
+      img &&
+      typeof img === 'string' &&
+      img !== 'vacio' &&
+      img !== 'null' &&
+      img.trim() !== ''
+    )
+    .map(mediaUrl);
+
+  const validVideos = (Array.isArray(post.videos) ? post.videos : [])
+    .filter(v => typeof v === 'string' && v.trim() !== '')
+    .map(mediaUrl);
+
+  const hasImage = validImages.length > 0 || validVideos.length > 0;
   const shouldShowMore = content.length > SEE_MORE_LIMIT;
   const visibleContent = shouldShowMore && !expanded
     ? `${content.slice(0, SEE_MORE_LIMIT)}...`
@@ -117,7 +131,8 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
   };
 
   const handleDeleteConfirm = () => {
-    onDelete?.(post.id);
+    const targetId = post._id || post.id;   
+    onDelete?.(targetId);                 
     setConfirmDel(false);
   };
 
@@ -129,7 +144,7 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
         <div className="post-avatar">
           {post.profilePhoto ? (
             <img 
-              src={post.profilePhoto} 
+              src={mediaUrl(post.profilePhoto)} 
               alt={post.author || 'Avatar'} 
               style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} 
             />
@@ -143,7 +158,8 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
           <div className="post-time">{formatPostTime(post.createdAt, now)}</div>
         </div>
 
-        {/* Botón ⋯ + menú desplegable */}
+        {/* Botón ⋯ + menú desplegable (solo para el dueño del post) */}
+        {post.isOwner !== false && (
         <div className="post-menu-wrapper" ref={menuRef}>
           <button
             type="button"
@@ -173,6 +189,7 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
             </div>
           )}
         </div>
+        )}
       </div>
 
       {/* ── Confirmación de eliminación ── */}
@@ -247,31 +264,31 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
         )
       )}
 
-      {/* ── Galería ── */}
-      {images.length > 0 && (
-        images.length === 1 ? (
+      {/* ── Galería corregida usando validImages ── */}
+      {validImages.length > 0 && (
+        validImages.length === 1 ? (
           <div
             className="post-image-wrapper"
-            onClick={() => navigate(`/photo/${post.id}/0`)}
+            onClick={() => navigate(`/photo/${postId}/0`)}
           >
             <div
               className="post-image-background"
-              style={{ backgroundImage: `url(${images[0]})` }}
+              style={{ backgroundImage: `url(${validImages[0]})` }}
             />
-            <img src={images[0]} alt="imagen del post" className="post-image" />
+            <img src={validImages[0]} alt="imagen del post" className="post-image" />
           </div>
         ) : (
-          <div className={`post-gallery post-gallery-${Math.min(images.length, 5)}`}>
-            {images.slice(0, 5).map((image, index) => {
-              const extraCount = images.length - 5;
-              const showExtra  = index === 4 && extraCount > 0;
+          <div className={`post-gallery post-gallery-${Math.min(validImages.length, 5)}`}>
+            {validImages.slice(0, 5).map((imgUrl, index) => {
+              const extraCount = validImages.length - 5;
+              const showExtra = index === 4 && extraCount > 0;
               return (
                 <div
-                  key={`${image}-${index}`}
+                  key={`${imgUrl}-${index}`}
                   className="post-gallery-item"
-                  onClick={() => navigate(`/photo/${post.id}/${index}`)}
+                  onClick={() => navigate(`/photo/${postId}/${index}`)}
                 >
-                  <img src={image} alt="imagen del post" />
+                  <img src={imgUrl} alt="imagen del post" />
                   {showExtra && <div className="post-gallery-more">+{extraCount}</div>}
                 </div>
               );
@@ -280,11 +297,20 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
         )
       )}
 
+      {/* ── Videos ── */}
+      {validVideos.length > 0 && (
+        <div className="post-videos">
+          {validVideos.map((src, i) => (
+            <video key={`${src}-${i}`} src={src} controls preload="metadata" className="post-video" />
+          ))}
+        </div>
+      )}
+
       {/* ── Stats ── */}
       <div className="post-stats">
-        <span>❤️ {post.likes} likes</span>
-        <span>💬 {post.comments} comentarios</span>
-        <span>↗ {post.shares} compartido</span>
+        <span>❤️ {post.likesCount ?? post.likes ?? 0} likes</span>
+        <span>💬 {post.commentsCount ?? post.comments ?? 0} comentarios</span>
+        <span>↗ {post.shares ?? 0} compartido</span>
       </div>
 
       {/* ── Acciones ── */}
@@ -292,7 +318,7 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
         <button
           type="button"
           className={post.liked ? 'post-liked-btn' : 'post-action-btn'}
-          onClick={() => onLike(post.id)}
+          onClick={() => onLike?.(postId)}
         >
           ♪ like
         </button>
@@ -300,7 +326,7 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
         <button
           type="button"
           className="post-action-btn"
-          onClick={() => onOpenPost?.(post.id)}
+          onClick={() => onOpenPost?.(postId)}
         >
           💬 comentar
         </button>

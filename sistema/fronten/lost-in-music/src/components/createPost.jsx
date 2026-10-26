@@ -1,8 +1,10 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useLang } from './LangContext';
 import '../styles/CreatePost.css';
 
 const MAX_POST_LENGTH = 2000;
+const MAX_IMAGE_MB = 10;
+const MAX_VIDEO_MB = 100;
 
 function getTextareaSizeClass(text) {
   const length = text.trim().length;
@@ -16,8 +18,16 @@ function CreatePost({ onPost }) {
   const cp = t.createPost;
 
   const [content, setContent] = useState('');
-  const [selectedImages, setSelectedImages] = useState([]);
+  // [{ file, preview, type: 'image' | 'video' }]
+  const [media, setMedia] = useState([]);
   const textareaRef = useRef(null);
+  const mediaRef = useRef([]);
+  mediaRef.current = media;
+
+  // Liberar las URLs de preview al desmontar
+  useEffect(() => {
+    return () => mediaRef.current.forEach((m) => URL.revokeObjectURL(m.preview));
+  }, []);
 
   const resizeTextarea = () => {
     const textarea = textareaRef.current;
@@ -38,14 +48,48 @@ function CreatePost({ onPost }) {
     });
   };
 
+  const clearMedia = () => {
+    media.forEach((m) => URL.revokeObjectURL(m.preview));
+    setMedia([]);
+  };
+
+  const handleFiles = (e) => {
+    const files = Array.from(e.target.files);
+    e.target.value = '';
+
+    const accepted = [];
+    for (const file of files) {
+      const isImage = file.type.startsWith('image/');
+      const isVideo = file.type.startsWith('video/');
+      if (!isImage && !isVideo) continue;
+
+      const maxMb = isImage ? MAX_IMAGE_MB : MAX_VIDEO_MB;
+      if (file.size > maxMb * 1024 * 1024) {
+        alert(`"${file.name}" supera el máximo de ${maxMb} MB`);
+        continue;
+      }
+      accepted.push({
+        file,
+        preview: URL.createObjectURL(file),
+        type: isImage ? 'image' : 'video',
+      });
+    }
+    if (accepted.length) setMedia((prev) => [...prev, ...accepted]);
+  };
+
   const handleSubmit = () => {
     const cleanContent = content.trim();
-    if (cleanContent || selectedImages.length > 0) {
-      onPost({ content: cleanContent, images: selectedImages });
-      setContent('');
-      setSelectedImages([]);
-      resetTextarea();
-    }
+    if (!cleanContent && media.length === 0) return;
+
+    onPost({
+      content: cleanContent,
+      image: media.filter((m) => m.type === 'image').map((m) => m.file),
+      videos: media.filter((m) => m.type === 'video').map((m) => m.file),
+    });
+
+    setContent('');
+    clearMedia();
+    resetTextarea();
   };
 
   const handleKey = (e) => {
@@ -82,40 +126,31 @@ function CreatePost({ onPost }) {
         </div>
 
         <input
-          id="post-image-input"
+          id="post-media-input"
           type="file"
-          accept="image/*"
+          accept="image/*,video/*"
           multiple
           style={{ display: 'none' }}
-          onChange={(e) => {
-            const files = Array.from(e.target.files);
-            if (files.length > 0) {
-              setSelectedImages((prev) => [
-                ...prev,
-                ...files.map((f) => URL.createObjectURL(f)),
-              ]);
-            }
-            e.target.value = '';
-          }}
+          onChange={handleFiles}
         />
       </div>
 
-      {selectedImages.length > 0 && (
-        <div className={`createpost-gallery createpost-gallery-${Math.min(selectedImages.length, 5)}`}>
-          <button
-            type="button"
-            className="createpost-remove-image"
-            onClick={() => setSelectedImages([])}
-          >
+      {media.length > 0 && (
+        <div className={`createpost-gallery createpost-gallery-${Math.min(media.length, 5)}`}>
+          <button type="button" className="createpost-remove-image" onClick={clearMedia}>
             ✕
           </button>
 
-          {selectedImages.slice(0, 5).map((image, index) => {
-            const extraCount = selectedImages.length - 5;
+          {media.slice(0, 5).map((m, index) => {
+            const extraCount = media.length - 5;
             const showExtra = index === 4 && extraCount > 0;
             return (
-              <div key={image} className="createpost-gallery-item">
-                <img src={image} alt="preview" />
+              <div key={`${m.preview}-${index}`} className="createpost-gallery-item">
+                {m.type === 'image' ? (
+                  <img src={m.preview} alt="preview" />
+                ) : (
+                  <video src={m.preview} muted preload="metadata" />
+                )}
                 {showExtra && <div className="createpost-gallery-more">+{extraCount}</div>}
               </div>
             );
@@ -128,11 +163,10 @@ function CreatePost({ onPost }) {
           <button
             type="button"
             className="createpost-action-btn"
-            onClick={() => document.getElementById('post-image-input').click()}
+            onClick={() => document.getElementById('post-media-input').click()}
           >
             {cp.photoVideo}
           </button>
-
         </div>
 
         <button type="button" className="createpost-publish-btn" onClick={handleSubmit}>
