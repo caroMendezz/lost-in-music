@@ -10,6 +10,7 @@ const { Login, Register, DeleteUser, UpdateUser} = require('./controllers/users'
 const {createPost, deletePost, updatePost} = require('./controllers/posts')
 const {createRole} = require('./controllers/roles')
 const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
+const {ForgotPassword, ResetPassword} = require('./controllers/passwordReset')
 const {checkToken } = require('./middlewares/auth')
 const {getMessages, getConversations, getUserById, markAsRead, searchUsers} = require('./controllers/messages')
 const {createProduct, deleteProduct, updateProduct} = require('./controllers/products')
@@ -27,7 +28,7 @@ server.use(express.json({ limit: '10mb' }))
 
 server.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', CLIENT_URL)
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization')
   res.setHeader('Access-Control-Allow-Credentials', 'true')
   if (req.method === 'OPTIONS') {
@@ -61,6 +62,10 @@ server.patch('/UpdateProduct/:id',checkToken, updateProduct);
 
 server.post('/verify/send', SendVerificationCode);
 server.post('/verify/check', CheckVerificationCode);
+
+// Recuperación de contraseña
+server.post('/password/forgot', ForgotPassword);
+server.post('/password/reset', ResetPassword);
 
 server.get("/messages/:otherUserId", checkToken, getMessages);
 
