@@ -19,7 +19,7 @@ const UserProfile = () => {
       ubication: "Buenos Aires, Argentina"
     };
     setUser(mockUser);
-  }, []);
+  }, []); //lol
 
   /* --- FETCH REAL (descomentar cuando la API esté lista) ESTO LO HIZO LA IA, NO SE SI ESTA BIEN--- 
   useEffect(() => {
