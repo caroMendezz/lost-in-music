@@ -20,6 +20,7 @@ import Feed from "./pages/feed";
 import Footer from "./components/footer";
 import PhotoPage from "./pages/PhotoPage";
 import CommentPage from "./pages/CommentPage";
+import PostPage from "./pages/PostPage";
 import Configuracion from "./pages/settings";
 import PostModal from "./components/PostModal";
 import { usePosts } from "./hooks/UsePosts";
@@ -209,6 +210,7 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/marketplace" element={<Marketplace />} />
 
+        <Route path="/post/:id" element={<PostPage />} />
         <Route path="/settings" element={<Configuracion />} />
         <Route
           path="/photo/:postId/:imageIndex"

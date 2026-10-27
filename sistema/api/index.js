@@ -8,7 +8,7 @@ const upload = require("./middlewares/upload");
 const uploadPostMedia = require("./middlewares/uploadPostMedia");
 const {uploadFile} = require("./controllers/uploads");
 const { Login, Register, DeleteUser, UpdateUser} = require('./controllers/users')
-const {createPost, deletePost, updatePost, getPosts} = require('./controllers/posts')
+const {createPost, deletePost, updatePost, getPosts, getPostById, getReplies, toggleLike} = require('./controllers/posts')
 const {createRole} = require('./controllers/roles')
 const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
 const {checkToken } = require('./middlewares/auth')
@@ -54,8 +54,11 @@ server.patch('/updateUser/:id',checkToken, UpdateUser);
 
 server.post('/CreatePost', checkToken, uploadPostMedia, createPost);
 server.patch('/DeletePost/:id',checkToken, deletePost);
-server.patch('/UpdatePost/:id',checkToken, updatePost);
-server.get('/GetPost', checkToken, getPosts); 
+server.patch('/UpdatePost/:id',checkToken, uploadPostMedia, updatePost);
+server.get('/GetPost', checkToken, getPosts);
+server.get('/GetPost/:id', checkToken, getPostById);
+server.get('/GetReplies/:id', checkToken, getReplies);
+server.post('/LikePost/:id', checkToken, toggleLike); 
 
 server.post('/CreateProduct', checkToken, createProduct);
 server.patch('/DeleteProduct/:id',checkToken, deleteProduct);

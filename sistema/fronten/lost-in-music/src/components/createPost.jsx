@@ -13,7 +13,7 @@ function getTextareaSizeClass(text) {
   return 'createpost-textarea-small';
 }
 
-function CreatePost({ onPost }) {
+function CreatePost({ onPost, title, placeholder, publishLabel, autoFocus = false }) {
   const { t } = useLang();
   const cp = t.createPost;
 
@@ -28,6 +28,11 @@ function CreatePost({ onPost }) {
   useEffect(() => {
     return () => mediaRef.current.forEach((m) => URL.revokeObjectURL(m.preview));
   }, []);
+
+  // Para usarlo como cuadro de respuesta: enfoca el textarea al abrir
+  useEffect(() => {
+    if (autoFocus) textareaRef.current?.focus();
+  }, [autoFocus]);
 
   const resizeTextarea = () => {
     const textarea = textareaRef.current;
@@ -101,7 +106,7 @@ function CreatePost({ onPost }) {
 
   return (
     <div className="createpost-container">
-      <div className="createpost-title">{cp.title}</div>
+      <div className="createpost-title">{title ?? cp.title}</div>
 
       <div className="createpost-user-row">
         <div className="createpost-avatar">👤</div>
@@ -111,7 +116,7 @@ function CreatePost({ onPost }) {
             ref={textareaRef}
             className={`createpost-textarea ${getTextareaSizeClass(content)}`}
             rows={1}
-            placeholder={cp.placeholder}
+            placeholder={placeholder ?? cp.placeholder}
             value={content}
             maxLength={MAX_POST_LENGTH}
             onChange={handleContentChange}
@@ -170,7 +175,7 @@ function CreatePost({ onPost }) {
         </div>
 
         <button type="button" className="createpost-publish-btn" onClick={handleSubmit}>
-          {cp.publish}
+          {publishLabel ?? cp.publish}
         </button>
       </div>
     </div>
