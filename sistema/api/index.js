@@ -11,6 +11,7 @@ const { Login, Register, DeleteUser, UpdateUser} = require('./controllers/users'
 const {createPost, deletePost, updatePost, getPosts, getPostById, getReplies, toggleLike} = require('./controllers/posts')
 const {createRole} = require('./controllers/roles')
 const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
+const {ForgotPassword, ResetPassword} = require('./controllers/passwordReset')
 const {checkToken } = require('./middlewares/auth')
 const {getMessages, getConversations, getUserById, markAsRead, searchUsers} = require('./controllers/messages')
 const {createProduct, deleteProduct, updateProduct} = require('./controllers/products')
@@ -66,6 +67,10 @@ server.patch('/UpdateProduct/:id',checkToken, updateProduct);
 
 server.post('/verify/send', SendVerificationCode);
 server.post('/verify/check', CheckVerificationCode);
+
+// Recuperación de contraseña
+server.post('/password/forgot', ForgotPassword);
+server.post('/password/reset', ResetPassword);
 
 server.get("/messages/:otherUserId", checkToken, getMessages);
 
