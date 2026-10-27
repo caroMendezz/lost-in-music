@@ -25,6 +25,8 @@ import Configuracion from "./pages/settings";
 import PostModal from "./components/PostModal";
 import { usePosts } from "./hooks/UsePosts";
 import { LangProvider } from "./components/LangContext";
+import { FriendsProvider } from "./components/FriendsContext";
+import FriendsPage from "./pages/FriendsPage";
 
 
 function Marketplace() {
@@ -168,6 +170,7 @@ export default function App() {
 
   return (
     <LangProvider>
+      <FriendsProvider>
       <Routes>
         <Route
           path="/"
@@ -210,6 +213,7 @@ export default function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/marketplace" element={<Marketplace />} />
 
+        <Route path="/amigos" element={<FriendsPage />} />
         <Route path="/post/:id" element={<PostPage />} />
         <Route path="/settings" element={<Configuracion />} />
         <Route
@@ -235,6 +239,7 @@ export default function App() {
           }
         />
       </Routes>
+      </FriendsProvider>
     </LangProvider>
   );
 }

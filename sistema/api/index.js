@@ -11,11 +11,15 @@ const { Login, Register, DeleteUser, UpdateUser} = require('./controllers/users'
 const {createPost, deletePost, updatePost, getPosts, getPostById, getReplies, toggleLike} = require('./controllers/posts')
 const {createRole} = require('./controllers/roles')
 const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
-const {ForgotPassword, ResetPassword} = require('./controllers/passwordReset')
 const {checkToken } = require('./middlewares/auth')
 const {getMessages, getConversations, getUserById, markAsRead, searchUsers} = require('./controllers/messages')
 const {createProduct, deleteProduct, updateProduct} = require('./controllers/products')
 const setupChat = require("./sockets/chat");
+const { setupPresence } = require("./sockets/presence");
+const {
+  getFriends, getFriendRequests, searchPeople,
+  sendFriendRequest, acceptFriendRequest, removeFriendship
+} = require("./controllers/friends");
 const sequelize = require('./config/db')
 const connectDB = require("./config/dbnosql")
 const server = express()
@@ -68,10 +72,6 @@ server.patch('/UpdateProduct/:id',checkToken, updateProduct);
 server.post('/verify/send', SendVerificationCode);
 server.post('/verify/check', CheckVerificationCode);
 
-// Recuperación de contraseña
-server.post('/password/forgot', ForgotPassword);
-server.post('/password/reset', ResetPassword);
-
 server.get("/messages/:otherUserId", checkToken, getMessages);
 
 server.get("/conversations", checkToken, getConversations);
@@ -79,10 +79,18 @@ server.get("/users/search", checkToken, searchUsers);
 server.get("/users/:id", checkToken, getUserById);
 server.put("/messages/read/:otherUserId", checkToken, markAsRead);
 
+server.get("/friends", checkToken, getFriends);
+server.get("/friends/requests", checkToken, getFriendRequests);
+server.get("/friends/search", checkToken, searchPeople);
+server.post("/friends/request/:userId", checkToken, sendFriendRequest);
+server.patch("/friends/accept/:userId", checkToken, acceptFriendRequest);
+server.delete("/friends/:userId", checkToken, removeFriendship);
+
 server.post("/Upload", checkToken, upload.single("file"), uploadFile);
 server.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 setupChat(io);
+setupPresence(io);
 
 const start = async () => {
   await sequelize.sync();

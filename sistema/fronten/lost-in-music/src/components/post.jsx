@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ImageViewer from './ImageViewer';
 import { postUrl } from '../services/postsApi';
+import { useFriends } from './FriendsContext';
 import '../styles/Post.css';
 
 const SEE_MORE_LIMIT = 220;
@@ -58,6 +59,7 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
   const [viewerIndex, setViewerIndex] = useState(null); // null = visor cerrado
   const [copied,      setCopied]      = useState(false); // feedback del botón compartir
   const navigate = useNavigate();
+  const { isOnline } = useFriends();
 
   // Multimedia en modo edición
   const [keptImages, setKeptImages] = useState([]); // rutas actuales que se conservan
@@ -283,7 +285,12 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
         </div>
 
         <div className="post-author-info">
-          <div className="post-author">{post.author}</div>
+          <div className="post-author">
+            {post.author}
+            {post.isOwner !== true && isOnline(post.userId) && (
+              <span className="post-online-badge" title="En línea" />
+            )}
+          </div>
           <Link to={`/post/${postId}`} className="post-time post-time-link">
             {formatPostTime(post.createdAt, now)}
           </Link>

@@ -4,6 +4,7 @@ const mongoose = require("mongoose")
 const Post = require("../models/Post")
 const Like = require("../models/Like")
 const { User } = require("../models/User")
+const { getFriendIds } = require("../services/friendsService")
 
 const UPLOADS_POST_DIR = path.join(__dirname, "..", "uploads", "posts")
 const MAX_IMAGES = 10
@@ -225,8 +226,12 @@ const getPosts = async (req, res) => {
     try {
         const currentUserId = getCurrentUserId(req)
 
+        // El feed muestra tus publicaciones y las de tus amigos
+        const friendIds = await getFriendIds(currentUserId)
+        const authorIds = [currentUserId, ...friendIds]
+
         // parentId: null también matchea los posts viejos que no tienen ese campo
-        const posts = await Post.find({ eliminated: false, parentId: null })
+        const posts = await Post.find({ eliminated: false, parentId: null, userId: { $in: authorIds } })
             .sort({ createdAt: -1 })
             .lean()
 

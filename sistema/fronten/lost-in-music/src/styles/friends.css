@@ -1,0 +1,191 @@
+.friends-card {
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.12);
+  color: #1b2733;
+}
+
+.friends-title {
+  margin: 0 0 12px;
+  font-size: 22px;
+}
+
+/* ── Pestañas ── */
+.friends-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 14px;
+  border-bottom: 1px solid #d9e0e7;
+}
+
+.friends-tab {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border: none;
+  border-bottom: 3px solid transparent;
+  background: transparent;
+  color: #5b6773;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.friends-tab:hover { color: #1d6fd1; }
+.friends-tab--active {
+  color: #1d6fd1;
+  border-bottom-color: #1d6fd1;
+}
+
+.friends-online-count {
+  color: #2e9e5b;
+  font-weight: 500;
+}
+
+.friends-badge {
+  min-width: 20px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: #e0392d;
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ── Buscador ── */
+.friends-input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 14px;
+  margin-bottom: 12px;
+  border: 1px solid #c9d3dd;
+  border-radius: 999px;
+  background: #fff;
+  font-size: 14px;
+  outline: none;
+}
+.friends-input:focus { border-color: #4da3ff; box-shadow: 0 0 0 3px rgba(77, 163, 255, 0.2); }
+
+/* ── Lista ── */
+.friends-section-title {
+  margin: 14px 2px 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #3b4752;
+}
+
+.friends-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.friends-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: #f4f7fa;
+}
+
+.friends-avatar {
+  position: relative;
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #dde4ea;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+}
+.friends-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Punto verde: amigo conectado */
+.friends-dot {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #2ecc71;
+  border: 2px solid #fff;
+}
+
+.friends-info {
+  flex: 1;
+  min-width: 0;
+}
+.friends-name {
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.friends-sub {
+  font-size: 13px;
+  color: #7a8794;
+}
+.friends-sub--online { color: #2e9e5b; font-weight: 600; }
+
+.friends-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+
+.friends-tag {
+  font-size: 13px;
+  color: #5b6773;
+}
+
+.friends-btn {
+  padding: 7px 14px;
+  border: 1px solid #c9d3dd;
+  border-radius: 999px;
+  background: #fff;
+  color: #1b2733;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.friends-btn:hover:not(:disabled) { background: #eef3f8; }
+.friends-btn:disabled { opacity: 0.55; cursor: default; }
+
+.friends-btn--primary {
+  background: #1d6fd1;
+  border-color: #1d6fd1;
+  color: #fff;
+}
+.friends-btn--primary:hover:not(:disabled) { background: #1860b6; }
+
+.friends-btn--danger { color: #c0392b; }
+.friends-btn--danger:hover:not(:disabled) { background: #fdecea; }
+
+.friends-empty {
+  padding: 22px 12px;
+  text-align: center;
+  color: #5b6773;
+  font-size: 14px;
+}
+.friends-empty .friends-btn { margin-top: 12px; }
+
+@media (max-width: 600px) {
+  .friends-row { flex-wrap: wrap; }
+  .friends-actions { width: 100%; justify-content: flex-end; }
+}
