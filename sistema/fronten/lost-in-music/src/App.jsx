@@ -23,7 +23,7 @@ import { usePosts } from "./hooks/UsePosts";
 import { LangProvider } from "./components/LangContext";
 
 // 👇 IMPORT NUEVO DEL PERFIL 👇
-import UserProfile from "./pages/userProfile";
+import UserProfile from "./pages/userProfilePage";
 
 function Marketplace() {
   return (

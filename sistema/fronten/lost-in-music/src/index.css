@@ -1,22 +1,8 @@
-html, body, #root {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  min-height: 100vh;
-}
 
-html,
-body,
-#root {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-}
+/* ==========================================
+   CONFIGURACIÓN GENERAL
+========================================== */
 
-body {
-  overflow-x: hidden;
-  margin: 0;}
 :root {
   --text: #6b6375;
   --text-h: #08060d;
@@ -37,48 +23,70 @@ body {
 
   font: 18px/145% var(--sans);
   letter-spacing: 0.18px;
+
   color-scheme: light;
   color: var(--text);
   background: var(--bg);
+
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-@media (max-width: 1024px) {
-  :root {
-    font-size: 16px;
-  }
-}
-
-
+/* ==========================================
+   RESET Y SCROLL
+========================================== */
 
 * {
   box-sizing: border-box;
 }
 
-body {
-  overflow: hidden;
-}
-
 html {
-  overflow-y: scroll;
-}
-#root {
-
   width: 100%;
-  max-width: 100%;
-  margin: 0px;
+  min-height: 100%;
+  height: auto;
 
-  width: 100%;
-  max-width: 100%;
-  min-height: 100svh;
   margin: 0;
+  padding: 0;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  scroll-behavior: smooth;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  height: auto;
+
+  margin: 0;
+  padding: 0;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#root {
   display: flex;
   flex-direction: column;
+
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  height: auto;
+
+  margin: 0;
+  padding: 0;
+
+  overflow: visible;
   border-inline: none;
 }
+
+/* ==========================================
+   TÍTULOS
+========================================== */
 
 h1,
 h2 {
@@ -96,22 +104,20 @@ h2 {
   font-size: 24px;
   line-height: 118%;
   letter-spacing: -0.24px;
-  margin: 0 0 0px;
+  margin: 0;
 }
-@media (max-width: 1024px) {
-  h1 {
-    font-size: 36px;
-    margin: 20px 0;
-  }
 
-  h2 {
-    font-size: 20px;
-  }
-}
+/* ==========================================
+   TEXTO
+========================================== */
 
 p {
   margin: 0;
 }
+
+/* ==========================================
+   CÓDIGO
+========================================== */
 
 code,
 .counter {
@@ -128,6 +134,68 @@ code {
   background: var(--code-bg);
 }
 
-* {
-  box-sizing: border-box;
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 1024px) {
+  :root {
+    font-size: 16px;
+  }
+
+  h1 {
+    font-size: 36px;
+    margin: 20px 0;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+}
+
+
+html {
+  height: auto !important;
+  min-height: 100% !important;
+  overflow-y: scroll !important;
+  overflow-x: hidden !important;
+}
+
+body {
+  position: static !important;
+  height: auto !important;
+  min-height: 100vh !important;
+
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+}
+
+#root {
+  position: relative !important;
+  height: auto !important;
+  min-height: 100vh !important;
+
+  overflow: visible !important;
+}
+
+/* Página del perfil */
+.user-profile-page {
+  position: relative !important;
+  height: auto !important;
+  min-height: 100vh !important;
+  overflow: visible !important;
+}
+
+.user-profile-page-content {
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+.user-profile,
+.up-profile-layout,
+.up-feed {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
 }

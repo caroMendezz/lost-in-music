@@ -1,0 +1,801 @@
+
+/* ==========================================
+   FRUTIGER AERO PROFILE
+========================================== */
+
+.user-profile {
+  --up-panel: #293846;
+  --up-panel-light: #536678;
+  --up-green: #003d35;
+  --up-border: #7697a9;
+  --up-text: #edf7fc;
+  --up-muted: #9bb3c2;
+
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 18px 3vw 45px;
+  box-sizing: border-box;
+
+  color: var(--up-text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+/* Portada y tarjeta principal */
+
+.up-profile-card {
+  position: relative;
+  width: 100%;
+  margin-bottom: 40px;
+  box-sizing: border-box;
+
+  background: var(--up-panel);
+  border: 1px solid var(--up-border);
+  box-shadow: 0 5px 18px rgba(0, 30, 50, 0.25);
+}
+
+
+.up-cover {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+
+  background:
+    radial-gradient(ellipse at 20% 0%,
+      rgba(255, 255, 255, 0.9),
+      transparent 28%),
+    linear-gradient(135deg,
+      #d5f7ff 0%,
+      #75d5f3 28%,
+      #258fc7 60%,
+      #b5f4ff 100%);
+}
+
+.up-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background:
+    linear-gradient(
+      115deg,
+      transparent 20%,
+      rgba(255, 255, 255, 0.45) 35%,
+      transparent 49%
+    ),
+    radial-gradient(
+      ellipse at 70% 110%,
+      rgba(0, 105, 165, 0.5),
+      transparent 50%
+    );
+}
+
+.up-cover::after {
+  content: "";
+  position: absolute;
+  left: -10%;
+  bottom: -85px;
+  width: 120%;
+  height: 130px;
+
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.25);
+  border-top: 2px solid rgba(255, 255, 255, 0.7);
+}
+
+/* Burbujas brillantes */
+
+.up-cover-orb {
+  position: absolute;
+  z-index: 1;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  border-radius: 50%;
+
+  background:
+    radial-gradient(
+      circle at 28% 20%,
+      rgba(255, 255, 255, 0.98),
+      rgba(255, 255, 255, 0.16) 28%,
+      rgba(50, 175, 230, 0.13) 60%,
+      rgba(255, 255, 255, 0.4)
+    );
+
+  box-shadow:
+    inset -12px -15px 25px rgba(0, 93, 150, 0.2),
+    inset 8px 8px 18px rgba(255, 255, 255, 0.7),
+    0 8px 20px rgba(0, 90, 150, 0.2);
+}
+
+.up-orb-one {
+  width: 170px;
+  height: 170px;
+  top: -55px;
+  left: 18%;
+}
+
+.up-orb-two {
+  width: 125px;
+  height: 125px;
+  top: 20px;
+  right: 23%;
+}
+
+.up-orb-three {
+  width: 75px;
+  height: 75px;
+  top: 95px;
+  left: 47%;
+}
+
+.up-cover-shine {
+  position: absolute;
+  z-index: 2;
+  width: 190px;
+  height: 35px;
+  top: 22px;
+  left: 35%;
+
+  transform: rotate(-35deg);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  filter: blur(12px);
+}
+
+/* Información del usuario */
+
+.up-profile-info {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  min-height: 82px;
+  padding: 12px 20px 12px 138px;
+  box-sizing: border-box;
+
+  background: rgba(235, 247, 255, 0.96);
+  color: #152b3b;
+}
+
+.up-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+  overflow: hidden;
+
+  color: #d5e2eb;
+  background: linear-gradient(145deg, #75899a, #4c6072);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+}
+
+.up-avatar span {
+  filter: grayscale(1);
+  opacity: 0.9;
+}
+
+.up-main-avatar {
+  position: absolute;
+  left: 12px;
+  top: -62px;
+
+  width: 114px;
+  height: 114px;
+
+  border: 4px solid #293846;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+}
+
+.up-main-avatar span {
+  font-size: 48px;
+}
+
+.up-profile-heading {
+  min-width: 0;
+  flex: 1;
+}
+
+.up-profile-heading h1 {
+  margin: 0 0 5px;
+
+  font-size: 23px;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+
+.up-profile-heading p {
+  margin: 0;
+  color: #455b6a;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.up-edit-button {
+  flex-shrink: 0;
+  padding: 9px 15px;
+
+  color: #f4fbff;
+  font-size: 12px;
+  font-weight: bold;
+
+  cursor: pointer;
+  background: linear-gradient(#647f92, #344e62);
+  border: 1px solid #90afc2;
+  border-radius: 5px;
+
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.3),
+    0 2px 4px rgba(0, 0, 0, 0.15);
+}
+
+.up-edit-button:hover {
+  background: linear-gradient(#7d9caf, #46667d);
+}
+
+/* Estadísticas */
+
+.up-stats {
+  display: flex;
+  gap: 0;
+
+  min-height: 83px;
+  padding: 16px 0 12px 145px;
+  box-sizing: border-box;
+
+  background: var(--up-panel);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.up-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  min-width: 145px;
+  padding: 0 0 0 0;
+}
+
+.up-stat span {
+  color: #d8e4ec;
+  font-size: 13px;
+}
+
+.up-stat strong {
+  color: #90c7e5;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+/* ==========================================
+   COLUMNAS
+========================================== */
+
+.up-profile-layout {
+  display: grid;
+  grid-template-columns: minmax(220px, 25%) minmax(0, 1fr);
+  align-items: start;
+  gap: 20px;
+
+  width: 100%;
+}
+
+
+.up-sidebar,
+.up-feed {
+  min-width: 0;
+}
+
+.up-side-card {
+  padding: 17px 16px;
+
+  color: #e4f2f5;
+  background: var(--up-green);
+  border: 1px solid #168c7d;
+
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.06),
+    0 4px 10px rgba(0, 0, 0, 0.12);
+}
+
+.up-side-card h2 {
+  margin: 0 0 12px;
+
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.up-about ul {
+  margin: 0;
+  padding-left: 19px;
+
+  color: #d1e2e5;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.up-friends-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 8px;
+}
+
+.up-friend {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.up-friend-avatar {
+  width: 36px;
+  height: 36px;
+
+  box-shadow:
+    inset 0 1px 4px rgba(255, 255, 255, 0.2);
+}
+
+.up-friend-avatar span {
+  font-size: 19px;
+}
+
+.up-friend > span {
+  max-width: 100%;
+  overflow: hidden;
+  color: #c5dbe3;
+  font-size: 10px;
+  text-overflow: ellipsis;
+}
+
+/* ==========================================
+   PUBLICACIONES
+========================================== */
+
+.up-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 19px;
+  min-width: 0;
+}
+
+.up-post {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.up-post-body {
+  display: flex;
+  gap: 12px;
+
+  min-height: 139px;
+  padding: 18px 20px;
+  box-sizing: border-box;
+}
+
+.up-post-avatar {
+  width: 52px;
+  height: 52px;
+}
+
+.up-post-avatar span {
+  font-size: 22px;
+}
+
+.up-post-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.up-post-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px;
+
+  margin-bottom: 17px;
+}
+
+.up-post-heading strong {
+  color: #f1f7fa;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.up-post-heading span {
+  color: var(--up-muted);
+  font-size: 12px;
+}
+
+.up-post-content p {
+  margin: 0;
+
+  color: #d1e0e9;
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* Botones inferiores */
+
+.up-post-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 12px;
+
+  min-height: 65px;
+  padding: 8px 18px;
+  box-sizing: border-box;
+
+  background: var(--up-panel-light);
+  border-top: 1px solid #8da9b9;
+}
+
+.up-post-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 3px 8px;
+
+  color: #edf6fc;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 700;
+
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 24px;
+
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.up-post-action:hover {
+  background: rgba(255, 255, 255, 0.13);
+  transform: translateY(-1px);
+}
+
+.up-action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
+  color: white;
+  font-size: 24px;
+
+  background: #263746;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, 0.15),
+    0 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+.up-post-action:hover .up-action-icon {
+  background: #167ba7;
+}
+
+.up-share-action {
+  margin-left: auto;
+}
+
+/* ==========================================
+   RESPONSIVE
+========================================== */
+
+@media (max-width: 700px) {
+  .user-profile {
+    padding: 12px 10px 30px;
+  }
+
+  .up-cover {
+    height: 145px;
+  }
+
+  .up-profile-info {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    padding: 14px 12px 14px 105px;
+    min-height: 100px;
+  }
+
+  .up-main-avatar {
+    left: 8px;
+    top: -42px;
+    width: 88px;
+    height: 88px;
+  }
+
+  .up-main-avatar span {
+    font-size: 36px;
+  }
+
+  .up-profile-heading h1 {
+    font-size: 19px;
+  }
+
+  .up-profile-heading p {
+    font-size: 12px;
+  }
+
+  .up-edit-button {
+    margin-left: 0;
+  }
+
+  .up-stats {
+    padding: 15px 12px;
+    justify-content: space-around;
+  }
+
+  .up-stat {
+    min-width: 0;
+    gap: 5px;
+  }
+
+  .up-stat span,
+  .up-stat strong {
+    font-size: 11px;
+  }
+
+  .up-profile-layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .up-sidebar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .up-side-card {
+    padding: 14px 12px;
+  }
+
+  .up-friends-grid {
+    gap: 10px 5px;
+  }
+
+  .up-post-body {
+    padding: 15px 12px;
+    gap: 10px;
+  }
+
+  .up-post-avatar {
+    width: 42px;
+    height: 42px;
+  }
+
+  .up-post-actions {
+    min-height: 58px;
+    padding: 6px 10px;
+  }
+
+  .up-action-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 20px;
+  }
+}
+
+@media (max-width: 390px) {
+  .up-sidebar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .up-profile-info {
+    padding-left: 12px;
+    padding-top: 52px;
+  }
+
+  .up-main-avatar {
+    top: -45px;
+  }
+
+  .up-edit-button {
+    margin-bottom: 4px;
+  }
+
+  .up-stat span,
+  .up-stat strong {
+    font-size: 10px;
+  }
+}
+
+
+/* ==========================================
+   POSTS: PANELES GRIS AZULADOS
+========================================== */
+
+.up-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-width: 0;
+  width: 100%;
+}
+
+/* Marco exterior de cada publicación */
+.up-post {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+
+  background: #293846;
+  border: 2px solid #718b9c;
+  border-radius: 0;
+
+  box-shadow:
+    0 4px 12px rgba(0, 25, 45, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* Cuerpo de la publicación */
+.up-post-body {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+
+  min-height: 140px;
+  padding: 20px 22px;
+  box-sizing: border-box;
+
+  background: #293846;
+}
+
+/* Avatar del post */
+.up-post-avatar {
+  flex-shrink: 0;
+  width: 52px;
+  height: 52px;
+
+  background: #536678;
+  border: 1px solid #718b9c;
+  border-radius: 50%;
+}
+
+/* Nombre y fecha */
+.up-post-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+
+  margin-bottom: 16px;
+}
+
+.up-post-heading strong {
+  color: #f1f7fa;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.up-post-heading span {
+  color: #91a9b9;
+  font-size: 13px;
+}
+
+/* Texto de la publicación */
+.up-post-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.up-post-content p {
+  margin: 0;
+
+  color: #d5e0e8;
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+/* Barra gris de likes, comentarios y compartir */
+.up-post-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 12px;
+
+  min-height: 66px;
+  padding: 8px 22px;
+  box-sizing: border-box;
+
+  background: #536678;
+  border-top: 2px solid #718b9c;
+}
+
+/* Botones de interacción */
+.up-post-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  padding: 3px 8px;
+
+  color: #eaf3f8;
+  font-size: 17px;
+  font-weight: 700;
+
+  cursor: pointer;
+  background: transparent;
+  border: none;
+  border-radius: 24px;
+
+  transition: background 0.2s ease;
+}
+
+.up-post-action:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.up-action-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 40px;
+  height: 40px;
+
+  color: #fff;
+  font-size: 24px;
+
+  background: #293846;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
+}
+
+.up-post-action:hover .up-action-icon {
+  background: #167ba7;
+}
+
+/* Botón compartir al extremo derecho */
+.up-share-action {
+  margin-left: auto;
+}
+
+/* En celulares */
+@media (max-width: 700px) {
+  .up-post-body {
+    min-height: 125px;
+    padding: 15px 12px;
+  }
+
+  .up-post-actions {
+    min-height: 58px;
+    padding: 6px 10px;
+  }
+
+  .up-action-icon {
+    width: 34px;
+    height: 34px;
+    font-size: 20px;
+  }
+}
+
+
+.user-profile {
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+.up-profile-layout,
+.up-feed {
+  height: auto;
+  overflow: visible;
+}

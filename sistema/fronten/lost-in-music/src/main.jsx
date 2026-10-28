@@ -1,23 +1,17 @@
-import React from 'react';
+
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import AccesoLayout from './pages/AccesoLayout';
+
+import { createBrowserRouter, RouterProvider, Outlet, useLocation } from 'react-router-dom';
+
 import './index.css';
-import { BrowserRouter } from 'react-router-dom';
+
 import App from './App.jsx';
 import { LangProvider } from './components/LangContext';
 
-import {
-  createBrowserRouter,
-  RouterProvider,
-  Outlet,
-  useLocation,
-} from 'react-router-dom';
-
+import AccesoLayout from './pages/AccesoLayout';
 import Acceso from './pages/registerlogin/registerlogin';
-import PasswordRecovery from './components/resetpassword';
-
-import { useEffect } from 'react';
-
+import UserProfilePage from './pages/userProfilePage';
 
 function TitleManager() {
   const location = useLocation();
@@ -29,6 +23,8 @@ function TitleManager() {
       document.title = 'Lost In Music - Acceso';
     } else if (path === '/reset-password') {
       document.title = 'Lost In Music - Recuperar contraseña';
+    } else if (path === '/perfil') {
+      document.title = 'Lost In Music - Perfil';
     } else {
       document.title = 'Lost In Music';
     }
@@ -51,12 +47,17 @@ const router = createBrowserRouter([
         ],
       },
       {
+        path: '/perfil',
+        element: <UserProfilePage />,
+      },
+      {
         path: '/*',
-        element: <App />
-      }
+        element: <App />,
+      },
     ],
   },
 ]);
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <LangProvider>

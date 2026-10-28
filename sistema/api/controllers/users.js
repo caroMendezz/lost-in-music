@@ -119,7 +119,7 @@ const DeleteUser = async (req, res) => {
 
 const UpdateUser = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { id } = req.params;
 
     const user = await User.findByPk(id);
 
@@ -159,9 +159,61 @@ const UpdateUser = async (req, res) => {
   }
 };
 
+
+const GetMyProfile = async (req, res) => {
+  try {
+    // El middleware de autenticación debe verificar el JWT
+    // y guardar su payload en req.user.
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "No se pudo identificar al usuario autenticado",
+      });
+    }
+
+    const user = await User.findOne({
+      where: {
+        userId,
+        eliminated: 0,
+      },
+      attributes: [
+        "userId",
+        "username",
+        "description",
+        "birthDate",
+        "gender",
+        "followerAmount",
+        "followingAmount",
+        "profilePhoto",
+        "banner",
+        "ubication",
+      ],
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Usuario no encontrado",
+      });
+    }
+
+    return res.status(200).json({
+      user,
+    });
+  } catch (error) {
+    console.error("Error al obtener el perfil:", error);
+
+    return res.status(500).json({
+      message: "Error al obtener el perfil del usuario",
+    });
+  }
+};
+
+
 module.exports = {
   Login,
   Register,
   DeleteUser,
   UpdateUser,
+  GetMyProfile
 };
