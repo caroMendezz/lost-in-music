@@ -5,6 +5,7 @@ const Post = require("../models/Post")
 const Like = require("../models/Like")
 const { User } = require("../models/User")
 const { getFriendIds } = require("../services/friendsService")
+const { notifyFriendsOfPost, removeNotifications } = require("../services/notificationsService")
 
 const UPLOADS_POST_DIR = path.join(__dirname, "..", "uploads", "posts")
 const MAX_IMAGES = 10
@@ -111,6 +112,11 @@ const createPost = async (req, res) => {
             await Post.updateOne({ _id: parentId }, { $inc: { commentsCount: 1 } })
         }
 
+        // Un post nuevo (no una respuesta) les genera una notificación a los amigos del autor
+        if (!parentId) {
+            notifyFriendsOfPost(post, userId) // no se espera: nunca falla la publicación por esto
+        }
+
         const [decorated] = await decoratePosts([post.toObject()], userId)
         return res.status(201).json(decorated)
     } catch (error) {
@@ -144,6 +150,9 @@ const deletePost = async (req, res) => {
                 { $inc: { commentsCount: -1 } }
             )
         }
+
+        // Si se elimina el post, las notificaciones que apuntaban a él ya no tienen a dónde llevar
+        await removeNotifications({ type: "friend_post", postId: String(post._id) })
 
         return res.status(200).json({ message: "Publicación eliminada correctamente" })
     } catch (error) {

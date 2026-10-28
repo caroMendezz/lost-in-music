@@ -7,13 +7,17 @@ const FriendsContext = createContext({
   friends: [],
   requests: { received: [], sent: [] },
   loading: false,
+  socket: null,
   isOnline: () => false,
   refresh: async () => {},
 });
 
 /**
  * Guarda la lista de amigos, las solicitudes y quién está conectado.
- * Se conecta al namespace /presence de socket.io y se mantiene actualizado en tiempo real:
+ * Abre UNA conexión de socket.io al namespace /presence y la comparte (`socket`) con
+ * quien la necesite, por ejemplo las notificaciones.
+ *
+ * Eventos que maneja acá:
  *   presence:update  -> un amigo se conectó / desconectó
  *   friends:changed  -> cambió una solicitud o una amistad (se vuelve a cargar todo)
  */
@@ -22,6 +26,7 @@ export function FriendsProvider({ children }) {
   const [requests, setRequests] = useState({ received: [], sent: [] });
   const [onlineIds, setOnlineIds] = useState(() => new Set());
   const [loading, setLoading] = useState(true);
+  const [socket, setSocket] = useState(null);
 
   const refresh = useCallback(async () => {
     if (!localStorage.getItem('token')) return;
@@ -49,12 +54,13 @@ export function FriendsProvider({ children }) {
 
     refresh();
 
-    const socket = io(PRESENCE_URL, { auth: { token } });
+    const connection = io(PRESENCE_URL, { auth: { token } });
+    setSocket(connection);
 
     // Al (re)conectar se vuelve a cargar todo: pudo haberse perdido algún evento
-    socket.on('connect', refresh);
+    connection.on('connect', refresh);
 
-    socket.on('presence:update', ({ userId, online }) => {
+    connection.on('presence:update', ({ userId, online }) => {
       setOnlineIds((prev) => {
         const next = new Set(prev);
         if (online) next.add(userId);
@@ -63,10 +69,11 @@ export function FriendsProvider({ children }) {
       });
     });
 
-    socket.on('friends:changed', refresh);
+    connection.on('friends:changed', refresh);
 
     return () => {
-      socket.disconnect();
+      connection.disconnect();
+      setSocket(null);
     };
   }, [refresh]);
 
@@ -75,10 +82,11 @@ export function FriendsProvider({ children }) {
       friends: friends.map((f) => ({ ...f, online: onlineIds.has(f.userId) })),
       requests,
       loading,
+      socket,
       isOnline: (userId) => onlineIds.has(Number(userId)),
       refresh,
     }),
-    [friends, requests, onlineIds, loading, refresh]
+    [friends, requests, onlineIds, loading, socket, refresh]
   );
 
   return <FriendsContext.Provider value={value}>{children}</FriendsContext.Provider>;

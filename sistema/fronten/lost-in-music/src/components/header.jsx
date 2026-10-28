@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/Header.css';
 import { useLang } from './LangContext';
 import LangSelector from './LangSelector';
+import NotificationsMenu from './NotificationsMenu';
 
 function Header() {
   const navigate = useNavigate();
@@ -54,9 +55,7 @@ function Header() {
       <div className="header-icons">
         <LangSelector />
         
-        <button className="header-icon-btn" title="Notificaciones">
-          🔔
-        </button>
+        <NotificationsMenu />
 
         {/* Botón de Perfil con menú desplegable */}
         <div className="header-profile-wrapper" ref={menuRef} style={{ position: 'relative' }}>

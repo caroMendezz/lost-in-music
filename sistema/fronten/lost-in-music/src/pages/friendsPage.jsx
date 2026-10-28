@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import PageLayout from '../components/PageLayout';
 import { useFriends } from '../components/FriendsContext';
 import {
@@ -96,8 +97,10 @@ function PersonRow({ person, relation, busy, handlers }) {
 
 function FriendsPage() {
   const { friends, requests, loading, refresh } = useFriends();
+  const location = useLocation();
 
-  const [tab, setTab] = useState('friends'); // friends | requests | search
+  // Se puede entrar directo a una pestaña: navigate('/amigos', { state: { tab: 'requests' } })
+  const [tab, setTab] = useState(location.state?.tab ?? 'friends'); // friends | requests | search
   const [filter, setFilter] = useState('');  // filtra "Mis amigos"
   const [query, setQuery] = useState('');    // busca personas nuevas
   const [results, setResults] = useState([]);
@@ -108,6 +111,11 @@ function FriendsPage() {
   useEffect(() => {
     refresh();
   }, [refresh]);
+
+  // Si ya estás en /amigos y tocás una notificación, cambia a la pestaña pedida
+  useEffect(() => {
+    if (location.state?.tab) setTab(location.state.tab);
+  }, [location.state]);
 
   // Búsqueda de personas (espera 350 ms después de la última tecla)
   useEffect(() => {

@@ -3,6 +3,7 @@ const { User } = require("../models/User");
 const { Friendship } = require("../models/Friendship");
 const { getFriendIds, findRelation } = require("../services/friendsService");
 const { isOnline, emitToUser } = require("../sockets/presence");
+const { notifyUser, removeNotifications } = require("../services/notificationsService");
 
 const USER_ATTRS = ["userId", "username", "profilePhoto", "ubication"];
 
@@ -172,11 +173,13 @@ const sendFriendRequest = async (req, res) => {
       // La otra persona ya me había enviado una solicitud: al agregarla, quedan como amigos
       existing.status = "accepted";
       await existing.save();
+      await removeNotifications({ userId: me, actorId: other, type: "friend_request" });
       notifyChange(me, other);
       return res.status(200).json({ relation: "friend" });
     }
 
     await Friendship.create({ requesterId: me, addresseeId: other, status: "pending" });
+    await notifyUser({ userId: other, actorId: me, type: "friend_request" });
     notifyChange(me, other);
 
     return res.status(201).json({ relation: "pending_sent" });
@@ -205,6 +208,7 @@ const acceptFriendRequest = async (req, res) => {
 
     request.status = "accepted";
     await request.save();
+    await removeNotifications({ userId: me, actorId: other, type: "friend_request" });
     notifyChange(me, other);
 
     return res.status(200).json({ relation: "friend" });
@@ -229,7 +233,14 @@ const removeFriendship = async (req, res) => {
     const relation = await findRelation(me, other);
     if (!relation) return res.status(404).json({ message: "No hay ninguna relación con este usuario" });
 
+    const wasPending = relation.status === "pending";
+    const { requesterId, addresseeId } = relation;
     await relation.destroy();
+
+    // Si era una solicitud (cancelada o rechazada), se quita la notificación del destinatario
+    if (wasPending) {
+      await removeNotifications({ userId: addresseeId, actorId: requesterId, type: "friend_request" });
+    }
     notifyChange(me, other);
 
     return res.status(200).json({ relation: "none" });

@@ -20,6 +20,9 @@ const {
   getFriends, getFriendRequests, searchPeople,
   sendFriendRequest, acceptFriendRequest, removeFriendship
 } = require("./controllers/friends");
+const {
+  getNotifications, markNotificationsRead, deleteNotification, clearNotifications
+} = require("./controllers/notifications");
 const sequelize = require('./config/db')
 const connectDB = require("./config/dbnosql")
 const server = express()
@@ -85,6 +88,11 @@ server.get("/friends/search", checkToken, searchPeople);
 server.post("/friends/request/:userId", checkToken, sendFriendRequest);
 server.patch("/friends/accept/:userId", checkToken, acceptFriendRequest);
 server.delete("/friends/:userId", checkToken, removeFriendship);
+
+server.get("/notifications", checkToken, getNotifications);
+server.patch("/notifications/read", checkToken, markNotificationsRead);
+server.delete("/notifications/:id", checkToken, deleteNotification);
+server.delete("/notifications", checkToken, clearNotifications);
 
 server.post("/Upload", checkToken, upload.single("file"), uploadFile);
 server.use("/uploads", express.static(path.join(__dirname, "uploads")));
