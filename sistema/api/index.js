@@ -6,6 +6,7 @@ const { Server } = require("socket.io");
 
 const upload = require("./middlewares/upload");
 const uploadPostMedia = require("./middlewares/uploadPostMedia");
+const auditLog = require("./middlewares/auditLog");
 const {uploadFile} = require("./controllers/uploads");
 const { Login, Register, DeleteUser, UpdateUser} = require('./controllers/users')
 const {createPost, deletePost, updatePost, getPosts, getPostById, getReplies, toggleLike} = require('./controllers/posts')
@@ -44,6 +45,9 @@ server.use((req, res, next) => {
   }
   next()
 })
+
+// Bitácora (logs/bitacora.txt): registra toda interacción que no sea GET
+server.use(auditLog)
 
 const io = new Server(httpServer, {
   cors: {
