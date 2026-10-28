@@ -22,11 +22,16 @@ const checkToken = async (req, res, next) => {
 
         if (!user) {
             return res.status(404).json({
-                
                 message: 'Usuario no encontrado',
-                
             });
-        }
+            }
+
+            if (user.eliminated === true || Number(user.eliminated) === 1) {
+            return res.status(403).json({
+                message: 'Esta cuenta está desactivada.',
+                accountDeleted: true,
+            });
+            }
 
         req.user = user;
 

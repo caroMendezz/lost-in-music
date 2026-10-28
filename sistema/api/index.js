@@ -11,6 +11,10 @@ const {
   RequestPasswordChange,
   ConfirmPasswordChange,
 } = require('./controllers/changePassword');
+const {
+  RequestAccountDeletion,
+  ConfirmAccountDeletion,
+} = require("./controllers/deleteAccount");
 
 const upload = require("./middlewares/upload");
 const uploadPostMedia = require("./middlewares/uploadPostMedia");
@@ -86,6 +90,18 @@ server.post(
   '/password/change/confirm',
   checkToken,
   ConfirmPasswordChange
+);
+
+server.post(
+  "/account/delete/request",
+  checkToken,
+  RequestAccountDeletion
+);
+
+server.post(
+  "/account/delete/confirm",
+  checkToken,
+  ConfirmAccountDeletion
 );
 
 server.patch('/deleteUser/:id',checkToken, DeleteUser);

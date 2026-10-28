@@ -17,7 +17,7 @@ const Login = async (req, res) => {
   }
 
   try {
-    // acepta login por username O por email (tu input es "correo o usuario")
+    // Acepta login por username o email
     const user = await User.findOne({
       where: { [Op.or]: [{ username }, { email: username }] },
     });
@@ -29,19 +29,27 @@ const Login = async (req, res) => {
     if (!compare)
       return res.status(400).json({ message: "Usuario o password incorrecta" });
 
+    // Verificar si la cuenta está desactivada
+    if (user.eliminated === true || Number(user.eliminated) === 1) {
+      return res.status(403).json({
+        message: "Esta cuenta está desactivada.",
+      });
+    }
+
     const token = jwt.sign(
       { userId: user.userId, idRole: user.idRole },
       process.env.JWT_SECRET,
       { expiresIn: "8h" },
     );
 
-    // UNA sola respuesta, con el rol incluido
+    // Una sola respuesta, con el rol incluido
     return res.json({ token, idRole: user.idRole });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Error al iniciar sesión" });
   }
 };
+
 
 const Register = async (req, res) => {
   const { email, username, password, gender, profilePhoto, birthDate} =
