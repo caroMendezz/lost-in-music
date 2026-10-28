@@ -12,6 +12,8 @@ const { io } = require("socket.io-client");
 const API_URL = process.env.API_URL || "http://localhost:3000";
 const USER_A = { username: process.env.USER_A || "ana", password: process.env.PASS_A || "1234" };
 const USER_B = { username: process.env.USER_B || "beto", password: process.env.PASS_B || "1234" };
+// Tercer usuario: se usa para probar que una respuesta no pueda citar mensajes de otra conversacion
+const USER_C = { username: process.env.USER_C || "carla", password: process.env.PASS_C || "1234" };
 
 let failures = 0;
 
@@ -207,6 +209,123 @@ async function main() {
         Array.isArray(conv.data) && conv.data.some((c) => Number(c.user.userId) === B.userId)
     );
 
+    // 8) Respuestas a mensajes (replyToMessageId)
+    console.log("\n8) Respuestas a mensajes");
+    const m5 = await sendText(sockA, sockB, B.userId, `${tag} original`);
+    const id5 = m5.sent?.messageId;
+
+    const replyText = `${tag} respuesta`;
+    const repSent = waitFor(sockA, "messageSent", (m) => m.content === replyText);
+    const repRecv = waitFor(sockB, "newMessage", (m) => m.content === replyText);
+    sockA.emit("sendMessage", {
+        receiverId: B.userId,
+        content: replyText,
+        messageType: "text",
+        replyToMessageId: id5
+    });
+    const [repA, repB] = await Promise.all([repSent, repRecv]);
+    check("A recibe messageSent de la respuesta", Boolean(repA));
+    check("la respuesta trae replyToMessageId", Boolean(repA) && Number(repA.replyToMessageId) === Number(id5));
+    check("B recibe la respuesta con la referencia", Boolean(repB) && Number(repB.replyToMessageId) === Number(id5));
+
+    const hRepA = await history(A, B.userId);
+    const hRepB = await history(B, A.userId);
+    check(
+        "GET /messages recupera la referencia en ambos usuarios",
+        hRepA.some((m) => m.content === replyText && Number(m.replyToMessageId) === Number(id5)) &&
+            hRepB.some((m) => m.content === replyText && Number(m.replyToMessageId) === Number(id5))
+    );
+    check(
+        "los mensajes que no son respuesta quedan sin referencia (compatibilidad)",
+        hRepA.some((m) => m.messageId === id5 && (m.replyToMessageId === null || m.replyToMessageId === undefined))
+    );
+
+    const errNoExist = waitFor(sockA, "messageError");
+    sockA.emit("sendMessage", {
+        receiverId: B.userId,
+        content: `${tag} respuesta huerfana`,
+        messageType: "text",
+        replyToMessageId: 99999999
+    });
+    check("no se puede responder un mensaje inexistente", Boolean(await errNoExist));
+
+    // Mensaje de OTRA conversacion del propio usuario (A <-> C) citado hablando con B
+    const C = await login(USER_C);
+    const foreignSent = waitFor(sockA, "messageSent", (m) => m.content === `${tag} otro chat`);
+    sockA.emit("sendMessage", { receiverId: C.userId, content: `${tag} otro chat`, messageType: "text" });
+    const foreign = await foreignSent;
+    const errForeign = waitFor(sockA, "messageError");
+    sockA.emit("sendMessage", {
+        receiverId: B.userId,
+        content: `${tag} referencia de otro chat`,
+        messageType: "text",
+        replyToMessageId: foreign?.messageId
+    });
+    check("no se puede responder con un mensaje de otra conversacion", Boolean(await errForeign));
+    check(
+        "el mensaje no se creo con una referencia invalida",
+        !(await history(A, B.userId)).some((m) => m.content === `${tag} referencia de otro chat`)
+    );
+
+    // Mensaje de una conversacion ajena (C <-> B) citado por A
+    const sockC = await connect(C);
+    const bcSent = waitFor(sockC, "messageSent", (m) => m.content === `${tag} BC`);
+    sockC.emit("sendMessage", { receiverId: B.userId, content: `${tag} BC`, messageType: "text" });
+    const bcMsg = await bcSent;
+    const errAjena = waitFor(sockA, "messageError");
+    sockA.emit("sendMessage", {
+        receiverId: B.userId,
+        content: `${tag} referencia ajena`,
+        messageType: "text",
+        replyToMessageId: bcMsg?.messageId
+    });
+    check("no se puede responder un mensaje de una conversacion ajena", Boolean(await errAjena));
+    sockC.disconnect();
+
+
+    // 9) Mensajes con varias imagenes (fileUrls)
+    console.log("\n9) Mensajes con varias imagenes");
+    const photoUrls = ["/uploads/a.jpg", "/uploads/b.jpg", "/uploads/c.jpg", "/uploads/d.jpg"];
+    const isMulti = (m) => Array.isArray(m?.fileUrls) && m.fileUrls.length === photoUrls.length;
+
+    const multiSent = waitFor(sockA, "messageSent", isMulti);
+    const multiRecv = waitFor(sockB, "newMessage", isMulti);
+    sockA.emit("sendMessage", {
+        receiverId: B.userId,
+        messageType: "image",
+        fileUrl: photoUrls[0],
+        fileName: "a.jpg",
+        fileUrls: photoUrls,
+        content: `${tag} 4 fotos`
+    });
+    const [multiA, multiB] = await Promise.all([multiSent, multiRecv]);
+
+    check("A recibe el mensaje con las 4 imagenes", isMulti(multiA));
+    check("B recibe las 4 imagenes en tiempo real", isMulti(multiB));
+    check("fileUrl conserva la primera imagen (compatibilidad)", multiA?.fileUrl === photoUrls[0]);
+    check("el pie de foto se guarda en content", multiA?.content === `${tag} 4 fotos`);
+
+    const multiStored = (await history(A, B.userId)).find((m) => m.messageId === multiA?.messageId);
+    check(
+        "GET /messages devuelve fileUrls como lista",
+        Array.isArray(multiStored?.fileUrls) && multiStored.fileUrls.length === photoUrls.length
+    );
+    check(
+        "B ve las mismas imagenes en su historial",
+        (await history(B, A.userId)).some(
+            (m) => m.messageId === multiA?.messageId && Array.isArray(m.fileUrls) && m.fileUrls.length === photoUrls.length
+        )
+    );
+
+    const tooMany = waitFor(sockA, "messageError");
+    sockA.emit("sendMessage", {
+        receiverId: B.userId,
+        messageType: "image",
+        fileUrl: "/uploads/x0.jpg",
+        fileName: "x0.jpg",
+        fileUrls: Array.from({ length: 11 }, (_, i) => `/uploads/x${i}.jpg`)
+    });
+    check("rechaza mas de 10 imagenes en un mensaje", Boolean(await tooMany));
     sockA.disconnect();
     sockB.disconnect();
 

@@ -14,9 +14,41 @@ function EmptyState({ title, detail }) {
     );
 }
 
-function MediaThumb({ message }) {
-    const url = resolveFileUrl(message.fileUrl);
+function MediaThumb({ message, onOpenImage }) {
+    // Cada mensaje puede traer varias fotos (fileUrls): el item ya trae la url resuelta
+    const url = message.url || resolveFileUrl(message.fileUrl);
     const video = isVideo(message);
+
+    // Las fotos abren el visor con TODAS las imagenes del mensaje original; los videos
+    // siguen abriéndose en una pestaña nueva.
+    const photoUrls = video
+        ? []
+        : (Array.isArray(message.fileUrls) && message.fileUrls.length > 0
+              ? message.fileUrls
+              : [message.fileUrl]
+          )
+              .map(resolveFileUrl)
+              .filter(Boolean);
+    const photoIndex = Math.max(photoUrls.indexOf(url), 0);
+
+    if (!video) {
+        return (
+            <button
+                type="button"
+                className={styles.sharedContentThumb}
+                onClick={() => onOpenImage?.(photoUrls, photoIndex)}
+                title={message.fileName || ""}
+                aria-label="Ver imagen"
+            >
+                <img
+                    className={styles.sharedContentMedia}
+                    src={url}
+                    alt={message.fileName || "Imagen"}
+                    loading="lazy"
+                />
+            </button>
+        );
+    }
 
     return (
         <a
@@ -26,27 +58,16 @@ function MediaThumb({ message }) {
             rel="noreferrer"
             title={message.fileName || ""}
         >
-            {video ? (
-                <video className={styles.sharedContentMedia} src={url} preload="metadata" muted />
-            ) : (
-                <img
-                    className={styles.sharedContentMedia}
-                    src={url}
-                    alt={message.fileName || "Imagen"}
-                    loading="lazy"
-                />
-            )}
-            {video && (
-                <span className={styles.sharedContentPlay} aria-hidden="true">
-                    ▶
-                </span>
-            )}
+            <video className={styles.sharedContentMedia} src={url} preload="metadata" muted />
+            <span className={styles.sharedContentPlay} aria-hidden="true">
+                ▶
+            </span>
         </a>
     );
 }
 
 // filters = { media: boolean, files: boolean } (los maneja ContactInfo)
-export default function SharedContent({ contact, messages, filters }) {
+export default function SharedContent({ contact, messages, filters, onOpenImage }) {
     // Sub-filtros de Multimedia. Si no hay ninguno activo se muestra todo (fotos y videos).
     const [kinds, setKinds] = useState({ photos: false, videos: false });
     const toggleKind = (kind) => setKinds((prev) => ({ ...prev, [kind]: !prev[kind] }));
@@ -55,10 +76,37 @@ export default function SharedContent({ contact, messages, filters }) {
     const showPhotos = noKindSelected || kinds.photos;
     const showVideos = noKindSelected || kinds.videos;
 
-    const mediaItems = useMemo(
-        () => messages.filter((m) => (showPhotos && isImage(m)) || (showVideos && isVideo(m))),
-        [messages, showPhotos, showVideos]
-    );
+    // Cada mensaje de varias fotos se desarma en un item por imagen, asi el panel
+    // de "Imagenes compartidas" muestra todas y no solo la primera.
+    const mediaItems = useMemo(() => {
+        const items = [];
+
+        messages.forEach((message) => {
+            if (showPhotos && isImage(message)) {
+                const urls =
+                    Array.isArray(message.fileUrls) && message.fileUrls.length > 0
+                        ? message.fileUrls
+                        : [message.fileUrl];
+
+                urls.forEach((fileUrl, index) => {
+                    items.push({
+                        ...message,
+                        fileUrl,
+                        url: resolveFileUrl(fileUrl),
+                        thumbKey: `${message.messageId}-${index}`
+                    });
+                });
+            } else if (showVideos && isVideo(message)) {
+                items.push({
+                    ...message,
+                    url: resolveFileUrl(message.fileUrl),
+                    thumbKey: String(message.messageId)
+                });
+            }
+        });
+
+        return items;
+    }, [messages, showPhotos, showVideos]);
     const mediaGroups = useMemo(() => groupByMonth(mediaItems), [mediaItems]);
     const files = useMemo(() => messages.filter(isOtherFile).sort(byNewest), [messages]);
 
@@ -105,7 +153,11 @@ export default function SharedContent({ contact, messages, filters }) {
                                 <h5 className={styles.sharedContentMonth}>{group.label}</h5>
                                 <div className={styles.sharedContentGrid}>
                                     {group.items.map((message) => (
-                                        <MediaThumb key={message.messageId} message={message} />
+                                        <MediaThumb
+                                            key={message.thumbKey}
+                                            message={message}
+                                            onOpenImage={onOpenImage}
+                                        />
                                     ))}
                                 </div>
                             </div>

@@ -22,6 +22,25 @@
   font-size: 17px;
 }
 
+/* Nombre del usuario en el encabezado: efecto hover y clic preparados
+   para abrir el perfil (la navegacion todavia no esta implementada). */
+.chatWindowNameButton {
+  margin: 0;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  font-size: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.chatWindowNameButton:hover {
+  background: #f0f2f5;
+  text-decoration: underline;
+}
+
 .chatWindowEmpty {
   margin: auto;
   color: #4a4d52;

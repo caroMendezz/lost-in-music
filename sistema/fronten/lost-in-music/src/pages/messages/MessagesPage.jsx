@@ -3,6 +3,8 @@ import { useSearchParams } from "react-router-dom";
 import ChatWindow from "../../components/messages/ChatWindow";
 import ContactInfo from "../../components/messages/ContactInfo";
 import ConversationList from "../../components/messages/ConversationList";
+import DeleteChatModal from "../../components/messages/DeleteChatModal";
+import ImageViewer from "../../components/messages/ImageViewer";
 import useMessages from "../../hooks/useMessages";
 import styles from "./MessagesPage.module.css";
 
@@ -22,12 +24,16 @@ export default function MessagesPage() {
         error,
         uploading,
         authError,
+        isContactTyping,
         selectConversation,
         sendMessage,
         sendAttachment,
         editMessage,
         revokeMessage,
-        deleteMessageForMe
+        deleteMessageForMe,
+        deleteConversation,
+        sendTyping,
+        sendStopTyping
     } = useMessages(initialUserId);
 
     const hasChat = selectedUserId !== null;
@@ -35,6 +41,24 @@ export default function MessagesPage() {
     // Panel derecho (info del contacto): se muestra por defecto en pantallas anchas.
     // El boton "i" del chat lo oculta/muestra sin cerrar la conversacion.
     const [infoOpen, setInfoOpen] = useState(() => window.innerWidth >= 1000);
+
+    // Visor de imagenes a pantalla completa: { conversationId, images, index }.
+    // Vive en la pagina para servir tanto al chat como al panel de contenido compartido.
+    const [viewer, setViewer] = useState(null);
+
+    // Solo se muestra si pertenece a la conversacion activa: si se cambia de chat con el
+    // visor abierto (por ejemplo desde la url) se descarta sin necesidad de un efecto.
+    const activeViewer = viewer && viewer.conversationId === selectedUserId ? viewer : null;
+
+    // Conversacion que se quiere eliminar (solo se borra la copia del usuario actual)
+    const [chatToDelete, setChatToDelete] = useState(null);
+
+    // Confirmado el borrado: se cierra la ventana y se ejecuta la eliminacion individual
+    const handleConfirmDeleteChat = async () => {
+        const conversation = chatToDelete;
+        setChatToDelete(null);
+        if (conversation) await deleteConversation(conversation.user.userId);
+    };
 
     if (authError) {
         return (
@@ -55,6 +79,7 @@ export default function MessagesPage() {
                     myId={myId}
                     loading={loadingConversations}
                     onSelect={selectConversation}
+                    onDeleteChat={setChatToDelete}
                 />
 
                 <ChatWindow
@@ -69,8 +94,14 @@ export default function MessagesPage() {
                     onEdit={editMessage}
                     onRevoke={revokeMessage}
                     onDeleteForMe={deleteMessageForMe}
+                    isContactTyping={isContactTyping}
+                    onTyping={sendTyping}
+                    onStopTyping={sendStopTyping}
                     infoOpen={infoOpen}
                     onToggleInfo={() => setInfoOpen((open) => !open)}
+                    onOpenImage={(images, index) =>
+                        setViewer({ conversationId: selectedUserId, images, index })
+                    }
                 />
 
                 {hasChat && (
@@ -79,9 +110,24 @@ export default function MessagesPage() {
                         contact={contact}
                         messages={messages}
                         hidden={!infoOpen}
+                        onOpenImage={(images, index) =>
+                            setViewer({ conversationId: selectedUserId, images, index })
+                        }
                     />
                 )}
             </div>
+
+            {activeViewer && (
+                <ImageViewer
+                    images={activeViewer.images}
+                    initialIndex={activeViewer.index}
+                    onClose={() => setViewer(null)}
+                />
+            )}
+
+            {chatToDelete && (
+                <DeleteChatModal onClose={() => setChatToDelete(null)} onConfirm={handleConfirmDeleteChat} />
+            )}
         </div>
     );
 }

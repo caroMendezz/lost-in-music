@@ -53,6 +53,14 @@ const Message = sequelize.define("message", {
         allowNull: true
     },
 
+    // Varios archivos en un solo mensaje (JSON con la lista de URLs).
+    // Solo se usa para mensajes "image" con mas de una foto; fileUrl conserva
+    // SIEMPRE la primera para compatibilidad con todo lo que ya lee ese campo.
+    fileUrls: {
+        type: DataTypes.TEXT,
+        allowNull: true
+    },
+
     sent_at: {
         type: DataTypes.DATE,
         allowNull: false,
@@ -89,6 +97,16 @@ const Message = sequelize.define("message", {
     editedAt: {
         type: DataTypes.DATE,
         allowNull: true
+    },
+
+    // Mensaje original al que responde este mensaje (null = mensaje normal)
+    replyToMessageId: {
+        type: DataTypes.INTEGER,
+        allowNull: true,
+        references: {
+            model: "messages",
+            key: "messageId"
+        }
     }
 });
 

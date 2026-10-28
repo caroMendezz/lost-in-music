@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+    deleteConversation as deleteConversationRequest,
     getConversations,
     getCurrentUserId,
     getMessages,
@@ -10,6 +11,7 @@ import {
 import { disconnectSocket, getSocket } from "../services/socket";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // mismo limite que multer en el backend
+const MAX_IMAGES_PER_MESSAGE = 10; // mismo limite que el backend (controllers/messages.js)
 
 // Une listas de mensajes sin duplicar por messageId y en orden cronologico.
 function mergeMessages(current, incoming) {
@@ -34,10 +36,12 @@ export default function useMessages(initialUserId = null) {
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState("");
     const [authError, setAuthError] = useState(!myId);
+    const [isContactTyping, setIsContactTyping] = useState(false);
 
     const selectedRef = useRef(null);
     const conversationsRef = useRef([]);
     const hasConnectedRef = useRef(false);
+    const typingTimeoutRef = useRef(null);
 
     useEffect(() => {
         conversationsRef.current = conversations;
@@ -118,6 +122,8 @@ export default function useMessages(initialUserId = null) {
             setContact(known?.user || null);
             setError("");
             setLoadingChat(true);
+            clearTimeout(typingTimeoutRef.current);
+            setIsContactTyping(false);
 
             try {
                 const [history, userData] = await Promise.all([getMessages(id), getUser(id)]);
@@ -169,6 +175,8 @@ export default function useMessages(initialUserId = null) {
             const isOpen = selectedRef.current === otherId;
 
             if (isOpen) {
+                clearTimeout(typingTimeoutRef.current);
+                setIsContactTyping(false);
                 setMessages((prev) => mergeMessages(prev, message));
                 markAsRead(otherId).catch(() => {});
             }
@@ -190,13 +198,23 @@ export default function useMessages(initialUserId = null) {
         };
 
         // Anulado para todos: el mensaje se actualiza (sin contenido) y conserva su posicion
-        const onMessageRevoked = (message) => {
+        // hiddenForViewer: este usuario ya habia eliminado el mensaje "para ti": NO debe reaparecer,
+        // pero las respuestas que lo citan se actualizan igual (el original ahora esta eliminado para todos).
+        const onMessageRevoked = ({ hiddenForViewer, ...message }) => {
             const otherId =
                 Number(message.senderId) === myId ? Number(message.receiverId) : Number(message.senderId);
+            const revokedId = Number(message.messageId);
 
-            if (selectedRef.current === otherId) {
-                setMessages((prev) => mergeMessages(prev, message));
-            }
+            setMessages((prev) => {
+                const updated = prev.map((m) =>
+                    Number(m.replyToMessageId) === revokedId && m.replyTo
+                        ? { ...m, replyTo: { ...m.replyTo, deletedForAll: true } }
+                        : m
+                );
+
+                if (hiddenForViewer || selectedRef.current !== otherId) return updated;
+                return mergeMessages(updated, message);
+            });
             loadConversations();
         };
 
@@ -219,13 +237,30 @@ export default function useMessages(initialUserId = null) {
 
         // Mensaje editado: se actualiza el MISMO mensaje (no se agrega uno nuevo)
         const onMessageEdited = (message) => {
-            setMessages((prev) => prev.map((m) => (m.messageId === message.messageId ? message : m)));
+            setMessages((prev) =>
+                prev.map((m) => (m.messageId === message.messageId ? { ...m, ...message } : m))
+            );
             setConversations((prev) =>
                 prev.map((c) => (c.lastMessage?.messageId === message.messageId ? { ...c, lastMessage: message } : c))
             );
         };
 
         const onMessageError = ({ message }) => setError(message || "Error al enviar el mensaje");
+
+        // Indicador de escritura: el otro participante esta escribiendo
+        const onUserTyping = ({ senderId, isTyping }) => {
+            if (Number(senderId) !== selectedRef.current) return;
+            if (isTyping) {
+                setIsContactTyping(true);
+                clearTimeout(typingTimeoutRef.current);
+                typingTimeoutRef.current = setTimeout(() => {
+                    setIsContactTyping(false);
+                }, 3500);
+            } else {
+                clearTimeout(typingTimeoutRef.current);
+                setIsContactTyping(false);
+            }
+        };
 
         const onConnectError = (err) => {
             if (/token|authentication/i.test(err.message)) setAuthError(true);
@@ -262,6 +297,7 @@ export default function useMessages(initialUserId = null) {
         socket.on("messagesRead", onMessagesRead);
         socket.on("messageEdited", onMessageEdited);
         socket.on("messageError", onMessageError);
+        socket.on("userTyping", onUserTyping);
 
         return () => {
             socket.off("connect", onConnect);
@@ -274,11 +310,14 @@ export default function useMessages(initialUserId = null) {
             socket.off("messagesRead", onMessagesRead);
             socket.off("messageEdited", onMessageEdited);
             socket.off("messageError", onMessageError);
+            socket.off("userTyping", onUserTyping);
+            clearTimeout(typingTimeoutRef.current);
             disconnectSocket();
         };
     }, [myId, applyMessageToConversations, loadConversations]);
 
-    const sendMessage = useCallback((content) => {
+    // replyToMessageId (opcional): id del mensaje original al que se responde.
+    const sendMessage = useCallback((content, replyToMessageId = null) => {
         const text = content.trim();
         if (!text || !selectedRef.current) return false;
 
@@ -292,18 +331,29 @@ export default function useMessages(initialUserId = null) {
         socket.emit("sendMessage", {
             receiverId: selectedRef.current,
             content: text,
-            messageType: "text"
+            messageType: "text",
+            replyToMessageId: replyToMessageId || null
         });
         return true;
     }, []);
 
-    // Sube el archivo por HTTP (/Upload) y lo envia como mensaje por socket (image | file)
+    // Sube los archivos por HTTP (/Upload) y los envia como UN SOLO mensaje por socket.
+    // Acepta un archivo (formato antiguo) o una lista de imagenes: en ese caso el mensaje
+    // llega con fileUrls (todas las fotos) y fileUrl apuntando a la primera.
+    // replyToMessageId (opcional): id del mensaje original al que se responde.
+    // content (opcional): pie de foto que se guarda en el mismo mensaje.
     const sendAttachment = useCallback(
-        async (file) => {
-            if (!file || !selectedRef.current) return false;
+        async (files, replyToMessageId = null, content = "") => {
+            const list = (Array.isArray(files) ? files : [files]).filter(Boolean);
+            if (!list.length || !selectedRef.current) return false;
 
-            if (file.size > MAX_FILE_SIZE) {
+            if (list.some((file) => file.size > MAX_FILE_SIZE)) {
                 setError("El archivo supera el maximo de 10 MB");
+                return false;
+            }
+
+            if (list.length > MAX_IMAGES_PER_MESSAGE) {
+                setError(`Puedes adjuntar hasta ${MAX_IMAGES_PER_MESSAGE} imagenes por mensaje`);
                 return false;
             }
 
@@ -318,13 +368,21 @@ export default function useMessages(initialUserId = null) {
             setUploading(true);
 
             try {
-                const uploaded = await uploadFile(file);
+                const uploaded = [];
+                for (const file of list) {
+                    uploaded.push(await uploadFile(file));
+                }
+
+                const allImages = uploaded.every((u) => u.mimeType?.startsWith("image/"));
 
                 socket.emit("sendMessage", {
                     receiverId,
-                    messageType: uploaded.mimeType?.startsWith("image/") ? "image" : "file",
-                    fileUrl: uploaded.fileUrl,
-                    fileName: uploaded.originalName
+                    messageType: allImages ? "image" : "file",
+                    fileUrl: uploaded[0].fileUrl,
+                    fileName: uploaded[0].originalName,
+                    fileUrls: allImages ? uploaded.map((u) => u.fileUrl) : null,
+                    content: content?.trim() ? content.trim() : null,
+                    replyToMessageId: replyToMessageId || null
                 });
                 return true;
             } catch (err) {
@@ -364,6 +422,62 @@ export default function useMessages(initialUserId = null) {
         getSocket().emit("deleteMessageForMe", { messageId });
     }, []);
 
+    // Elimina la conversacion SOLO para este usuario: el backend oculta sus mensajes y
+    // aqui se saca de la lista (y se cierra si estaba abierta). El otro participante
+    // conserva su historial completo y se puede volver a buscar para escribirle.
+    const deleteConversation = useCallback(
+        async (otherUserId) => {
+            const id = Number(otherUserId);
+            if (!id) return false;
+
+            try {
+                await deleteConversationRequest(id);
+            } catch (err) {
+                handleError(err, "No se pudo eliminar la conversacion");
+                return false;
+            }
+
+            // Si el chat eliminado era el que estaba abierto, se cierra: no deben seguir
+            // visible mensajes que ya no existen para este usuario.
+            if (selectedRef.current === id) {
+                selectedRef.current = null;
+                setSelectedUserId(null);
+                setMessages([]);
+                setContact(null);
+                setLoadingChat(false);
+                setError("");
+                setIsContactTyping(false);
+                clearTimeout(typingTimeoutRef.current);
+            }
+
+            setConversations((prev) => prev.filter((c) => c.user.userId !== id));
+            return true;
+        },
+        [handleError]
+    );
+
+    // Emite que el usuario comenzo a escribir. receiverId es la conversacion donde se escribio:
+    // se pasa de forma explicita para que un "dejo de escribir" tardio (por ejemplo al cambiar
+    // de chat) llegue al participante correcto y no al de la conversacion nueva.
+    const sendTyping = useCallback((receiverId) => {
+        const target = Number(receiverId) || selectedRef.current;
+        if (!target) return;
+        const socket = getSocket();
+        if (socket.connected) {
+            socket.emit("typing", { receiverId: target });
+        }
+    }, []);
+
+    // Emite que el usuario dejo de escribir
+    const sendStopTyping = useCallback((receiverId) => {
+        const target = Number(receiverId) || selectedRef.current;
+        if (!target) return;
+        const socket = getSocket();
+        if (socket.connected) {
+            socket.emit("stopTyping", { receiverId: target });
+        }
+    }, []);
+
     return {
         myId,
         conversations,
@@ -375,11 +489,15 @@ export default function useMessages(initialUserId = null) {
         error,
         uploading,
         authError,
+        isContactTyping,
         selectConversation,
         sendMessage,
         sendAttachment,
         editMessage,
         revokeMessage,
-        deleteMessageForMe
+        deleteMessageForMe,
+        deleteConversation,
+        sendTyping,
+        sendStopTyping
     };
 }

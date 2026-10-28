@@ -14,6 +14,7 @@ const { checkToken } = require("./middlewares/auth");
 const {
   getMessages,
   getConversations,
+  deleteConversationForUser,
   getUserById,
   markAsRead,
   searchUsers
@@ -26,8 +27,8 @@ const { User } = require("./models/User");
 const server = express();
 const httpServer = http.createServer(server);
 
-const PORT = 3000;
-const CLIENT_URL = "http://localhost:5173";
+const PORT = process.env.PORT || 3000;
+const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173";
 
 server.use(express.json());
 
@@ -50,6 +51,8 @@ server.post("/login", Login);
 server.post("/register", Register);
 
 server.get("/conversations", checkToken, getConversations);
+// Elimina la conversacion SOLO para el usuario autenticado (no borra nada del otro)
+server.delete("/conversations/:otherUserId", checkToken, deleteConversationForUser);
 server.get("/users/search", checkToken, searchUsers); // antes de /users/:id
 server.get("/users/:id", checkToken, getUserById);
 server.get("/messages/:otherUserId", checkToken, getMessages);
@@ -73,7 +76,9 @@ const start = async () => {
       deletedForAll: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
       deletedBySender: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
       deletedByReceiver: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false },
-      editedAt: { type: DataTypes.DATE, allowNull: true }
+      editedAt: { type: DataTypes.DATE, allowNull: true },
+      replyToMessageId: { type: DataTypes.INTEGER, allowNull: true },
+      fileUrls: { type: DataTypes.TEXT, allowNull: true }
     };
     for (const [name, definition] of Object.entries(extraColumns)) {
       if (!table[name]) {

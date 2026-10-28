@@ -4,6 +4,14 @@ const { User } = require("../models/User");
 
 const VALID_TYPES = ["text", "image", "file"];
 
+// Maximo de imagenes que puede llevar un solo mensaje (mismo limite que usa el frontend)
+const MAX_IMAGES_PER_MESSAGE = 10;
+
+// Un mensaje propio solo se puede editar durante los primeros 15 minutos desde su envio.
+// Se calcula siempre contra la fecha de envio almacenada (sent_at), no contra el momento
+// en que se carga la pagina ni contra cuanto tiempo esta abierta la conversacion.
+const EDIT_WINDOW_MS = 15 * 60 * 1000;
+
 // Campos publicos del usuario (nunca password, email, DVH, etc.)
 const PUBLIC_USER_FIELDS = [
     "userId",
@@ -25,9 +33,63 @@ const toClientMessage = (message) => {
         data.content = null;
         data.fileUrl = null;
         data.fileName = null;
+        data.fileUrls = null;
+    } else {
+        // En la base se guarda como JSON (TEXT); el cliente siempre recibe lista o null
+        let urls = data.fileUrls;
+        if (typeof urls === "string") {
+            try {
+                urls = JSON.parse(urls);
+            } catch {
+                urls = null;
+            }
+        }
+        data.fileUrls = Array.isArray(urls)
+            ? urls.filter((u) => typeof u === "string" && u !== "")
+            : null;
     }
 
     return data;
+};
+
+// true si el mensaje fue eliminado "para ti" por ese usuario (no afecta al otro participante)
+const isHiddenForUser = (message, userId) =>
+    (Number(message.senderId) === Number(userId) && Boolean(message.deletedBySender)) ||
+    (Number(message.receiverId) === Number(userId) && Boolean(message.deletedByReceiver));
+
+// Mensajes tal como se envian al cliente + referencia liviana al mensaje original de cada respuesta:
+//   replyTo: { messageId, senderId, deletedForAll }
+// NUNCA incluye contenido ni flags de "eliminado para ti" (privados de cada participante).
+// Sirve para que el cliente sepa quien escribio el original y si fue anulado para todos aunque
+// el original ya no este visible para el, sin exponer contenido que no deberia ver.
+const serializeMessages = async (messages) => {
+    const list = [].concat(messages);
+    const originalIds = [...new Set(list.map((m) => m.replyToMessageId).filter(Boolean))];
+
+    const originals = originalIds.length
+        ? await Message.findAll({
+              where: { messageId: originalIds },
+              attributes: ["messageId", "senderId", "deletedForAll"]
+          })
+        : [];
+    const originalsById = new Map(originals.map((o) => [Number(o.messageId), o]));
+
+    return list.map((message) => {
+        const data = toClientMessage(message);
+
+        if (data.replyToMessageId) {
+            const original = originalsById.get(Number(data.replyToMessageId));
+            data.replyTo = original
+                ? {
+                      messageId: original.messageId,
+                      senderId: original.senderId,
+                      deletedForAll: Boolean(original.deletedForAll)
+                  }
+                : null;
+        }
+
+        return data;
+    });
 };
 
 const createMessage = async (data) => {
@@ -40,7 +102,9 @@ const createMessage = async (data) => {
             content,
             messageType = "text",
             fileUrl,
-            fileName
+            fileName,
+            fileUrls,
+            replyToMessageId
         } = data;
 
         if (!VALID_TYPES.includes(messageType)) {
@@ -75,8 +139,58 @@ const createMessage = async (data) => {
         }
 
 
-        if (messageType !== "text" && !fileUrl) {
+        // Lista de imagenes del mensaje (solo mensajes "image").
+        // Se normaliza aqui para que el cliente viejo (fileUrl unico) y el nuevo
+        // (fileUrls) convivan sin cambios en el resto de las funcionalidades.
+        const imageUrls = Array.isArray(fileUrls)
+            ? fileUrls.filter((u) => typeof u === "string" && u.trim() !== "")
+            : [];
+
+        if (messageType === "image" && imageUrls.length > MAX_IMAGES_PER_MESSAGE) {
+            throw new Error(`A message can include at most ${MAX_IMAGES_PER_MESSAGE} images`);
+        }
+
+        // fileUrl siempre conserva la primera imagen (compatibilidad con lo existente)
+        const storedFileUrl = fileUrl || imageUrls[0] || null;
+
+        if (messageType !== "text" && !storedFileUrl) {
             throw new Error("File URL is required");
+        }
+
+
+        // Respuesta a un mensaje existente: se guarda SOLO la referencia (id).
+        // El mensaje original debe existir y pertenecer a la misma conversacion
+        // (misma pareja de usuarios) a la que se esta enviando el mensaje.
+        let replyTo = null;
+        const hasReply = replyToMessageId !== undefined && replyToMessageId !== null && replyToMessageId !== "";
+
+        if (hasReply) {
+            const originalId = Number(replyToMessageId);
+
+            if (!Number.isInteger(originalId)) {
+                throw new Error("Invalid reply reference");
+            }
+
+            replyTo = await Message.findByPk(originalId);
+
+            if (!replyTo) {
+                throw new Error("The message you are replying to does not exist");
+            }
+
+            const originalParticipants = [Number(replyTo.senderId), Number(replyTo.receiverId)];
+            const sameConversation =
+                Number(senderId) !== Number(receiverId) &&
+                originalParticipants.includes(Number(senderId)) &&
+                originalParticipants.includes(Number(receiverId));
+
+            if (!sameConversation) {
+                throw new Error("You cannot reply with a message from another conversation");
+            }
+
+            // Un mensaje que el usuario elimino "para ti" ya no es visible para el: no se puede citar
+            if (isHiddenForUser(replyTo, senderId)) {
+                throw new Error("The message you are replying to is no longer available");
+            }
         }
 
 
@@ -89,9 +203,16 @@ const createMessage = async (data) => {
 
             messageType,
 
-            fileUrl: fileUrl || null,
+            fileUrl: storedFileUrl,
 
             fileName: fileName || null,
+
+            fileUrls:
+                messageType === "image" && imageUrls.length > 0
+                    ? JSON.stringify(imageUrls)
+                    : null,
+
+            replyToMessageId: replyTo ? replyTo.messageId : null,
 
             sent_at: new Date()
 
@@ -162,6 +283,13 @@ const editMessage = async (messageId, userId, content) => {
 
         if (message.messageType !== "text") {
             throw new Error("Only text messages can be edited");
+        }
+
+        // Limite de edicion: 15 minutos desde el envio, medidos contra sent_at.
+        // Se valida en el backend tambien para que no se pueda evadir con una peticion directa.
+        const sentAt = new Date(message.sent_at).getTime();
+        if (!Number.isFinite(sentAt) || Date.now() - sentAt > EDIT_WINDOW_MS) {
+            throw new Error("A message can only be edited during the first 15 minutes after being sent");
         }
 
         const newContent = typeof content === "string" ? content.trim() : "";
@@ -267,7 +395,7 @@ const getMessages = async (req, res) => {
             order: [["sent_at", "ASC"]]
         });
 
-        res.json(messages.map(toClientMessage));
+        res.json(await serializeMessages(messages));
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error fetching messages" });
@@ -334,6 +462,42 @@ const getConversations = async (req, res) => {
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error fetching conversations" });
+    }
+};
+
+
+// ---------------------------------------------------------------
+// NUEVO: DELETE /conversations/:otherUserId
+// Elimina la conversacion SOLO para el usuario autenticado: se marcan sus mensajes
+// como ocultos para el (deletedBySender / deletedByReceiver). Los mensajes del otro
+// participante NO se tocan, por lo que su historial sigue intacto.
+// ---------------------------------------------------------------
+const deleteConversationForUser = async (req, res) => {
+    try {
+        const userId = Number(req.user.userId);
+        const otherUserId = Number(req.params.otherUserId);
+
+        if (!Number.isInteger(otherUserId) || otherUserId <= 0 || otherUserId === userId) {
+            return res.status(400).json({ message: "Conversacion invalida" });
+        }
+
+        // Un solo UPDATE por direccion: los mensajes enviados por el usuario quedan
+        // ocultos para el (deletedBySender) y los recibidos tambien (deletedByReceiver).
+        // Los mensajes del otro participante no se tocan: su historial sigue intacto.
+        const [sent] = await Message.update(
+            { deletedBySender: true },
+            { where: { senderId: userId, receiverId: otherUserId, deletedBySender: false } }
+        );
+
+        const [received] = await Message.update(
+            { deletedByReceiver: true },
+            { where: { senderId: otherUserId, receiverId: userId, deletedByReceiver: false } }
+        );
+
+        res.json({ deleted: sent + received });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Error deleting conversation" });
     }
 };
 
@@ -434,11 +598,15 @@ module.exports = {
     deleteMessage,
     getMessages,
     getConversations,
+    deleteConversationForUser,
     getUserById,
     markAsRead,
     searchUsers,
     revokeMessage,
     deleteMessageForUser,
     editMessage,
-    toClientMessage
+    toClientMessage,
+    serializeMessages,
+    isHiddenForUser,
+    EDIT_WINDOW_MS
 };

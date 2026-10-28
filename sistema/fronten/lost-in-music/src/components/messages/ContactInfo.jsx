@@ -7,7 +7,7 @@ import styles from "./ContactInfo.module.css";
 const NO_FILTERS = { media: false, files: false };
 
 // Se monta con key={userId}: al cambiar de conversacion vuelve a la vista inicial.
-export default function ContactInfo({ contact, messages, hidden }) {
+export default function ContactInfo({ contact, messages, hidden, onOpenImage }) {
     const [view, setView] = useState("info"); // "info" | "content"
     const [filters, setFilters] = useState(NO_FILTERS);
     const [sectionOpen, setSectionOpen] = useState(false); // el desplegable arranca cerrado
@@ -81,7 +81,12 @@ export default function ContactInfo({ contact, messages, hidden }) {
                     <FilterChip label="Archivos" active={filters.files} onClick={() => toggleFilter("files")} />
                 </div>
 
-                <SharedContent contact={contact} messages={messages} filters={filters} />
+                <SharedContent
+                    contact={contact}
+                    messages={messages}
+                    filters={filters}
+                    onOpenImage={onOpenImage}
+                />
             </div>
         </aside>
     );

@@ -3,7 +3,7 @@ import ConversationItem from "./ConversationItem";
 import NewChatPanel from "./NewChatPanel";
 import styles from "./ConversationList.module.css";
 
-export default function ConversationList({ conversations, selectedUserId, myId, loading, onSelect }) {
+export default function ConversationList({ conversations, selectedUserId, myId, loading, onSelect, onDeleteChat }) {
     const [search, setSearch] = useState("");
     const [onlyUnread, setOnlyUnread] = useState(false);
     const [newChatOpen, setNewChatOpen] = useState(false);
@@ -89,6 +89,7 @@ export default function ConversationList({ conversations, selectedUserId, myId, 
                                     isActive={conversation.user.userId === selectedUserId}
                                     myId={myId}
                                     onSelect={onSelect}
+                                    onRequestDelete={onDeleteChat}
                                 />
                             ))}
                         </ul>

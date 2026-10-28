@@ -4,6 +4,7 @@ const { Sequelize } = require("sequelize");
 
 module.exports = new Sequelize({
   dialect: "sqlite",
-  storage: path.join(__dirname, "..", "dev.sqlite"),
+  // SQLITE_STORAGE permite correr una copia aislada de la base (solo para verificacion)
+  storage: process.env.SQLITE_STORAGE || path.join(__dirname, "..", "dev.sqlite"),
   logging: false
 });

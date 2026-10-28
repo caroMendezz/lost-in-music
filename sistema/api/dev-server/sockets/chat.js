@@ -5,7 +5,8 @@ const {
     revokeMessage,
     deleteMessageForUser,
     editMessage,
-    toClientMessage
+    toClientMessage,
+    serializeMessages
 } = require("../controllers/messages");
 
 const SECRET = 'SOCRATESLEPEGOUNPUNHETAZOENLACARA';
@@ -44,8 +45,15 @@ function setupChat(io) {
                     senderId: socket.userId
                 });
 
-                io.to(`user_${message.receiverId}`).emit("newMessage", message);
-                socket.emit("messageSent", message);
+                // Incluye la referencia liviana al mensaje original (replyTo) si es una respuesta
+                const [payload] = await serializeMessages([message]);
+
+                io.to(`user_${message.receiverId}`).emit("newMessage", payload);
+                io.to(`user_${message.receiverId}`).emit("userTyping", {
+                    senderId: socket.userId,
+                    isTyping: false
+                });
+                socket.emit("messageSent", payload);
             } catch (error) {
                 console.error(error);
                 socket.emit("messageError", { message: error.message });
@@ -91,10 +99,21 @@ function setupChat(io) {
 
             try {
                 const message = await revokeMessage(data?.messageId, socket.userId);
+                const [payload] = await serializeMessages([message]);
 
-                io.to(`user_${message.receiverId}`)
-                    .to(`user_${message.senderId}`)
-                    .emit("messageRevoked", toClientMessage(message));
+                // Se avisa a cada participante por separado: quien ya habia eliminado el mensaje
+                // "para ti" recibe hiddenForViewer=true para que el mensaje NO reaparezca en su chat
+                // (solo actualiza las respuestas que lo citan).
+                io.to(`user_${message.senderId}`).emit("messageRevoked", {
+                    ...payload,
+                    hiddenForViewer: Boolean(message.deletedBySender)
+                });
+                if (Number(message.receiverId) !== Number(message.senderId)) {
+                    io.to(`user_${message.receiverId}`).emit("messageRevoked", {
+                        ...payload,
+                        hiddenForViewer: Boolean(message.deletedByReceiver)
+                    });
+                }
             } catch (error) {
                 console.error(error);
                 socket.emit("messageError", { message: error.message });
@@ -125,15 +144,40 @@ function setupChat(io) {
 
             try {
                 const message = await editMessage(data?.messageId, socket.userId, data?.content);
+                const [payload] = await serializeMessages([message]);
 
-                io.to(`user_${message.receiverId}`)
-                    .to(`user_${message.senderId}`)
-                    .emit("messageEdited", toClientMessage(message));
+                // No se envia a quien elimino el mensaje "para ti"
+                if (!message.deletedBySender) {
+                    io.to(`user_${message.senderId}`).emit("messageEdited", payload);
+                }
+                if (!message.deletedByReceiver && Number(message.receiverId) !== Number(message.senderId)) {
+                    io.to(`user_${message.receiverId}`).emit("messageEdited", payload);
+                }
             } catch (error) {
                 console.error(error);
                 socket.emit("messageError", { message: error.message });
             }
 
+        });
+
+
+        // Indicador de escritura en tiempo real: retransmite al destinatario
+        socket.on("typing", (data) => {
+            const receiverId = Number(data?.receiverId);
+            if (!receiverId || receiverId === Number(socket.userId)) return;
+            io.to(`user_${receiverId}`).emit("userTyping", {
+                senderId: socket.userId,
+                isTyping: true
+            });
+        });
+
+        socket.on("stopTyping", (data) => {
+            const receiverId = Number(data?.receiverId);
+            if (!receiverId || receiverId === Number(socket.userId)) return;
+            io.to(`user_${receiverId}`).emit("userTyping", {
+                senderId: socket.userId,
+                isTyping: false
+            });
         });
 
 

@@ -68,6 +68,12 @@ export const getMessages = (otherUserId) => request(`/messages/${otherUserId}`);
 
 // Nuevos (ver backend/controllers/messages.js)
 export const getConversations = () => request("/conversations");
+
+// DELETE /conversations/:otherUserId
+// Elimina la conversacion SOLO para el usuario autenticado: su copia desaparece de la
+// lista y de su historial, pero el otro participante conserva todos sus mensajes.
+export const deleteConversation = (otherUserId) =>
+    request(`/conversations/${otherUserId}`, { method: "DELETE" });
 export const getUser = (userId) => request(`/users/${userId}`);
 export const markAsRead = (otherUserId) =>
     request(`/messages/read/${otherUserId}`, { method: "PUT" });
