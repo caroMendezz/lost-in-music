@@ -3,6 +3,14 @@ const express = require('express')
 const http = require("http");
 const path = require("path");
 const { Server } = require("socket.io");
+const {
+  RequestEmailChange,
+  ConfirmEmailChange,
+} = require("./controllers/changeEmail");
+const {
+  RequestPasswordChange,
+  ConfirmPasswordChange,
+} = require('./controllers/changePassword');
 
 const upload = require("./middlewares/upload");
 const uploadPostMedia = require("./middlewares/uploadPostMedia");
@@ -75,6 +83,14 @@ server.post('/register', Register);
 
 server.get('/myProfile', checkToken, GetMyProfile);
 server.patch('/myProfile', checkToken, UpdateMyProfile);
+// Cambio seguro de correo electrónico
+server.post("/email/change/request",checkToken,RequestEmailChange);
+
+server.post("/email/change/confirm",checkToken,ConfirmEmailChange);
+
+server.post('/password/change/request',checkToken,RequestPasswordChange);
+
+server.post('/password/change/confirm',checkToken,ConfirmPasswordChange);
 
 server.patch('/deleteUser/:id',checkToken, DeleteUser);
 server.patch('/updateUser/:id',checkToken, UpdateUser);
