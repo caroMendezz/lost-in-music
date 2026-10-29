@@ -1,9 +1,10 @@
 import React from "react";
+import aero from "../../styles/aero.module.css";
 
 export default function GlassPanel({ children, className = "", style = {} }) {
   return (
-    <div className={`glass-panel ${className}`} style={style}>
-      <span className="sheen" />
+    <div className={`${aero["glass-panel"]} ${className}`} style={style}>
+      <span className={aero.sheen} />
       {children}
     </div>
   );

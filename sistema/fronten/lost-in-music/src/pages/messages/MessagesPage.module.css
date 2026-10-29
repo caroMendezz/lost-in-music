@@ -1,0 +1,91 @@
+/*
+  La pagina ocupa toda la ventana: el Header reutilizado del feed queda arriba y la
+  interfaz de mensajeria ocupa el alto restante. Se usa flex (no un alto fijo) para que
+  el header pueda cambiar de alto sin dejar huecos ni provocar scroll.
+*/
+.messagesPage {
+  width: 100%;
+  height: 100vh;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-sizing: border-box;
+  background: #e9ecf1;
+  /* Aisla la pagina de los estilos globales (color, alineacion y modo oscuro de index.css) */
+  color: #111;
+  color-scheme: light;
+  text-align: left;
+}
+
+/* Sin chat seleccionado: lista + area principal.
+   flex: 1 lo hace ocupar solo el espacio que queda debajo del Header. */
+.messagesLayout {
+  display: grid;
+  grid-template-columns: clamp(260px, 24vw, 380px) minmax(0, 1fr);
+  grid-template-rows: minmax(0, 1fr);
+  gap: 8px;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+/* Con chat seleccionado y panel de info visible: lista + chat + informacion del contacto.
+   Si el panel se oculta (boton "i") se vuelve a 2 columnas y el chat ocupa todo el ancho. */
+.messagesLayoutWithInfo {
+  grid-template-columns:
+    clamp(260px, 24vw, 380px)
+    minmax(0, 1fr)
+    clamp(240px, 22vw, 340px);
+}
+
+/* Barra con el boton para volver al feed, debajo del Header */
+.messagesToolbar {
+  display: flex;
+  align-items: center;
+  padding: 2px 8px 0;
+  flex: 0 0 auto;
+}
+
+.backToFeed {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #0c447c;
+  background: rgba(219, 244, 255, 0.892);
+  border: 1px solid #c7def0;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.backToFeed:hover {
+  background: #d3eefc;
+}
+
+.backToFeed:focus-visible {
+  outline: 2px solid #378add;
+  outline-offset: 2px;
+}
+
+.messagesPageNotice {
+  margin: 32px auto;
+  max-width: 480px;
+  padding: 16px;
+  border-radius: 8px;
+  background: #fdecea;
+  color: #a12622;
+  text-align: center;
+}
+
+/* El panel derecho se achica en ventanas medianas; el boton "i" del chat permite ocultarlo */
+@media (max-width: 1100px) {
+  .messagesLayoutWithInfo {
+    grid-template-columns: 240px minmax(0, 1fr) 240px;
+  }
+}

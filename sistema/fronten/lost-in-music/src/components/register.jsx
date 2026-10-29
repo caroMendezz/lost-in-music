@@ -1,6 +1,5 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import "../styles/register.css";
-import MusicPlayerMini from "./MusicPlayerMini";
 
 const calcPasswordStrength = (pwd) => {
   if (!pwd) return 0;
@@ -72,28 +71,9 @@ export default function Register({ goToLogin }) {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [touched, setTouched] = useState({});
-  const [isPlaying, setIsPlaying] = useState(false);
 
-  const bgMusicRef = useRef(null);
   const fileInputRef = useRef(null);
   const sliderRef = useRef(null);
-
-  //Audio
-  useEffect(() => {
-    bgMusicRef.current = new Audio("/background-music.mp3");
-    bgMusicRef.current.volume = 0.2;
-    bgMusicRef.current.loop = true;
-    bgMusicRef.current.preload = "auto";
-
-    bgMusicRef.current
-      .play()
-      .then(() => setIsPlaying(true))
-      .catch(() => setIsPlaying(false));
-
-    return () => {
-      bgMusicRef.current?.pause();
-    };
-  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -219,17 +199,6 @@ export default function Register({ goToLogin }) {
 
   return (
     <div className="register-bg">
-      <MusicPlayerMini
-        audioRef={bgMusicRef}
-        isPlaying={isPlaying}
-        setIsPlaying={setIsPlaying}
-      />
-
-      {/*Burbujas*/}
-      {[1, 2, 3, 4, 5, 6].map((n) => (
-        <div key={n} className={`bubble bubble-${n}`} />
-      ))}
-
       <div className="register-card">
         {/*Barra de progreso*/}
         <div className="reg-progress-wrap">

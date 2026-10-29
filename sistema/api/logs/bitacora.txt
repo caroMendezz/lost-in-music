@@ -1,5 +1,6 @@
 fecha=2026-10-28 17:34:43.629 -03:00 | timestamp=1793219683629 | usuario=pepe (sin sesión) | endpoint=POST /login | status=200 | duracion=995ms | ip=::1 | token=sin-token
 fecha=2026-10-28 17:34:50.191 -03:00 | timestamp=1793219690191 | usuario=pepe (id 2) | endpoint=POST /CreatePost | status=201 | duracion=125ms | ip=::1 | token=sha256:b920e4db85600a5c
+<<<<<<< HEAD
 fecha=2026-10-28 22:14:49.063 -03:00 | timestamp=1793236489063 | usuario=agus (sin sesión) | endpoint=POST /register | status=201 | duracion=63ms | ip=::1 | token=sin-token
 fecha=2026-10-28 22:15:00.677 -03:00 | timestamp=1793236500677 | usuario=rivera.agustinet36@gmail.com (sin sesión) | endpoint=POST /login | status=200 | duracion=58ms | ip=::1 | token=sin-token
 fecha=2026-10-28 23:52:52.708 -03:00 | timestamp=1793242372708 | usuario=agus (id 1) | endpoint=POST /CreatePost | status=201 | duracion=16ms | ip=::1 | token=sha256:1d85de4388076394
@@ -93,3 +94,20 @@ fecha=2026-10-29 10:48:59.529 -03:00 | timestamp=1793281739529 | usuario=sas (id
 fecha=2026-10-29 10:49:04.019 -03:00 | timestamp=1793281744019 | usuario=sas (id 6) | endpoint=DELETE /notifications/2 | status=200 | duracion=3ms | ip=::1 | token=sha256:96763943224cc580
 fecha=2026-10-29 10:49:06.889 -03:00 | timestamp=1793281746889 | usuario=sas (id 6) | endpoint=PATCH /friends/accept/7 | status=200 | duracion=5ms | ip=::1 | token=sha256:96763943224cc580
 fecha=2026-10-29 10:49:22.348 -03:00 | timestamp=1793281762348 | usuario=sas (id 6) | endpoint=DELETE /friends/7 | status=200 | duracion=6ms | ip=::1 | token=sha256:96763943224cc580
+=======
+fecha=2026-10-29 00:19:18.891 -03:00 | timestamp=1793243958891 | usuario=zzz_test_1793243957 (sin sesión) | endpoint=POST /register | status=400 | duracion=319ms | ip=::1 | token=sin-token
+fecha=2026-10-29 00:19:31.040 -03:00 | timestamp=1793243971040 | usuario=zzz_t2_1793243970 (sin sesión) | endpoint=POST /register | status=201 | duracion=633ms | ip=::1 | token=sin-token
+fecha=2026-10-29 00:26:16.898 -03:00 | timestamp=1793244376898 | usuario=caro123 (sin sesión) | endpoint=POST /register | status=500 | duracion=174ms | ip=::1 | token=sin-token
+fecha=2026-10-29 00:26:38.847 -03:00 | timestamp=1793244398847 | usuario=caromendez (sin sesión) | endpoint=POST /register | status=500 | duracion=110ms | ip=::1 | token=sin-token
+fecha=2026-10-29 00:26:50.827 -03:00 | timestamp=1793244410827 | usuario=caromendezzzzz (sin sesión) | endpoint=POST /register | status=500 | duracion=104ms | ip=::1 | token=sin-token
+fecha=2026-10-29 00:26:58.067 -03:00 | timestamp=1793244418067 | usuario=caromendezzzzz (sin sesión) | endpoint=POST /register | status=500 | duracion=90ms | ip=::1 | token=sin-token
+fecha=2026-10-29 00:28:57.295 -03:00 | timestamp=1793244537295 | usuario=zzz_t3_1793244536 (sin sesión) | endpoint=POST /register | status=500 | duracion=182ms | ip=::1 | token=sin-token
+fecha=2026-10-29 00:30:52.173 -03:00 | timestamp=1793244652173 | usuario=zzz_t5_1793244651477 (sin sesión) | endpoint=POST /register | status=201 | duracion=347ms | ip=::1 | token=sin-token
+fecha=2026-10-29 00:35:14.122 -03:00 | timestamp=1793244914122 | usuario=caropMendez (sin sesión) | endpoint=POST /register | status=201 | duracion=249ms | ip=::1 | token=sin-token
+fecha=2026-10-29 00:35:28.088 -03:00 | timestamp=1793244928088 | usuario=caroo@gmail.com (sin sesión) | endpoint=POST /login | status=200 | duracion=122ms | ip=::1 | token=sin-token
+fecha=2026-10-29 00:35:43.648 -03:00 | timestamp=1793244943648 | usuario=caropMendez (id 3) | endpoint=POST /CreatePost | status=500 | duracion=10083ms | ip=::1 | token=sha256:4629c303e1b19622
+fecha=2026-10-29 00:35:46.072 -03:00 | timestamp=1793244946072 | usuario=caropMendez (id 3) | endpoint=POST /CreatePost | status=500 | duracion=10024ms | ip=::1 | token=sha256:4629c303e1b19622
+fecha=2026-10-29 00:36:16.371 -03:00 | timestamp=1793244976371 | usuario=caropMendez (id 3) | endpoint=POST /CreatePost | status=500 | duracion=10043ms | ip=::1 | token=sha256:4629c303e1b19622
+fecha=2026-10-29 00:38:13.454 -03:00 | timestamp=1793245093454 | usuario=zzz_t6_1793245093 (sin sesión) | endpoint=POST /register | status=201 | duracion=124ms | ip=::1 | token=sin-token
+fecha=2026-10-29 00:38:13.646 -03:00 | timestamp=1793245093646 | usuario=zzz_t6_1793245093 (sin sesión) | endpoint=POST /login | status=200 | duracion=87ms | ip=::1 | token=sin-token
+>>>>>>> develop

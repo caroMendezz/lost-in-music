@@ -21,7 +21,7 @@ const {createPost, deletePost, updatePost, getPosts, getPostById, getReplies, to
 const {createRole} = require('./controllers/roles')
 const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
 const {checkToken } = require('./middlewares/auth')
-const {getMessages, getConversations, getUserById, markAsRead, searchUsers} = require('./controllers/messages')
+const {getMessages, getConversations, deleteConversationForUser, getUserById, markAsRead, searchUsers} = require('./controllers/messages')
 const {createProduct, deleteProduct, updateProduct} = require('./controllers/products')
 const setupChat = require("./sockets/chat");
 const { setupPresence } = require("./sockets/presence");
@@ -33,6 +33,7 @@ const {
   getNotifications, markNotificationsRead, deleteNotification, clearNotifications
 } = require("./controllers/notifications");
 const sequelize = require('./config/db')
+const { ensureMessagesColumns, ensureUsersColumns } = require('./config/migrations')
 const connectDB = require("./config/dbnosql")
 const server = express()
 
@@ -106,6 +107,7 @@ server.get("/conversations", checkToken, getConversations);
 server.get("/users/search", checkToken, searchUsers);
 server.get("/users/:id", checkToken, GetUserProfile);
 server.put("/messages/read/:otherUserId", checkToken, markAsRead);
+server.delete("/conversations/:otherUserId", checkToken, deleteConversationForUser);
 
 server.get("/friends", checkToken, getFriends);
 server.get("/friends/requests", checkToken, getFriendRequests);
@@ -122,11 +124,16 @@ server.delete("/notifications", checkToken, clearNotifications);
 server.post("/Upload", checkToken, upload.single("file"), uploadFile);
 server.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Permite que los controladores HTTP (por ejemplo markAsRead) emitan eventos por socket
+server.set("io", io);
+
 setupChat(io);
 setupPresence(io);
 
 const start = async () => {
   await sequelize.sync();
+  await ensureMessagesColumns();
+  await ensureUsersColumns();
   await connectDB();
 
   httpServer.listen(PORT, () => {

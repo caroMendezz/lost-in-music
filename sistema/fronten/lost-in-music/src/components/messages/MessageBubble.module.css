@@ -1,0 +1,471 @@
+.bubbleRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  justify-content: flex-start;
+  margin-bottom: 6px;
+}
+
+.bubbleRowOwn {
+  justify-content: flex-end;
+}
+
+/* Contenedor vertical para mensaje normal (permite colocar "Editado" por encima) */
+.bubbleContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  max-width: calc(65% + 64px);
+}
+
+.bubbleContainerOwn {
+  align-items: flex-end;
+}
+
+.bubbleContainer .bubble {
+  max-width: 100%;
+}
+
+/* Fila que contiene el globo de respuesta/nuevo y sus acciones asociadas */
+.bubbleActionGroup {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+}
+
+.bubbleActionGroupOwn {
+  justify-content: flex-end;
+}
+
+.bubbleActionGroupOther {
+  justify-content: flex-start;
+}
+
+.bubble {
+  max-width: 65%;
+  padding: 8px 12px;
+  border-radius: 16px;
+  overflow-wrap: anywhere;
+  transition: box-shadow 0.2s, transform 0.2s;
+}
+
+/* Resaltado temporal al navegar a un mensaje citado */
+.bubbleHighlighted {
+  animation: highlightGlow 1.8s ease-in-out;
+}
+
+@keyframes highlightGlow {
+  0% {
+    box-shadow: 0 0 0 4px rgba(27, 95, 217, 0.55);
+    transform: scale(1.02);
+  }
+  35% {
+    box-shadow: 0 0 0 5px rgba(27, 95, 217, 0.65);
+    transform: scale(1.02);
+  }
+  70% {
+    box-shadow: 0 0 0 3px rgba(27, 95, 217, 0.3);
+    transform: scale(1.01);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(27, 95, 217, 0);
+    transform: scale(1);
+  }
+}
+
+.bubbleOther {
+  background: #e9ebef;
+  color: #111;
+}
+
+.bubbleOwn {
+  background: #1b5fd9;
+  color: #fff;
+}
+
+/* Mensaje con imagen: sin fondo ni relleno de globo, las fotos se apoyan
+   directamente sobre el fondo de la conversacion. */
+.bubbleMedia {
+  padding: 0;
+  background: transparent;
+  color: #111;
+}
+
+/* Mensaje anulado para todos */
+.bubbleRevoked {
+  border: 1px solid #c4c9d2;
+  background: transparent;
+  color: #65676b;
+  font-style: italic;
+}
+
+.bubbleText {
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+/* "Leer mas" / "Leer menos" de los mensajes largos */
+.bubbleReadMore {
+  display: block;
+  width: fit-content;
+  margin-top: 4px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1b5fd9;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* En mensajes propios el boton queda alineado a la derecha y en blanco:
+   sobre el fondo azul del globo el azul del texto no se distingue */
+.bubbleOwn .bubbleReadMore {
+  margin-left: auto;
+  text-align: right;
+  color: #fff;
+}
+
+.bubbleReadMore:hover {
+  text-decoration: underline;
+}
+
+/* La imagen unica se abre en el visor a pantalla completa (botón sin apariencia de boton) */
+.imageButton {
+  display: block;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+}
+
+.bubbleImage {
+  display: block;
+  max-width: 100%;
+  max-height: 260px;
+  border-radius: 10px;
+}
+
+.bubbleFile {
+  display: block;
+  color: inherit;
+  text-decoration: underline;
+}
+
+/* --------------------------------------------------------------- */
+/* Varias imagenes en un solo mensaje                                */
+/* --------------------------------------------------------------- */
+
+/* De 2 a 3 imagenes: escalonadas, una a la derecha y la siguiente
+   a la izquierda superpuesta sobre la anterior. */
+.imageCollage {
+  display: flex;
+  flex-direction: column;
+  width: 230px;
+  max-width: 100%;
+}
+
+.imageCollageItem {
+  display: block;
+  width: 180px;
+  max-width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.imageCollageItem img {
+  display: block;
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+}
+
+.imageCollageItem:nth-child(odd) {
+  align-self: flex-end;
+}
+
+.imageCollageItem:nth-child(even) {
+  align-self: flex-start;
+}
+
+/* Todas menos la primera pisan a la anterior (solapamiento) */
+.imageCollageItem + .imageCollageItem {
+  margin-top: -70px;
+}
+
+/* Mas de 3 imagenes: pila agrupada con la cantidad indicada arriba */
+.imageStackGroup {
+  display: flex;
+  flex-direction: column;
+  max-width: 100%;
+}
+
+.imageStackCount {
+  margin: 0 0 4px;
+  font-size: 12px;
+  color: inherit;
+  opacity: 0.85;
+}
+
+.imageStackCountOwn {
+  align-self: flex-end;
+  text-align: right;
+}
+
+.imageStackCountOther {
+  align-self: flex-start;
+  text-align: left;
+}
+
+/* Tamaño fijo para que las capas superpuestas quepan sin recortarse */
+.imageStack {
+  position: relative;
+  width: 220px;
+  max-width: 100%;
+  height: 214px;
+}
+
+.imageStackItem {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 190px;
+  max-width: 100%;
+  height: 190px;
+  padding: 0;
+  border: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Mensaje recibido: la pila se refleja (frente a la izquierda, capas hacia la derecha) */
+.imageStackOther .imageStackItem {
+  right: auto;
+  left: 0;
+}
+
+.imageStackItem img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Acciones (⋯ y responder): aparecen al pasar el mouse sobre el globo de texto nuevo */
+.bubbleActions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  visibility: hidden;
+  flex-shrink: 0;
+}
+
+.bubbleActionsOwn {
+  flex-direction: row;
+}
+
+.bubbleActionsOther {
+  flex-direction: row-reverse;
+}
+
+.bubbleActionGroup:hover .bubbleActions,
+.bubbleActionGroup:focus-within .bubbleActions,
+.bubbleActionsOpen {
+  visibility: visible;
+}
+
+.bubbleActionsOpen {
+  z-index: 5;
+}
+
+.bubbleMore {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: #e4e6eb;
+  color: inherit;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.bubbleMore:hover {
+  background: #d8dadf;
+}
+
+.bubbleMore:focus-visible {
+  outline: 2px solid #1b5fd9;
+  outline-offset: 1px;
+}
+
+/* Responder (↩️): activa el modo respuesta */
+.bubbleReply {
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-size: 16px;
+  line-height: 1;
+  user-select: none;
+  cursor: pointer;
+}
+
+.bubbleReply:hover {
+  filter: brightness(0.75);
+}
+
+.bubbleReply:focus-visible {
+  outline: 2px solid #1b5fd9;
+  outline-offset: 1px;
+}
+
+.bubbleMenu {
+  position: absolute;
+  bottom: calc(100% + 6px);
+  min-width: 140px;
+  padding: 4px;
+  border: 1px solid #c4c9d2;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.18);
+}
+
+.bubbleMenuOwn {
+  right: 0;
+}
+
+.bubbleMenuOther {
+  left: 0;
+}
+
+.bubbleMenuItem {
+  display: block;
+  width: 100%;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.bubbleMenuItem:hover:not(:disabled) {
+  background: #e9ecf1;
+}
+
+.bubbleMenuItem:disabled {
+  color: #9a9da3;
+  cursor: default;
+}
+
+/* Respuesta: cabecera + mensaje original citado + respuesta nueva */
+.replyStack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  max-width: calc(65% + 64px);
+}
+
+.replyStackOwn {
+  align-items: flex-end;
+}
+
+.replyHeader {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 2px 0;
+  font-size: 12px;
+  color: #65676b;
+}
+
+.replyHeaderOwn {
+  align-self: flex-end;
+  text-align: right;
+}
+
+.replyHeaderOther {
+  align-self: flex-start;
+  text-align: left;
+}
+
+.replyHeaderSeparator {
+  color: #65676b;
+}
+
+.replyHeaderEdited {
+  color: #1b5fd9;
+  font-weight: 500;
+}
+
+.replyQuote {
+  max-width: 100%;
+  padding: 6px 10px;
+  border: 1px solid #d6d9de;
+  border-radius: 12px;
+  background: #e9ebef;
+  color: #111;
+  font-size: 13px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* Original eliminado/no disponible: se muestra atenuado (sin contenido) */
+.replyQuoteUnavailable {
+  color: #65676b;
+  font-style: italic;
+}
+
+.replyQuoteClickable {
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.15s, border-color 0.15s, transform 0.15s;
+}
+
+.replyQuoteClickable:hover {
+  background: #dfe3ea;
+  border-color: #bcc1cb;
+}
+
+.replyQuoteClickable:focus-visible {
+  outline: 2px solid #1b5fd9;
+  outline-offset: 1px;
+}
+
+.replyStack .bubble {
+  max-width: 100%;
+}
+
+/* "Editado" por encima del globo */
+.bubbleEdited {
+  margin: 0 4px 4px 0;
+  text-align: right;
+  font-size: 12px;
+  color: #1b5fd9;
+  font-weight: 500;
+}
+
+.bubbleEditedOther {
+  margin: 0 0 4px 4px;
+  text-align: left;
+}

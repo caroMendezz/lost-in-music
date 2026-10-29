@@ -1,0 +1,234 @@
+/* Visor de imagenes a pantalla completa (se superpone sobre la pagina actual) */
+.viewer {
+    position: fixed;
+    inset: 0;
+    z-index: 1900;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 14px;
+    padding: 72px 24px 18px;
+    box-sizing: border-box;
+    overflow: hidden;
+    font-family: inherit;
+}
+
+/* Fondo: la misma imagen a pantalla completa, desenfocada y oscurecida */
+.backdrop {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    background: #14151a;
+}
+
+.backdrop img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.25);
+    filter: blur(46px) brightness(0.45) saturate(1.15);
+    user-select: none;
+}
+
+/* Controles superiores: unicamente descargar (⬇️) y cerrar (❌) */
+.topControls {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.controlButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    border-radius: 50%;
+    background: rgba(24, 24, 28, 0.66);
+    color: #fff;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.controlButton:hover {
+    background: rgba(60, 60, 68, 0.9);
+    transform: translateY(-1px);
+}
+
+/* Zona de la imagen principal (ocupa el espacio restante) */
+.stage {
+    position: relative;
+    z-index: 1;
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 0;
+}
+
+.mainImage {
+    max-width: min(calc(100vw - 160px), 1100px);
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    border-radius: 10px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.55);
+    user-select: none;
+}
+
+/* Flechas de navegacion a los costados */
+.navButton {
+    position: absolute;
+    top: 50%;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 54px;
+    height: 54px;
+    padding: 0;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 50%;
+    background: rgba(52, 52, 58, 0.78);
+    color: #fff;
+    cursor: pointer;
+    transform: translateY(-50%);
+    transition: background 0.15s ease;
+}
+
+.navButton:hover {
+    background: rgba(88, 88, 96, 0.95);
+}
+
+.navPrev {
+    left: 26px;
+}
+
+.navNext {
+    right: 26px;
+}
+
+/* Tira de miniaturas */
+.thumbStrip {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+}
+
+.thumbs {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 4px;
+    box-sizing: border-box;
+}
+
+/* Si entran todas: centradas y sin barra de scroll */
+.thumbsCentered {
+    justify-content: center;
+    overflow: hidden;
+}
+
+/* Si no entran: scroll horizontal que afecta SOLO a las miniaturas */
+.thumbsScrollable {
+    justify-content: flex-start;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding-bottom: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.65) rgba(255, 255, 255, 0.14);
+}
+
+.thumbsScrollable::-webkit-scrollbar {
+    height: 8px;
+}
+
+.thumbsScrollable::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.14);
+    border-radius: 4px;
+}
+
+.thumbsScrollable::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.65);
+    border-radius: 4px;
+}
+
+.thumbsScrollable::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.85);
+}
+
+.thumb {
+    flex: 0 0 auto;
+    width: 78px;
+    height: 78px;
+    padding: 0;
+    border: 2px solid transparent;
+    border-radius: 10px;
+    background: none;
+    overflow: hidden;
+    cursor: pointer;
+    opacity: 0.62;
+    transition: opacity 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.thumb img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+    pointer-events: none;
+}
+
+.thumb:hover {
+    opacity: 0.9;
+}
+
+/* Miniatura seleccionada: borde blanco brillante (como en las referencias) */
+.thumbActive {
+    opacity: 1;
+    border-color: #fff;
+    box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.35), 0 0 14px rgba(255, 255, 255, 0.55);
+}
+
+/* Pantallas chicas: flechas y miniaturas mas compactas */
+@media (max-width: 700px) {
+    .viewer {
+        padding: 64px 12px 12px;
+        gap: 10px;
+    }
+
+    .mainImage {
+        max-width: calc(100vw - 72px);
+    }
+
+    .navButton {
+        width: 42px;
+        height: 42px;
+    }
+
+    .navPrev {
+        left: 8px;
+    }
+
+    .navNext {
+        right: 8px;
+    }
+
+    .thumb {
+        width: 62px;
+        height: 62px;
+    }
+}

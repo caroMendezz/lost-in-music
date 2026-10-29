@@ -144,3 +144,54 @@
   border: 1px solid rgba(255, 255, 255, 0.8);
   flex-shrink: 0;
 }
+/* Foto de perfil real (amigos y últimos chats) */
+.sidebar-avatar-img {
+  object-fit: cover;
+  background: #dbeafe;
+}
+
+/* Estado desconectado: punto rojo, mismo tamaño y posición que el verde */
+.sidebar-offline-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #e53935;
+  border: 2px solid white;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+/* Filas clicables (abren el chat en /messages) */
+.sidebar-chat-item-clickable,
+.sidebar-friend-item {
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.sidebar-chat-item-clickable:hover,
+.sidebar-friend-item:hover {
+  background: rgba(255, 255, 255, 0.6);
+}
+
+.sidebar-chat-item-clickable:focus-visible,
+.sidebar-friend-item:focus-visible {
+  outline: 2px solid #378add;
+  outline-offset: 2px;
+}
+
+.sidebar-friend-name {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Aviso cuando todavía no hay amigos o chats */
+.sidebar-empty {
+  position: relative;
+  z-index: 1;
+  font-size: 11px;
+  color: #185fa5;
+  opacity: 0.85;
+}

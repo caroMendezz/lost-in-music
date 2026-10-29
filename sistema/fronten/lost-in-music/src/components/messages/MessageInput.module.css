@@ -1,0 +1,200 @@
+.messageInputArea {
+  border-top: 1px solid #c4c9d2;
+}
+
+/* Apartado "Editando mensaje" (encima del campo de escritura) */
+.messageInputEdit {
+  position: relative;
+  padding: 10px 52px 0 16px;
+}
+
+.messageInputEditTitle {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.messageInputEditPreview {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: #65676b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.messageInputEditClose {
+  position: absolute;
+  top: 8px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: #e4e6eb;
+  color: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.messageInputEditClose:hover {
+  background: #d8dadf;
+}
+
+.messageInputEditClose:focus-visible {
+  outline: 2px solid #1b5fd9;
+}
+
+.messageInput {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+}
+
+.messageInputFile {
+  display: none;
+}
+
+.messageInputField {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid #c4c9d2;
+  border-radius: 20px;
+  background: #f5f6f8;
+  color: inherit;
+  font: inherit;
+}
+
+/* Campo con las miniaturas de las imagenes elegidas (todavia no enviadas):
+   fila de miniaturas arriba y el texto de escritura debajo, todo dentro del mismo campo. */
+.messageInputFieldFiles {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 12px;
+}
+
+.messageInputThumbs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+}
+
+/* "+": agrega mas imagenes al lote */
+.messageInputAdd {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #c4c9d2;
+  border-radius: 8px;
+  background: #e4e6eb;
+  color: #1b5fd9;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.messageInputAdd:hover:not(:disabled) {
+  background: #d8dadf;
+}
+
+.messageInputAdd:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.messageInputAdd:focus-visible {
+  outline: 2px solid #1b5fd9;
+}
+
+.messageInputThumb {
+  position: relative;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+}
+
+.messageInputThumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  object-fit: cover;
+}
+
+/* "X" en la esquina de cada miniatura para quitar esa imagen */
+.messageInputThumbRemove {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  padding: 0;
+  border: 1px solid #b6bcc6;
+  border-radius: 50%;
+  background: #fff;
+  color: #111;
+  font-size: 9px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.messageInputThumbRemove:hover {
+  border-color: #8d939c;
+  background: #e9ecf1;
+}
+
+.messageInputThumbRemove:focus-visible {
+  outline: 2px solid #1b5fd9;
+}
+
+/* Campo de texto cuando hay miniaturas: sin borde ni fondo propios */
+.messageInputText {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+
+/* Avisos de adjuntos (imagen muy pesada, limite alcanzado) */
+.messageInputNotice {
+  margin: 0;
+  padding: 0 16px 10px;
+  font-size: 12px;
+  color: #c0392b;
+}
+
+.messageInputIcon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.messageInputIcon:hover:not(:disabled) {
+  background: #e9ecf1;
+}
+
+.messageInputIcon:focus-visible {
+  outline: 2px solid #1b5fd9;
+}
+
+.messageInputIcon:disabled {
+  opacity: 0.4;
+  cursor: default;
+}

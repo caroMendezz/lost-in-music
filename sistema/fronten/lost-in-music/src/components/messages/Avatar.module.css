@@ -1,0 +1,17 @@
+.avatarImage {
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+  display: block;
+}
+
+.avatarFallback {
+  border-radius: 50%;
+  background: #c9d3e6;
+  color: #2b3a55;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}

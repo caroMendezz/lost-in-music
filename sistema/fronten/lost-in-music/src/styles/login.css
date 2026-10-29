@@ -209,6 +209,7 @@
 }
 
 .login-password-input {
+  /* Reserva espacio para el boton mostrar/ocultar */
   padding-right: 3rem;
 }
 
@@ -224,12 +225,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  z-index: 1;
 }
 .login-error-text-pass{
   color: #c0392b;
   font-size: 0.78rem;
   font-weight: 600;
-  margin-top: 8px;
 }
 
 .login-hint-text {
@@ -272,10 +273,14 @@
 .login-status-icon {
   position: absolute;
   right: 12px;
-  top: 52%;
+  top: 50%;
   transform: translateY(-50%);
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 17px;
+  height: 17px;
+  line-height: 0;
   pointer-events: none;
 }
 
@@ -283,7 +288,14 @@
   animation: popIn 0.2s cubic-bezier(0.34,1.56,0.64,1);
 }
 
+/* En el campo de contrasena el icono de error se ubica centrado verticalmente
+   y con el mismo margen derecho que el resto de los iconos del campo. */
 .password-error-icon {
-  right: 12px;
-  top: 40%;
+  right: 1.25rem;
+}
+
+/* Caso borde (contrasena solo con espacios): la X y el ojo coexisten, asi que
+   la X se corre para no superponerse. */
+.login-password-wrapper:has(.login-password-toggle) .password-error-icon {
+  right: 2.6rem;
 } 

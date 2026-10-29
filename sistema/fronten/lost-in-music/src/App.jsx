@@ -6,7 +6,7 @@ import "./styles/aero.css";
 
 import Register from "./components/register";
 import Navbar from "./components/shopinvivo/Navbar";
-import AeroSidebar from "./components/shopinvivo/Sidebar"; 
+import AeroSidebar from "./components/shopinvivo/Sidebar";
 import ProductGrid from "./components/shopinvivo/ProductGrid";
 import RightSidebar from "./components/shopinvivo/RightSidebar";
 
@@ -168,48 +168,46 @@ export default function App() {
   return (
     <LangProvider>
       <FriendsProvider>
-      <Routes>
-        <Route
-          path="/"
-          element={
-            <FeedPage
-              rootPosts={rootPosts}
-              addPost={addPost}
-              toggleLike={toggleLike}
-              openPost={openPost}
-              getReplies={getReplies}
-              addComment={addComment}
-              openedPost={openedPost}
-              closePost={closePost}
-              deletePost={deletePost}
-              editPost={editPost}
-              now={now}
-            />
-          }
-        />
-        <Route
-          path="/feed"
-          element={
-            <FeedPage
-              rootPosts={rootPosts}
-              addPost={addPost}
-              toggleLike={toggleLike}
-              openPost={openPost}
-              getReplies={getReplies}
-              addComment={addComment}
-              openedPost={openedPost}
-              closePost={closePost}
-              deletePost={deletePost}
-              editPost={editPost}
-              now={now}
-            />
-          }
-        />
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <FeedPage
+                rootPosts={rootPosts}
+                addPost={addPost}
+                toggleLike={toggleLike}
+                openPost={openPost}
+                getReplies={getReplies}
+                addComment={addComment}
+                openedPost={openedPost}
+                closePost={closePost}
+                deletePost={deletePost}
+                editPost={editPost}
+                now={now}
+              />
+            }
+          />
 
-        {/* Registro y Aero integrados en el enrutador */}
-        <Route path="/register" element={<Register />} />
-        <Route path="/marketplace" element={<Marketplace />} />
+          <Route
+            path="/feed"
+            element={
+              <FeedPage
+                rootPosts={rootPosts}
+                addPost={addPost}
+                toggleLike={toggleLike}
+                openPost={openPost}
+                getReplies={getReplies}
+                addComment={addComment}
+                openedPost={openedPost}
+                closePost={closePost}
+                deletePost={deletePost}
+                editPost={editPost}
+                now={now}
+              />
+            }
+          />
 
+<<<<<<< HEAD
         <Route path="/amigos" element={<FriendsPage />} />
         <Route path="/post/:id" element={<PostPage />} />
         <Route path="/settings" element={<Configuracion />} />
@@ -241,6 +239,44 @@ export default function App() {
           }
         />
       </Routes>
+=======
+          {/* Registro y Shopinvivo */}
+          <Route path="/register" element={<Register />} />
+          <Route path="/marketplace" element={<Marketplace />} />
+
+          {/* Mensajería */}
+          <Route path="/messages" element={<MessagesPage />} />
+
+          {/* Resto de la red social */}
+          <Route path="/amigos" element={<FriendsPage />} />
+          <Route path="/post/:id" element={<PostPage />} />
+          <Route path="/settings" element={<Configuracion />} />
+
+          <Route
+            path="/photo/:postId/:imageIndex"
+            element={
+              <PhotoPage
+                posts={rootPosts}
+                getReplies={getReplies}
+                onComment={addComment}
+                onLike={toggleLike}
+              />
+            }
+          />
+
+          <Route
+            path="/comment/:id"
+            element={
+              <CommentPage
+                getPost={getPost}
+                getReplies={getReplies}
+                onComment={addComment}
+                onLike={toggleLike}
+              />
+            }
+          />
+        </Routes>
+>>>>>>> develop
       </FriendsProvider>
     </LangProvider>
   );
