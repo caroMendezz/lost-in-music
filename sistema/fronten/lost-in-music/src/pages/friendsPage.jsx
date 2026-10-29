@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import PageLayout from '../components/PageLayout';
-import { useFriends } from '../components/FriendsContext';
+import PageLayout from '../components/pageLayout';
+import { useFriends } from '../components/friendsContext';
 import {
   resolveMedia,
   searchPeople,
@@ -9,7 +9,7 @@ import {
   acceptFriendRequest,
   removeFriendship,
 } from '../services/friendsApi';
-import '../styles/Friends.css';
+import '../styles/friends.css';
 
 const DEFAULT_LOCATION = 'Agregar ubicacion'; // valor que el backend pone al registrarse
 

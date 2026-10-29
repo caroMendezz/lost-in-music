@@ -10,11 +10,11 @@ import {
   X,
 } from "lucide-react";
 import { CATEGORIES } from "../../data/categories";
+import { createProduct, uploadProductImages } from "../../services/productsApi";
 import aero from "../../styles/aero.module.css";
 
 const CONDITIONS = ["Nuevo", "Usado - Como nuevo", "Usado - Buen Estado", "Usado - Aceptable"];
 const AVAILABILITIES = ["Publicar como artículo único", "Publicar como disponible"];
-const NEIGHBORHOODS = ["San Telmo", "Caballito", "Palermo", "Belgrano", "Villa Urquiza"];
 const MAX_IMAGES = 10;
 
 const formatPrice = (value) => {
@@ -24,7 +24,7 @@ const formatPrice = (value) => {
     : "Precio";
 };
 
-export default function UploadProductModal({ onClose }) {
+export default function UploadProductModal({ onClose, onCreated }) {
   const [form, setForm] = useState({
     title: "",
     price: "",
@@ -40,6 +40,8 @@ export default function UploadProductModal({ onClose }) {
   const [photos, setPhotos] = useState([]);
   const photosRef = useRef([]);
   const [notice, setNotice] = useState("");
+  const [error, setError] = useState("");
+  const [sending, setSending] = useState(false);
   const fileInputRef = useRef(null);
   const titleId = useId();
   const descriptionId = useId();
@@ -68,6 +70,7 @@ export default function UploadProductModal({ onClose }) {
     const { name, value, checked, type } = event.target;
     setForm((current) => ({ ...current, [name]: type === "checkbox" ? checked : value }));
     setNotice("");
+    setError("");
   };
 
   const addPhotos = (files) => {
@@ -100,9 +103,37 @@ export default function UploadProductModal({ onClose }) {
     addPhotos(event.dataTransfer.files);
   };
 
-  const onSubmit = (event) => {
+  // Sube las fotos y crea la publicación en el backend (POST /CreateProduct)
+  const onSubmit = async (event) => {
     event.preventDefault();
-    setNotice("Tu publicación está lista para publicar.");
+    if (sending) return;
+
+    setNotice("");
+    setError("");
+    setSending(true);
+
+    try {
+      const images = await uploadProductImages(photos.map((photo) => photo.file));
+
+      const created = await createProduct({
+        title: form.title,
+        images,
+        description: form.description,
+        category: form.category,
+        subcategory: form.subcategory,
+        condition: form.condition,
+        price: form.price,
+        location: form.neighborhood,
+      });
+
+      setNotice("Publicación creada correctamente.");
+      onCreated?.(created);
+      onClose();
+    } catch (submitError) {
+      setError(submitError.message || "No se pudo publicar el producto.");
+    } finally {
+      setSending(false);
+    }
   };
 
   return createPortal((
@@ -183,7 +214,7 @@ export default function UploadProductModal({ onClose }) {
                 {CATEGORIES.map((item) => <option key={item.label}>{item.label}</option>)}
               </select>
               {category && (
-                <select name="subcategory" value={form.subcategory} onChange={updateField} aria-label="Subcategoría">
+                <select name="subcategory" value={form.subcategory} onChange={updateField} aria-label="Subcategoría" required>
                   <option value="">Subcategoría</option>
                   {category.items.map((item) => <option key={item}>{item}</option>)}
                 </select>
@@ -208,10 +239,14 @@ export default function UploadProductModal({ onClose }) {
               </select>
               <section className={aero["upload-location"]}>
                 <div className={aero["upload-location-title"]}><MapPin size={19} /><span><strong>Ubicación</strong><small>Ciudad Autónoma de Buenos Aires</small></span></div>
-                <select name="neighborhood" value={form.neighborhood} onChange={updateField} aria-label="Barrio">
-                  <option value="">Seleccioná un barrio</option>
-                  {NEIGHBORHOODS.map((neighborhood) => <option key={neighborhood}>{neighborhood}</option>)}
-                </select>
+                <input
+                  name="neighborhood"
+                  value={form.neighborhood}
+                  onChange={updateField}
+                  placeholder="Escribí el barrio o la zona"
+                  aria-label="Barrio o zona"
+                  maxLength={80}
+                />
               </section>
             </section>
 
@@ -223,8 +258,11 @@ export default function UploadProductModal({ onClose }) {
             </section>
 
             <footer className={aero["upload-submit-area"]}>
-              {notice && <span role="status">{notice}</span>}
-              <button type="submit" className={aero["upload-submit"]}><Check size={16} /> Publicar</button>
+              {error && <span role="alert" className={aero["upload-error"]}>{error}</span>}
+              {notice && !error && <span role="status">{notice}</span>}
+              <button type="submit" className={aero["upload-submit"]} disabled={sending}>
+                <Check size={16} /> {sending ? "Publicando..." : "Publicar"}
+              </button>
             </footer>
           </form>
 

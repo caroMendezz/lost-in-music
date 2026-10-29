@@ -7,6 +7,7 @@ import '../styles/LeftNav.css';
 function getKeyFromPath(pathname) {
   if (pathname === '/amigos') return 'amigos';
   if (pathname.startsWith('/messages')) return 'mensajes';
+  if (pathname.startsWith('/shopinvivo') || pathname.startsWith('/marketplace')) return 'shop';
   if (pathname === '/' || pathname === '/feed' || pathname.startsWith('/post/')) return 'principal';
   return null;
 }
@@ -22,7 +23,7 @@ function LeftNav() {
   const navItems = [
     { key: 'principal', label: n.principal, icon: '🏠', path: '/' },
     { key: 'mensajes',  label: n.mensajes,  icon: '💬', path: '/messages' },
-    { key: 'shop',      label: n.shop,      icon: '🛍️' },
+    { key: 'shop',      label: n.shop,      icon: '🛍️', path: '/shopinvivo' },
     { key: 'amigos',    label: n.amigos,    icon: '👥', path: '/amigos' },
   ];
 

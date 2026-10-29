@@ -5,9 +5,53 @@ const createProduct = async (req, res) => {
 
     try {
 
-        const { userId, title, image, description, category, condition, price, location } = req.body
+        const {
+            userId,
+            title,
+            image,
+            description,
+            category,
+            subcategory,
+            condition,
+            price,
+            location,
+            available
+        } = req.body
 
-        const user = await User.findByPk(userId)
+        // El dueño de la publicación sale del token (checkToken) y no del body
+        const ownerId = req.user?.userId ?? userId
+
+        if (!ownerId) {
+            return res.status(400).json({
+                message: "Falta el usuario que publica"
+            })
+        }
+
+        if (!title || !String(title).trim()) {
+            return res.status(400).json({
+                message: "El título es obligatorio"
+            })
+        }
+
+        if (price === undefined || price === null || String(price).trim() === "") {
+            return res.status(400).json({
+                message: "El precio es obligatorio"
+            })
+        }
+
+        if (!category || (Array.isArray(category) && category.length === 0)) {
+            return res.status(400).json({
+                message: "La categoría es obligatoria"
+            })
+        }
+
+        if (!condition || (Array.isArray(condition) && condition.length === 0)) {
+            return res.status(400).json({
+                message: "El estado del producto es obligatorio"
+            })
+        }
+
+        const user = await User.findByPk(ownerId)
 
         if (!user) {
             return res.status(404).json({
@@ -16,17 +60,80 @@ const createProduct = async (req, res) => {
         }
 
         const product = await Product.create({
-            userId,
-            title,
+            userId: ownerId,
+            title: String(title).trim(),
             image,
             description,
             category,
+            subcategory,
             condition,
+            price,
             location,
-            price
+            ...(available !== undefined ? { available } : {})
         })
 
-        return res.status(201).json(product)
+        return res.status(201).json({
+            ...product.toObject(),
+            seller: {
+                userId: user.userId,
+                username: user.username,
+                profilePhoto: user.profilePhoto || null
+            }
+        })
+
+    } catch (error) {
+
+        console.error(error)
+
+        return res.status(500).json({
+            message: "Error interno",
+            error: error.message
+        })
+
+    }
+
+}
+
+// Publicaciones activas para Shop in vivo, de la más nueva a la más vieja.
+// Cada una incluye los datos del vendedor para la tarjeta y el detalle.
+const getProducts = async (req, res) => {
+
+    try {
+
+        const products = await Product.find({ eliminated: false })
+            .sort({ createdAt: -1 })
+            .lean()
+
+        const ownerIds = [
+            ...new Set(
+                products
+                    .map((product) => Number(product.userId))
+                    .filter((id) => Number.isInteger(id))
+            )
+        ]
+
+        const users = ownerIds.length
+            ? await User.findAll({ where: { userId: ownerIds } })
+            : []
+
+        const usersById = new Map(users.map((user) => [Number(user.userId), user]))
+
+        return res.status(200).json(
+            products.map((product) => {
+                const seller = usersById.get(Number(product.userId))
+
+                return {
+                    ...product,
+                    seller: seller
+                        ? {
+                            userId: seller.userId,
+                            username: seller.username,
+                            profilePhoto: seller.profilePhoto || null
+                        }
+                        : null
+                }
+            })
+        )
 
     } catch (error) {
 
@@ -159,6 +266,7 @@ const updateProduct = async (req, res) => {
 
 module.exports = {
     createProduct,
+    getProducts,
     deleteProduct,
     updateProduct
 }

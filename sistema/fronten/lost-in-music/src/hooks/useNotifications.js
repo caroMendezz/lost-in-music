@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useFriends } from '../components/FriendsContext';
+import { useFriends } from '../components/friendsContext';
 import {
   fetchNotifications,
   markNotificationsRead,

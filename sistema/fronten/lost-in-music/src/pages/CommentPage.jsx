@@ -4,7 +4,7 @@ import ThreadView from '../components/ThreadView';
 import Header from '../components/header';
 import LeftNav from '../components/leftNav';
 import Sidebar from '../components/sidebar';
-import Footer from '../components/Footer';
+import Footer from '../components/footer';
 import { useLang } from '../components/LangContext';
 import '../styles/CommentPage.css';
 

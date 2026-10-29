@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import CreatePost from '../components/CreatePost';
+import CreatePost from '../components/createPost';
 import Post from '../components/post';
 import { fetchPosts, createPostRequest } from '../services/postsApi';
 import { usePostActions } from '../hooks/usePostActions';

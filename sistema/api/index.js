@@ -14,7 +14,7 @@ const {createRole} = require('./controllers/roles')
 const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
 const {checkToken } = require('./middlewares/auth')
 const {getMessages, getConversations, deleteConversationForUser, getUserById, markAsRead, searchUsers} = require('./controllers/messages')
-const {createProduct, deleteProduct, updateProduct} = require('./controllers/products')
+const {createProduct, getProducts, deleteProduct, updateProduct} = require('./controllers/products')
 const setupChat = require("./sockets/chat");
 const { setupPresence } = require("./sockets/presence");
 const {
@@ -74,6 +74,7 @@ server.get('/GetReplies/:id', checkToken, getReplies);
 server.post('/LikePost/:id', checkToken, toggleLike); 
 
 server.post('/CreateProduct', checkToken, createProduct);
+server.get('/GetProduct', checkToken, getProducts);
 server.patch('/DeleteProduct/:id',checkToken, deleteProduct);
 server.patch('/UpdateProduct/:id',checkToken, updateProduct); 
 

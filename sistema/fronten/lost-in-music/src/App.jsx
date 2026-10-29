@@ -5,10 +5,7 @@ import "./styles/App.css";
 import "./styles/aero.module.css";
 
 import Register from "./components/register";
-import Navbar from "./components/shopinvivo/Navbar";
-import AeroSidebar from "./components/shopinvivo/Sidebar";
-import ProductGrid from "./components/shopinvivo/ProductGrid";
-import RightSidebar from "./components/shopinvivo/RightSidebar";
+import Shopinvivo from "./pages/shopinvivo";
 
 import Header from "./components/header";
 import LeftNav from "./components/leftNav";
@@ -22,24 +19,9 @@ import Configuracion from "./pages/settings";
 import PostModal from "./components/PostModal";
 import { usePosts } from "./hooks/UsePosts";
 import { LangProvider } from "./components/LangContext";
-import { FriendsProvider } from "./components/FriendsContext";
-import FriendsPage from "./pages/FriendsPage";
+import { FriendsProvider } from "./components/friendsContext";
+import FriendsPage from "./pages/friendsPage";
 import MessagesPage from "./pages/messages/MessagesPage";
-
-function Marketplace() {
-  return (
-    <div className="aero-root">
-      <div className="frame">
-        <Navbar />
-        <div className="body-grid">
-          <AeroSidebar />
-          <ProductGrid />
-          <RightSidebar />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 function FeedPage({
   rootPosts,
@@ -207,7 +189,8 @@ export default function App() {
 
           {/* Registro y Shopinvivo */}
           <Route path="/register" element={<Register />} />
-          <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/shopinvivo" element={<Shopinvivo />} />
+          <Route path="/marketplace" element={<Shopinvivo />} />
 
           {/* Mensajería */}
           <Route path="/messages" element={<MessagesPage />} />

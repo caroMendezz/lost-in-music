@@ -5,7 +5,7 @@ import Header from '../components/header';
 import LeftNav from '../components/leftNav';
 import SocialSidebar from '../components/sidebar';
 import Footer from '../components/footer';
-import CreatePost from '../components/CreatePost';
+import CreatePost from '../components/createPost';
 import Post from '../components/post';
 
 import { fetchPost, fetchReplies, createPostRequest } from '../services/postsApi';

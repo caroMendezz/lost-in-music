@@ -3,9 +3,9 @@ import React, { useState } from "react";
 import Header from "../components/header";
 import Footer from "../components/footer";
 
-import ChangeEmail from "../components/settings/ChangeEmail";
-import ChangePassword from "../components/settings/ChangePassword";
-import DeleteAccount from "../components/settings/DeleteAccount";
+import ChangeEmail from "../components/settings/changeEmail";
+import ChangePassword from "../components/settings/changePassword";
+import DeleteAccount from "../components/settings/deleteAccount";
 
 import "../styles/settings.css";
 

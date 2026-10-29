@@ -16,6 +16,11 @@ const ProductSchema = new mongoose.Schema({
         enum: ["Cuerda", "Viento", "Percusion", "Electronicos", "Complementos"]
     }],
 
+    // Subcategoría elegida en el formulario ("Cuerda", "Cables", "Fundas", ...)
+    subcategory: [{
+        type: String
+    }],
+
     condition: [{
         type: String,
         enum: ["Nuevo","Usado"]
