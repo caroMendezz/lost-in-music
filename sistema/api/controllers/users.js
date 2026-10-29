@@ -418,6 +418,8 @@ const GetUserProfile = async (req, res) => {
         "profilePhoto",
         "banner",
         "ubication",
+        "penaltyDate", // 👈 nuevo
+        "idRole",      // 👈 nuevo
       ],
     });
 
@@ -427,9 +429,7 @@ const GetUserProfile = async (req, res) => {
       });
     }
 
-    return res.status(200).json({
-      user,
-    });
+    return res.status(200).json({ user });
   } catch (error) {
     console.error("Error al obtener el perfil público:", error);
 

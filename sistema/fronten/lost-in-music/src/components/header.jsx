@@ -83,17 +83,26 @@ function Header() {
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
 
-  // Al hacer clic en un usuario, vamos a su perfil (o al chat)
+  // Al hacer clic en un usuario, vamos a su perfil (Admin o Normal)
   const handleUserClick = (userId) => {
     setShowResults(false);
     setSearchQuery('');
-    // Ajusta esta ruta dependiendo de cómo tengas configurado tu React Router
-    navigate(`/perfil/${userId}`); 
+    
+    // Leemos el rol del localStorage
+    const currentIdRole = localStorage.getItem('idRole');
+    
+    // Si es Admin (2), va a la ruta de admin. Si no, a la normal.
+    if (String(currentIdRole) === '2') {
+      navigate(`/admin/perfil/${userId}`); 
+    } else {
+      navigate(`/perfil/${userId}`); 
+    }
   };
 
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
+    localStorage.removeItem('idRole'); // 👈 Agregado para limpiar el rol al salir
     navigate('/acceso');
   };
 

@@ -8,6 +8,8 @@ const upload = require("./middlewares/upload");
 const uploadPostMedia = require("./middlewares/uploadPostMedia");
 const auditLog = require("./middlewares/auditLog");
 const {uploadFile} = require("./controllers/uploads");
+const { isAdmin } = require("./middlewares/isAdmin");
+const { banUser, unbanUser, adminDeletePost } = require("./controllers/admin");
 const {
   Login,
   Register,
@@ -92,7 +94,10 @@ server.get("/posts/user/:userId/profile",checkToken,getUserProfilePosts);
 server.get("/posts/user/:userId/replies",checkToken,getUserProfileReplies);
 server.get("/posts/user/:userId/likes",checkToken,getUserProfileLikes);
 
-
+// === Rutas de administración ===
+server.patch("/admin/ban/:userId", checkToken, isAdmin, banUser);
+server.patch("/admin/unban/:userId", checkToken, isAdmin, unbanUser);
+server.patch("/admin/DeletePost/:id", checkToken, isAdmin, adminDeletePost);
 
 server.post('/CreateProduct', checkToken, createProduct);
 server.patch('/DeleteProduct/:id',checkToken, deleteProduct);

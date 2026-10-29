@@ -18,6 +18,7 @@ import AccesoLayout from './pages/AccesoLayout';
 import Acceso from './pages/registerlogin/registerlogin';
 import UserProfilePage from './pages/userProfilePage';
 import UserOtherProfilePage from './pages/UserOtherProfilePage';
+import UserOtherProfilePageAdmin from './pages/OtherUserProfilePageAdmin';
 
 function TitleManager() {
   const location = useLocation();
@@ -33,7 +34,10 @@ function TitleManager() {
       document.title = 'Lost In Music - Mi perfil';
     } else if (path.startsWith('/perfil/')) {
       document.title = 'Lost In Music - Perfil de usuario';
-    } else {
+    } else if (path.startsWith('/admin/perfil/')) {
+      document.title = 'Lost In Music - Admin · Perfil de usuario';
+    }
+    else {
       document.title = 'Lost In Music';
     }
   }, [location]);
@@ -61,6 +65,10 @@ const router = createBrowserRouter([
       {
         path: '/perfil/:userId',
         element: <UserOtherProfilePage />,
+      },
+      {
+        path: '/admin/perfil/:userId',
+        element: <UserOtherProfilePageAdmin />,
       },
       {
         path: '/*',
