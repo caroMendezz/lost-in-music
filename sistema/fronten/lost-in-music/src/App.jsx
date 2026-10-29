@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import "./styles/App.css";
-import "./styles/aero.css";
+import "./styles/aero.module.css";
 
 import Register from "./components/register";
 import Navbar from "./components/shopinvivo/Navbar";
@@ -207,7 +207,6 @@ export default function App() {
             }
           />
 
-<<<<<<< HEAD
         <Route path="/amigos" element={<FriendsPage />} />
         <Route path="/post/:id" element={<PostPage />} />
         <Route path="/settings" element={<Configuracion />} />
@@ -239,44 +238,6 @@ export default function App() {
           }
         />
       </Routes>
-=======
-          {/* Registro y Shopinvivo */}
-          <Route path="/register" element={<Register />} />
-          <Route path="/marketplace" element={<Marketplace />} />
-
-          {/* Mensajería */}
-          <Route path="/messages" element={<MessagesPage />} />
-
-          {/* Resto de la red social */}
-          <Route path="/amigos" element={<FriendsPage />} />
-          <Route path="/post/:id" element={<PostPage />} />
-          <Route path="/settings" element={<Configuracion />} />
-
-          <Route
-            path="/photo/:postId/:imageIndex"
-            element={
-              <PhotoPage
-                posts={rootPosts}
-                getReplies={getReplies}
-                onComment={addComment}
-                onLike={toggleLike}
-              />
-            }
-          />
-
-          <Route
-            path="/comment/:id"
-            element={
-              <CommentPage
-                getPost={getPost}
-                getReplies={getReplies}
-                onComment={addComment}
-                onLike={toggleLike}
-              />
-            }
-          />
-        </Routes>
->>>>>>> develop
       </FriendsProvider>
     </LangProvider>
   );
