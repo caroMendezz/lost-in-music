@@ -30,6 +30,8 @@ const translations = {
     sidebar: {
       chats: 'Últimos chats',
       friends: 'Lista de amig@s',
+      noChats: 'Todavía no tenés chats',
+      noFriends: 'Todavía no tenés amigos',
     },
 
 
@@ -125,6 +127,8 @@ const translations = {
     sidebar: {
       chats: 'Recent chats',
       friends: 'Friends list',
+      noChats: 'No chats yet',
+      noFriends: 'No friends yet',
     },
 
     createPost: {

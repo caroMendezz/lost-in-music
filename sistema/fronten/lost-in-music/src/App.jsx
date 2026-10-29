@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import "./styles/App.css";
-import "./styles/aero.css";
+import "./styles/aero.module.css";
 
 import Register from "./components/register";
 import Navbar from "./components/shopinvivo/Navbar";

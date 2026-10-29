@@ -40,6 +40,39 @@
     clamp(240px, 22vw, 340px);
 }
 
+/* Barra con el boton para volver al feed, debajo del Header */
+.messagesToolbar {
+  display: flex;
+  align-items: center;
+  padding: 2px 8px 0;
+  flex: 0 0 auto;
+}
+
+.backToFeed {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  color: #0c447c;
+  background: rgba(219, 244, 255, 0.892);
+  border: 1px solid #c7def0;
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+}
+
+.backToFeed:hover {
+  background: #d3eefc;
+}
+
+.backToFeed:focus-visible {
+  outline: 2px solid #378add;
+  outline-offset: 2px;
+}
+
 .messagesPageNotice {
   margin: 32px auto;
   max-width: 480px;

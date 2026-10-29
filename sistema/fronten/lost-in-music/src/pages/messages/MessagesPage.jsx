@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Header from "../../components/header";
 import ChatWindow from "../../components/messages/ChatWindow";
 import ContactInfo from "../../components/messages/ContactInfo";
@@ -12,6 +12,7 @@ import styles from "./MessagesPage.module.css";
 export default function MessagesPage() {
     // /messages?user=5 abre directamente el chat con el usuario 5 (util desde un perfil)
     const [searchParams] = useSearchParams();
+    const navigate = useNavigate();
     const initialUserId = searchParams.get("user");
 
     const {
@@ -75,6 +76,17 @@ export default function MessagesPage() {
     return (
         <div className={styles.messagesPage}>
             <Header />
+
+            {/* Volver al feed desde la mensajeria */}
+            <div className={styles.messagesToolbar}>
+                <button
+                    type="button"
+                    className={styles.backToFeed}
+                    onClick={() => navigate("/")}
+                >
+                    <span aria-hidden="true">←</span> Volver al feed
+                </button>
+            </div>
 
             <div className={`${styles.messagesLayout} ${hasChat && infoOpen ? styles.messagesLayoutWithInfo : ""}`}>
                 <ConversationList

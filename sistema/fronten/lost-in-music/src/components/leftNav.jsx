@@ -6,6 +6,7 @@ import '../styles/LeftNav.css';
 // Pestaña que corresponde a la ruta actual (null = ninguna de las que navegan)
 function getKeyFromPath(pathname) {
   if (pathname === '/amigos') return 'amigos';
+  if (pathname.startsWith('/messages')) return 'mensajes';
   if (pathname === '/' || pathname === '/feed' || pathname.startsWith('/post/')) return 'principal';
   return null;
 }
@@ -20,7 +21,7 @@ function LeftNav() {
   // `path` = a dónde navega el botón (los que no tienen path solo se resaltan, como antes)
   const navItems = [
     { key: 'principal', label: n.principal, icon: '🏠', path: '/' },
-    { key: 'mensajes',  label: n.mensajes,  icon: '💬' },
+    { key: 'mensajes',  label: n.mensajes,  icon: '💬', path: '/messages' },
     { key: 'shop',      label: n.shop,      icon: '🛍️' },
     { key: 'amigos',    label: n.amigos,    icon: '👥', path: '/amigos' },
   ];
