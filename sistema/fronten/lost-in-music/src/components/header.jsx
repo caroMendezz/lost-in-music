@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Header.css';
 import { useLang } from './LangContext';
-import LangSelector from './LangSelector';
+import LangSelector from './Langselector';
 import NotificationsMenu from './NotificationsMenu';
 
 function Header() {
@@ -199,7 +199,11 @@ function Header() {
           )}
         </div>
 
-        <button className="header-icon-btn" title="Configuración">
+        <button
+          className="header-icon-btn"
+          title="Configuración"
+          onClick={() => navigate('/settings')}
+        >
           ⚙️
         </button>
       </div>

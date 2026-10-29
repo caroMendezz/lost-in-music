@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLang } from './LangContext';
-import { useFriends } from './FriendsContext';
+import { useFriends } from './friendsContext';
 import {
   getConversations,
   getCurrentUserId,
