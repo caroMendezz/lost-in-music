@@ -66,4 +66,46 @@ async function ensureMessagesColumns() {
     }
 }
 
-module.exports = { ensureMessagesColumns };
+// Columnas del modelo User que quedaron desactualizadas en tablas creadas con
+// versiones anteriores: profilePhoto se guarda como data URL base64 (mucho mas
+// grande que un VARCHAR(255)) y el enum de gender no contemplaba 'NoBinario'.
+const USERS_GENDER_VALUES = [
+    "Femenino",
+    "Masculino",
+    "Otro",
+    "PrefieroNoDecir",
+    "NoBinario"
+];
+
+async function ensureUsersColumns() {
+    const queryInterface = sequelize.getQueryInterface();
+
+    let table;
+    try {
+        table = await queryInterface.describeTable("users");
+    } catch (error) {
+        // La tabla no existe todavia: sequelize.sync() la crea completa en el proximo arranque.
+        console.warn("No se pudo revisar la tabla users:", error.message);
+        return;
+    }
+
+    const profilePhotoType = String(table.profilePhoto?.type || "").toUpperCase();
+    if (table.profilePhoto && profilePhotoType !== "LONGTEXT") {
+        await queryInterface.changeColumn("users", "profilePhoto", {
+            type: DataTypes.TEXT("long"),
+            allowNull: false
+        });
+        console.log("Columna users.profilePhoto ampliada a LONGTEXT (fotos en base64)");
+    }
+
+    const genderType = String(table.gender?.type || "");
+    if (table.gender && !USERS_GENDER_VALUES.every((value) => genderType.includes(value))) {
+        await queryInterface.changeColumn("users", "gender", {
+            type: DataTypes.ENUM(...USERS_GENDER_VALUES),
+            allowNull: false
+        });
+        console.log("Columna users.gender actualizada con las opciones actuales");
+    }
+}
+
+module.exports = { ensureMessagesColumns, ensureUsersColumns };

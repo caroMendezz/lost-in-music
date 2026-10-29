@@ -25,7 +25,7 @@ const {
   getNotifications, markNotificationsRead, deleteNotification, clearNotifications
 } = require("./controllers/notifications");
 const sequelize = require('./config/db')
-const { ensureMessagesColumns } = require('./config/migrations')
+const { ensureMessagesColumns, ensureUsersColumns } = require('./config/migrations')
 const connectDB = require("./config/dbnosql")
 const server = express()
 
@@ -112,6 +112,7 @@ setupPresence(io);
 const start = async () => {
   await sequelize.sync();
   await ensureMessagesColumns();
+  await ensureUsersColumns();
   await connectDB();
 
   httpServer.listen(PORT, () => {
