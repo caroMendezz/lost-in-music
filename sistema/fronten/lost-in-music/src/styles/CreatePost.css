@@ -387,3 +387,6 @@
   font-size: 34px;
   font-weight: 700;
 }
+
+.createpost-gallery-item video { width: 100%; height: 100%; object-fit: cover; }
+
