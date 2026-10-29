@@ -475,6 +475,172 @@ const getMyProfileLikes = async (req, res) => {
 
 
 
+/**
+ * Perfil público: publicaciones originales de otro usuario.
+ */
+const getUserProfilePosts = async (req, res) => {
+    try {
+        const userId = Number(req.params.userId);
+        const currentUserId = getCurrentUserId(req);
+
+        if (!Number.isInteger(userId) || userId <= 0) {
+            return res.status(400).json({
+                message: "El ID del usuario no es válido"
+            });
+        }
+
+        // Verificar que el usuario exista y no esté eliminado.
+        const user = await User.findOne({
+            where: {
+                userId,
+                eliminated: 0
+            },
+            attributes: ["userId"],
+            raw: true
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                message: "Usuario no encontrado"
+            });
+        }
+
+        const posts = await Post.find({
+            userId,
+            parentId: null,
+            eliminated: false
+        })
+            .sort({ createdAt: -1 })
+            .lean();
+
+        return res.status(200).json(
+            await decoratePosts(posts, currentUserId)
+        );
+    } catch (error) {
+        console.error("Error al obtener las publicaciones del usuario:", error);
+
+        return res.status(500).json({
+            message: "Error al obtener las publicaciones del usuario"
+        });
+    }
+};
+
+/**
+ * Perfil público: comentarios y respuestas publicados por otro usuario.
+ */
+const getUserProfileReplies = async (req, res) => {
+    try {
+        const userId = Number(req.params.userId);
+        const currentUserId = getCurrentUserId(req);
+
+        if (!Number.isInteger(userId) || userId <= 0) {
+            return res.status(400).json({
+                message: "El ID del usuario no es válido"
+            });
+        }
+
+        const user = await User.findOne({
+            where: {
+                userId,
+                eliminated: 0
+            },
+            attributes: ["userId"],
+            raw: true
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                message: "Usuario no encontrado"
+            });
+        }
+
+        const replies = await Post.find({
+            userId,
+            parentId: { $ne: null },
+            eliminated: false
+        })
+            .sort({ createdAt: -1 })
+            .lean();
+
+        return res.status(200).json(
+            await decoratePosts(replies, currentUserId)
+        );
+    } catch (error) {
+        console.error("Error al obtener las respuestas del usuario:", error);
+
+        return res.status(500).json({
+            message: "Error al obtener las respuestas del usuario"
+        });
+    }
+};
+
+/**
+ * Perfil público: publicaciones y respuestas a las que otro usuario
+ * les dio like. Se conserva el orden cronológico de los likes.
+ */
+const getUserProfileLikes = async (req, res) => {
+    try {
+        const userId = Number(req.params.userId);
+        const currentUserId = getCurrentUserId(req);
+
+        if (!Number.isInteger(userId) || userId <= 0) {
+            return res.status(400).json({
+                message: "El ID del usuario no es válido"
+            });
+        }
+
+        const user = await User.findOne({
+            where: {
+                userId,
+                eliminated: 0
+            },
+            attributes: ["userId"],
+            raw: true
+        });
+
+        if (!user) {
+            return res.status(404).json({
+                message: "Usuario no encontrado"
+            });
+        }
+
+        const likes = await Like.find({ userId })
+            .sort({ createdAt: -1 })
+            .select("postId")
+            .lean();
+
+        if (likes.length === 0) {
+            return res.status(200).json([]);
+        }
+
+        const postIds = likes.map(like => like.postId);
+
+        const posts = await Post.find({
+            _id: { $in: postIds },
+            eliminated: false
+        }).lean();
+
+        // MongoDB no garantiza que $in respete el orden de postIds.
+        const postsById = new Map(
+            posts.map(post => [String(post._id), post])
+        );
+
+        const orderedPosts = postIds
+            .map(id => postsById.get(String(id)))
+            .filter(Boolean);
+
+        return res.status(200).json(
+            await decoratePosts(orderedPosts, currentUserId)
+        );
+    } catch (error) {
+        console.error("Error al obtener los likes del usuario:", error);
+
+        return res.status(500).json({
+            message: "Error al obtener los likes del usuario"
+        });
+    }
+};
+
 
 
 
@@ -489,5 +655,8 @@ module.exports = {
     getMyPostsCount,
     getMyProfilePosts,
     getMyProfileReplies,
-    getMyProfileLikes
+    getMyProfileLikes,
+    getUserProfilePosts,
+    getUserProfileReplies,
+    getUserProfileLikes, 
 }

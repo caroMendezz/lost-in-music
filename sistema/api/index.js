@@ -14,9 +14,10 @@ const {
   DeleteUser,
   UpdateUser,
   GetMyProfile,
-  UpdateMyProfile
+  UpdateMyProfile,
+  GetUserProfile,
 } = require('./controllers/users')
-const {createPost, deletePost, updatePost, getPosts, getPostById, getReplies, toggleLike, getMyPostsCount, getMyProfilePosts, getMyProfileReplies, getMyProfileLikes} = require('./controllers/posts')
+const {createPost, deletePost, updatePost, getPosts, getPostById, getReplies, toggleLike, getMyPostsCount, getMyProfilePosts, getMyProfileReplies, getMyProfileLikes, getUserProfilePosts, getUserProfileReplies, getUserProfileLikes} = require('./controllers/posts')
 const {createRole} = require('./controllers/roles')
 const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
 const {checkToken } = require('./middlewares/auth')
@@ -86,6 +87,9 @@ server.get("/posts/my/count", checkToken, getMyPostsCount);
 server.get("/posts/my/profile", checkToken, getMyProfilePosts);
 server.get("/posts/my/replies", checkToken, getMyProfileReplies);
 server.get("/posts/my/likes", checkToken, getMyProfileLikes);
+server.get("/posts/user/:userId/profile",checkToken,getUserProfilePosts);
+server.get("/posts/user/:userId/replies",checkToken,getUserProfileReplies);
+server.get("/posts/user/:userId/likes",checkToken,getUserProfileLikes);
 
 
 
@@ -100,7 +104,7 @@ server.get("/messages/:otherUserId", checkToken, getMessages);
 
 server.get("/conversations", checkToken, getConversations);
 server.get("/users/search", checkToken, searchUsers);
-server.get("/users/:id", checkToken, getUserById);
+server.get("/users/:id", checkToken, GetUserProfile);
 server.put("/messages/read/:otherUserId", checkToken, markAsRead);
 
 server.get("/friends", checkToken, getFriends);

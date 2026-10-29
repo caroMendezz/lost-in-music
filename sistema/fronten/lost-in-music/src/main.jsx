@@ -2,7 +2,12 @@
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 
-import { createBrowserRouter, RouterProvider, Outlet, useLocation } from 'react-router-dom';
+import {
+  createBrowserRouter,
+  RouterProvider,
+  Outlet,
+  useLocation,
+} from 'react-router-dom';
 
 import './index.css';
 
@@ -12,6 +17,7 @@ import { LangProvider } from './components/LangContext';
 import AccesoLayout from './pages/AccesoLayout';
 import Acceso from './pages/registerlogin/registerlogin';
 import UserProfilePage from './pages/userProfilePage';
+import UserOtherProfilePage from './pages/UserOtherProfilePage';
 
 function TitleManager() {
   const location = useLocation();
@@ -24,7 +30,9 @@ function TitleManager() {
     } else if (path === '/reset-password') {
       document.title = 'Lost In Music - Recuperar contraseña';
     } else if (path === '/perfil') {
-      document.title = 'Lost In Music - Perfil';
+      document.title = 'Lost In Music - Mi perfil';
+    } else if (path.startsWith('/perfil/')) {
+      document.title = 'Lost In Music - Perfil de usuario';
     } else {
       document.title = 'Lost In Music';
     }
@@ -49,6 +57,10 @@ const router = createBrowserRouter([
       {
         path: '/perfil',
         element: <UserProfilePage />,
+      },
+      {
+        path: '/perfil/:userId',
+        element: <UserOtherProfilePage />,
       },
       {
         path: '/*',

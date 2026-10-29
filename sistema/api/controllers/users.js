@@ -393,6 +393,53 @@ const UpdateMyProfile = async (req, res) => {
 
 
 
+
+const GetUserProfile = async (req, res) => {
+  try {
+    const userId = Number(req.params.id);
+
+    if (!Number.isInteger(userId) || userId <= 0) {
+      return res.status(400).json({
+        message: "El ID del usuario no es válido",
+      });
+    }
+
+    const user = await User.findOne({
+      where: {
+        userId,
+        eliminated: 0,
+      },
+      attributes: [
+        "userId",
+        "username",
+        "description",
+        "followerAmount",
+        "followingAmount",
+        "profilePhoto",
+        "banner",
+        "ubication",
+      ],
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Usuario no encontrado",
+      });
+    }
+
+    return res.status(200).json({
+      user,
+    });
+  } catch (error) {
+    console.error("Error al obtener el perfil público:", error);
+
+    return res.status(500).json({
+      message: "Error al obtener el perfil del usuario",
+    });
+  }
+};
+
+
 module.exports = {
   Login,
   Register,
@@ -400,5 +447,5 @@ module.exports = {
   UpdateUser,
   GetMyProfile,
   UpdateMyProfile,
-
+  GetUserProfile,
 };
