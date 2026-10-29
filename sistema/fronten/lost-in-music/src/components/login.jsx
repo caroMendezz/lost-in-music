@@ -2,8 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/login.css";
 
-import FondoAcceso from "./FondoAcceso";
-
 function Login({ goToRegister, goToResetPassword }) {
   const navigate = useNavigate();
 
@@ -159,11 +157,6 @@ function Login({ goToRegister, goToResetPassword }) {
                   </svg>
                 </span>
               )}
-              {touched.password && errors.password && (
-                <div className="login-error-text-pass">
-                  Ingresa tu contraseña
-                </div>
-              )}
               {password && (
                 <button
                   type="button"
@@ -217,6 +210,12 @@ function Login({ goToRegister, goToResetPassword }) {
                 </button>
               )}
             </div>
+
+            {touched.password && errors.password && (
+              <div className="login-error-text-pass">
+                Ingresa tu contraseña
+              </div>
+            )}
           </div>
           <div className="login-hint-text">Escribe tu contraseña</div>
 

@@ -1,0 +1,67 @@
+.newChatPanel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  flex: 1;
+}
+
+.newChatHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 8px 12px;
+}
+
+.newChatBack {
+  border: none;
+  background: #e4e6eb;
+  border-radius: 16px;
+  padding: 6px 12px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.newChatTitle {
+  margin: 0;
+  font-size: 18px;
+}
+
+.newChatSearch {
+  margin: 0 8px 12px;
+  padding: 9px 14px;
+  border: none;
+  border-radius: 20px;
+  background: #f0f2f5;
+  font: inherit;
+}
+
+.newChatStatus {
+  margin: 8px 12px;
+  color: #65676b;
+  font-size: 14px;
+}
+
+.newChatResults {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.newChatResult {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.newChatResult:hover {
+  background: #f0f2f5;
+}

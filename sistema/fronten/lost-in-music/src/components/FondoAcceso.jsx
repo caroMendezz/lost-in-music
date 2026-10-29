@@ -6,19 +6,24 @@ export default function FondoAcceso({ children }) {
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef(null);
 
+  // Una sola instancia de audio por montaje del fondo compartido: al alternar
+  // entre login y registro este componente sigue montado y la reproduccion no
+  // se reinicia ni se superpone.
   useEffect(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio("/background-music.mp3");
-      audioRef.current.volume = 0.2;
-      audioRef.current.loop = true;
+    const audio = new Audio("/background-music.mp3");
+    audio.volume = 0.2;
+    audio.loop = true;
+    audioRef.current = audio;
 
-      audioRef.current
-        .play()
-        .then(() => setIsPlaying(true))
-        .catch(() => setIsPlaying(false));
-    }
+    audio
+      .play()
+      .then(() => setIsPlaying(true))
+      .catch(() => setIsPlaying(false));
 
-    return () => {};
+    return () => {
+      audio.pause();
+      audioRef.current = null;
+    };
   }, []);
 
   return (

@@ -1,0 +1,86 @@
+.chatWindow {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid #c4c9d2;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.chatWindowHeader {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px;
+  border-bottom: 1px solid #dfe1e5;
+}
+
+.chatWindowName {
+  margin: 0;
+  font-size: 17px;
+}
+
+/* Nombre del usuario en el encabezado: efecto hover y clic preparados
+   para abrir el perfil (la navegacion todavia no esta implementada). */
+.chatWindowNameButton {
+  margin: 0;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  font: inherit;
+  font-size: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+
+.chatWindowNameButton:hover {
+  background: #f0f2f5;
+  text-decoration: underline;
+}
+
+.chatWindowEmpty {
+  margin: auto;
+  color: #4a4d52;
+  font-size: 20px;
+  text-align: center;
+}
+
+.chatWindowError {
+  margin: 0;
+  padding: 8px 16px;
+  background: #fdecea;
+  color: #a12622;
+  font-size: 14px;
+}
+
+.chatWindowInfo {
+  margin-left: auto;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: 1px solid #c4c9d2;
+  border-radius: 50%;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.chatWindowInfo:hover {
+  background: #e9ecf1;
+}
+
+.chatWindowInfo[aria-pressed="true"] {
+  border-color: #1b5fd9;
+  background: #e4ecfb;
+  color: #1b5fd9;
+}
+
+.chatWindowInfo:focus-visible {
+  outline: 2px solid #1b5fd9;
+  outline-offset: 1px;
+}
