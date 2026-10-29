@@ -1,24 +1,30 @@
 import React, { useState } from "react";
 import { Home, Bell, Plus, ChevronRight } from "lucide-react";
+import UploadProductModal from "./UploadProductModal";
 import GlassPanel from "./GlassPanel";
-import { CATEGORIES } from "../../assets/data/categories";
+import { CATEGORIES } from "../../data/categories";
+import aero from "../../styles/aero.module.css";
 
 export default function Sidebar() {
   const [openCat, setOpenCat] = useState("Instrumentos");
+  const [uploadOpen, setUploadOpen] = useState(false);
 
   return (
-    <GlassPanel className="sidebar">
-      <div className="nav-link"><Home size={17} /> Explorar todo</div>
-      <div className="nav-link"><Bell size={17} /> Notificaciones</div>
-      <button className="upload-btn"><Plus size={16} /> Subir producto</button>
+    <GlassPanel className={aero.sidebar}>
+      <div className={aero["nav-link"]}><Home size={17} /> Explorar todo</div>
+      <div className={aero["nav-link"]}><Bell size={17} /> Notificaciones</div>
+      <button className={aero["upload-btn"]} type="button" onClick={() => setUploadOpen(true)}>
+        <Plus size={16} /> Subir producto
+      </button>
+      {uploadOpen && <UploadProductModal onClose={() => setUploadOpen(false)} />}
 
-      <div className="cat-heading">Categorías</div>
+      <div className={aero["cat-heading"]}>Categorías</div>
       {CATEGORIES.map((cat) => {
         const Icon = cat.icon;
         const open = openCat === cat.label;
         return (
-          <div className="cat-group" key={cat.label}>
-            <div className="cat-title" onClick={() => setOpenCat(open ? "" : cat.label)}>
+          <div className={aero["cat-group"]} key={cat.label}>
+            <div className={aero["cat-title"]} onClick={() => setOpenCat(open ? "" : cat.label)}>
               <Icon size={16} />
               {cat.label}
               <ChevronRight
@@ -31,9 +37,9 @@ export default function Sidebar() {
               />
             </div>
             {open && (
-              <div className="cat-items">
+              <div className={aero["cat-items"]}>
                 {cat.items.map((it) => (
-                  <span key={it}>• {it}</span>
+                  <span key={it}>{it}</span>
                 ))}
               </div>
             )}
@@ -41,7 +47,7 @@ export default function Sidebar() {
         );
       })}
 
-      <div className="sidebar-footer">
+      <div className={aero["sidebar-footer"]}>
         <span>Configuración</span>
         <span>Condiciones y políticas</span>
       </div>
