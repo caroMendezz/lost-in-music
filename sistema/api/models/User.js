@@ -67,7 +67,7 @@ const User = sequelize.define('User', {
     allowNull: false,
   },
   banner: { //
-    type: DataTypes.STRING(255),
+    type: DataTypes.TEXT('long'), // Permite guardar cadenas Base64 muy grandes
     allowNull: false,
   },
   friendId: {

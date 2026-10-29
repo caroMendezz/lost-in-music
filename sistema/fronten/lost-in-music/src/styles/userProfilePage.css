@@ -1,0 +1,54 @@
+.user-profile-page-content {
+  flex: 1;
+  width: 100%;
+  max-width: none;
+  padding: 12px 1.5vw 30px;
+  box-sizing: border-box;
+}
+
+.user-profile-page-content > .user-profile {
+  width: 100%;
+  max-width: none;
+  margin: 0;
+}
+
+@media (max-width: 700px) {
+  .user-profile-page-content {
+    padding: 10px 8px 24px;
+  }
+}
+
+
+/* Permitir scroll vertical en toda la página */
+html,
+body,
+#root {
+  min-height: 100%;
+  height: auto;
+  margin: 0;
+}
+
+body {
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+#root {
+  overflow: visible;
+}
+
+.user-profile-page {
+  display: flex;
+  flex-direction: column;
+
+  min-height: 100vh;
+  height: auto;
+  overflow: visible;
+}
+
+.user-profile-page-content {
+  flex: 1 0 auto;
+  min-height: 0;
+  height: auto;
+  overflow: visible;
+}

@@ -1,10 +1,6 @@
-import React from 'react';
+
+import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
-import AccesoLayout from './pages/AccesoLayout';
-import './index.css';
-import { BrowserRouter } from 'react-router-dom';
-import App from './App.jsx';
-import { LangProvider } from './components/LangContext';
 
 import {
   createBrowserRouter,
@@ -13,11 +9,16 @@ import {
   useLocation,
 } from 'react-router-dom';
 
+import './index.css';
+
+import App from './App.jsx';
+import { LangProvider } from './components/LangContext';
+
+import AccesoLayout from './pages/AccesoLayout';
 import Acceso from './pages/registerlogin/registerlogin';
-import PasswordRecovery from './components/resetpassword';
-
-import { useEffect } from 'react';
-
+import UserProfilePage from './pages/userProfilePage';
+import UserOtherProfilePage from './pages/UserOtherProfilePage';
+import UserOtherProfilePageAdmin from './pages/OtherUserProfilePageAdmin';
 
 function TitleManager() {
   const location = useLocation();
@@ -29,7 +30,14 @@ function TitleManager() {
       document.title = 'Lost In Music - Acceso';
     } else if (path === '/reset-password') {
       document.title = 'Lost In Music - Recuperar contraseña';
-    } else {
+    } else if (path === '/perfil') {
+      document.title = 'Lost In Music - Mi perfil';
+    } else if (path.startsWith('/perfil/')) {
+      document.title = 'Lost In Music - Perfil de usuario';
+    } else if (path.startsWith('/admin/perfil/')) {
+      document.title = 'Lost In Music - Admin · Perfil de usuario';
+    }
+    else {
       document.title = 'Lost In Music';
     }
   }, [location]);
@@ -51,12 +59,25 @@ const router = createBrowserRouter([
         ],
       },
       {
+        path: '/perfil',
+        element: <UserProfilePage />,
+      },
+      {
+        path: '/perfil/:userId',
+        element: <UserOtherProfilePage />,
+      },
+      {
+        path: '/admin/perfil/:userId',
+        element: <UserOtherProfilePageAdmin />,
+      },
+      {
         path: '/*',
-        element: <App />
-      }
+        element: <App />,
+      },
     ],
   },
 ]);
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <LangProvider>

@@ -44,12 +44,12 @@ const Login = async (req, res) => {
 };
 
 const Register = async (req, res) => {
-  const { email, username, password, gender, profilePhoto, birthDate} =
+  const { email, username, password, gender, profilePhoto, birthDate } =
     req.body;
 
   if (password) req.body.password = "[REDACTED]";
 
-  
+
 
   if (!username || !password || !email) {
     return res
@@ -119,7 +119,7 @@ const DeleteUser = async (req, res) => {
 
 const UpdateUser = async (req, res) => {
   try {
-    const { userId } = req.params;
+    const { id } = req.params;
 
     const user = await User.findByPk(id);
 
@@ -159,9 +159,293 @@ const UpdateUser = async (req, res) => {
   }
 };
 
+
+const GetMyProfile = async (req, res) => {
+  try {
+    // El middleware de autenticación debe verificar el JWT
+    // y guardar su payload en req.user.
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "No se pudo identificar al usuario autenticado",
+      });
+    }
+
+    const user = await User.findOne({
+      where: {
+        userId,
+        eliminated: 0,
+      },
+      attributes: [
+        "userId",
+        "username",
+        "description",
+        "birthDate",
+        "gender",
+        "followerAmount",
+        "followingAmount",
+        "profilePhoto",
+        "banner",
+        "ubication",
+      ],
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Usuario no encontrado",
+      });
+    }
+
+    return res.status(200).json({
+      user,
+    });
+  } catch (error) {
+    console.error("Error al obtener el perfil:", error);
+
+    return res.status(500).json({
+      message: "Error al obtener el perfil del usuario",
+    });
+  }
+};
+
+
+const UpdateMyProfile = async (req, res) => {
+  try {
+    const userId = req.user?.userId;
+
+    if (!userId) {
+      return res.status(401).json({
+        message: "No se pudo identificar al usuario autenticado",
+      });
+    }
+
+    const user = await User.findOne({
+      where: {
+        userId,
+        eliminated: 0,
+      },
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Usuario no encontrado",
+      });
+    }
+
+    const { username, description, ubication, profilePhoto, banner, } = req.body;
+    const dataUpdate = {};
+
+    if (username !== undefined) {
+      if (typeof username !== "string" || !username.trim()) {
+        return res.status(400).json({
+          message: "El username no puede estar vacío",
+        });
+      }
+
+      const cleanUsername = username.trim();
+
+      if (cleanUsername.length > 100) {
+        return res.status(400).json({
+          message: "El username no puede superar los 100 caracteres",
+        });
+      }
+
+      // Verificar que otro usuario no tenga el mismo username.
+      const existingUser = await User.findOne({
+        where: {
+          username: cleanUsername,
+          userId: { [Op.ne]: userId },
+        },
+      });
+
+      if (existingUser) {
+        return res.status(409).json({
+          message: "Ese username ya está en uso",
+        });
+      }
+
+      dataUpdate.username = cleanUsername;
+    }
+
+    if (description !== undefined) {
+      if (typeof description !== "string") {
+        return res.status(400).json({
+          message: "La descripción debe ser un texto",
+        });
+      }
+
+      dataUpdate.description = description.trim();
+    }
+
+    if (ubication !== undefined) {
+      if (typeof ubication !== "string") {
+        return res.status(400).json({
+          message: "La ubicación debe ser un texto",
+        });
+      }
+
+      const cleanUbication = ubication.trim();
+
+      if (cleanUbication.length > 150) {
+        return res.status(400).json({
+          message: "La ubicación no puede superar los 150 caracteres",
+        });
+      }
+
+      dataUpdate.ubication = cleanUbication || "Agregar ubicacion";
+    }
+
+    if (profilePhoto !== undefined) {
+      if (typeof profilePhoto !== "string" || !profilePhoto.trim()) {
+        return res.status(400).json({
+          message: "La foto de perfil no es válida",
+        });
+      }
+
+      if (banner !== undefined) {
+        if (typeof banner !== "string" || !banner.trim()) {
+          return res.status(400).json({
+            message: "El banner no es válido",
+          });
+        }
+
+        const isBase64Image =
+          /^data:image\/(jpeg|jpg|png|webp|gif);base64,[A-Za-z0-9+/=\s]+$/i
+            .test(banner);
+
+        const isExistingUrl =
+          /^(https?:\/\/|\/)/i.test(banner);
+
+        if (!isBase64Image && !isExistingUrl) {
+          return res.status(400).json({
+            message: "El formato del banner no es válido",
+          });
+        }
+
+        if (isBase64Image && banner.length > 7_000_000) {
+          return res.status(413).json({
+            message: "El banner es demasiado grande. Elegí una imagen de hasta 5 MB.",
+          });
+        }
+
+        dataUpdate.banner = banner;
+      }
+      // Aceptar una imagen Base64 o una ruta/URL existente.
+      const isBase64Image =
+        /^data:image\/(jpeg|jpg|png|webp|gif);base64,[A-Za-z0-9+/=\s]+$/i
+          .test(profilePhoto);
+
+      const isExistingUrl =
+        /^(https?:\/\/|\/)/i.test(profilePhoto);
+
+      if (!isBase64Image && !isExistingUrl) {
+        return res.status(400).json({
+          message: "El formato de la foto no es válido",
+        });
+      }
+
+      // Límite de 5 MB aproximados para la imagen original.
+      if (isBase64Image && profilePhoto.length > 7_000_000) {
+        return res.status(413).json({
+          message: "La foto es demasiado grande. Elegí una imagen de hasta 5 MB.",
+        });
+      }
+
+      dataUpdate.profilePhoto = profilePhoto;
+    }
+
+    if (Object.keys(dataUpdate).length === 0) {
+      return res.status(400).json({
+        message: "No se recibieron cambios para guardar",
+      });
+    }
+
+    await user.update(dataUpdate);
+
+    return res.status(200).json({
+      message: "Perfil actualizado correctamente",
+      user: {
+        userId: user.userId,
+        username: user.username,
+        description: user.description,
+        ubication: user.ubication,
+        profilePhoto: user.profilePhoto,
+        banner: user.banner,
+        followerAmount: user.followerAmount,
+        followingAmount: user.followingAmount,
+      },
+    });
+  } catch (error) {
+    if (error.name === "SequelizeUniqueConstraintError") {
+      return res.status(409).json({
+        message: "Ese username ya está en uso",
+      });
+    }
+
+    console.error("Error al actualizar el perfil:", error);
+
+    return res.status(500).json({
+      message: "Error al actualizar el perfil",
+    });
+  }
+};
+
+
+
+
+const GetUserProfile = async (req, res) => {
+  try {
+    const userId = Number(req.params.id);
+
+    if (!Number.isInteger(userId) || userId <= 0) {
+      return res.status(400).json({
+        message: "El ID del usuario no es válido",
+      });
+    }
+
+    const user = await User.findOne({
+      where: {
+        userId,
+        eliminated: 0,
+      },
+      attributes: [
+        "userId",
+        "username",
+        "description",
+        "followerAmount",
+        "followingAmount",
+        "profilePhoto",
+        "banner",
+        "ubication",
+        "penaltyDate", // 👈 nuevo
+        "idRole",      // 👈 nuevo
+      ],
+    });
+
+    if (!user) {
+      return res.status(404).json({
+        message: "Usuario no encontrado",
+      });
+    }
+
+    return res.status(200).json({ user });
+  } catch (error) {
+    console.error("Error al obtener el perfil público:", error);
+
+    return res.status(500).json({
+      message: "Error al obtener el perfil del usuario",
+    });
+  }
+};
+
+
 module.exports = {
   Login,
   Register,
   DeleteUser,
   UpdateUser,
+  GetMyProfile,
+  UpdateMyProfile,
+  GetUserProfile,
 };

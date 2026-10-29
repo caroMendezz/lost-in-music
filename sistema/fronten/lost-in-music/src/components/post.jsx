@@ -28,15 +28,15 @@ function formatPostTime(createdAt, nowValue = Date.now()) {
 
   if (diffSeconds < 60) return 'Ahora';
   if (diffMinutes < 60) return diffMinutes === 1 ? 'hace 1 minuto' : `hace ${diffMinutes} minutos`;
-  if (diffHours < 24)   return diffHours === 1   ? 'hace 1 hora'   : `hace ${diffHours} horas`;
-  if (diffDays < 7)     return diffDays === 1    ? 'hace 1 día'    : `hace ${diffDays} días`;
+  if (diffHours < 24) return diffHours === 1 ? 'hace 1 hora' : `hace ${diffHours} horas`;
+  if (diffDays < 7) return diffDays === 1 ? 'hace 1 día' : `hace ${diffDays} días`;
   return `${date.toLocaleDateString('es-AR', { day: 'numeric', month: 'long' })} a las ${date.toLocaleTimeString('es-AR', { hour: 'numeric', minute: '2-digit' })}`;
 }
 
 function getContentClass(content, hasImage) {
   const length = content?.length ?? 0;
-  if (hasImage)      return 'post-content-small';
-  if (length <= 40)  return 'post-content-large';
+  if (hasImage) return 'post-content-small';
+  if (length <= 40) return 'post-content-large';
   if (length <= 120) return 'post-content-medium';
   return 'post-content-small';
 }
@@ -50,26 +50,26 @@ function getContentClass(content, hasImage) {
  *   onEdit      — (id, { text, keepImages, keepVideos, newImages, newVideos }) => void
  *   now         — Date.now() reactivo
  */
-function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
-  const [expanded,    setExpanded]    = useState(false);
-  const [menuOpen,    setMenuOpen]    = useState(false);
-  const [editing,     setEditing]     = useState(false);
-  const [editDraft,   setEditDraft]   = useState('');
-  const [confirmDel,  setConfirmDel]  = useState(false);
+function Post({ post, onLike, onOpenPost, onDelete, onEdit, now, canDelete = false }) {
+  const [expanded, setExpanded] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [editDraft, setEditDraft] = useState('');
+  const [confirmDel, setConfirmDel] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(null); // null = visor cerrado
-  const [copied,      setCopied]      = useState(false); // feedback del botón compartir
+  const [copied, setCopied] = useState(false); // feedback del botón compartir
   const navigate = useNavigate();
   const { isOnline } = useFriends();
 
   // Multimedia en modo edición
   const [keptImages, setKeptImages] = useState([]); // rutas actuales que se conservan
   const [keptVideos, setKeptVideos] = useState([]);
-  const [newMedia,   setNewMedia]   = useState([]); // [{ file, preview, type }]
+  const [newMedia, setNewMedia] = useState([]); // [{ file, preview, type }]
 
-  const menuRef      = useRef(null);
-  const textareaRef  = useRef(null);
-  const editFileRef  = useRef(null);
-  const newMediaRef  = useRef([]);
+  const menuRef = useRef(null);
+  const textareaRef = useRef(null);
+  const editFileRef = useRef(null);
+  const newMediaRef = useRef([]);
   newMediaRef.current = newMedia;
 
   // === ADAPTACIÓN PARA EL BACKEND (MongoDB / Sequelize) ===
@@ -296,8 +296,8 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
           </Link>
         </div>
 
-        {/* Botón ⋯ + menú desplegable (solo para el dueño del post) */}
-        {post.isOwner !== false && (
+        {/* Botón ⋯ + menú desplegable (dueño del post o admin con permiso) */}
+        {(post.isOwner !== false || canDelete === true) && (
           <div className="post-menu-wrapper" ref={menuRef}>
             <button
               type="button"
@@ -307,16 +307,17 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now }) {
             >
               ⋯
             </button>
-
             {menuOpen && (
               <div className="post-menu-dropdown">
-                <button
-                  type="button"
-                  className="post-menu-item"
-                  onClick={handleEditStart}
-                >
-                  ✏️ Editar
-                </button>
+                {post.isOwner !== false && (
+                  <button
+                    type="button"
+                    className="post-menu-item"
+                    onClick={handleEditStart}
+                  >
+                    ✏️ Editar
+                  </button>
+                )}
                 <button
                   type="button"
                   className="post-menu-item post-menu-item--danger"

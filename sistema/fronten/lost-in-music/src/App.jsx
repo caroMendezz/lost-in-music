@@ -22,6 +22,8 @@ import { LangProvider } from "./components/LangContext";
 import { FriendsProvider } from "./components/friendsContext";
 import FriendsPage from "./pages/friendsPage";
 import MessagesPage from "./pages/messages/MessagesPage";
+// 👇 IMPORT NUEVO DEL PERFIL 👇
+import UserProfile from "./pages/userProfilePage";
 
 function FeedPage({
   rootPosts,
@@ -191,39 +193,37 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/shopinvivo" element={<Shopinvivo />} />
           <Route path="/marketplace" element={<Shopinvivo />} />
-
-          {/* Mensajería */}
-          <Route path="/messages" element={<MessagesPage />} />
-
-          {/* Resto de la red social */}
           <Route path="/amigos" element={<FriendsPage />} />
           <Route path="/post/:id" element={<PostPage />} />
           <Route path="/settings" element={<Configuracion />} />
+          
+          {/* 👇 RUTA NUEVA DEL PERFIL 👇 */}
+          <Route path="/profile" element={<UserProfile />} />
+          {/* Si querés que sea por username, cambialo a: path="/:username" */}
 
-          <Route
-            path="/photo/:postId/:imageIndex"
-            element={
-              <PhotoPage
-                posts={rootPosts}
-                getReplies={getReplies}
-                onComment={addComment}
-                onLike={toggleLike}
-              />
-            }
-          />
-
-          <Route
-            path="/comment/:id"
-            element={
-              <CommentPage
-                getPost={getPost}
-                getReplies={getReplies}
-                onComment={addComment}
-                onLike={toggleLike}
-              />
-            }
-          />
-        </Routes>
+        <Route
+          path="/photo/:postId/:imageIndex"
+          element={
+            <PhotoPage
+              posts={rootPosts}
+              getReplies={getReplies}
+              onComment={addComment}
+              onLike={toggleLike}
+            />
+          }
+        />
+        <Route
+          path="/comment/:id"
+          element={
+            <CommentPage
+              getPost={getPost}
+              getReplies={getReplies}
+              onComment={addComment}
+              onLike={toggleLike}
+            />
+          }
+        />
+      </Routes>
       </FriendsProvider>
     </LangProvider>
   );

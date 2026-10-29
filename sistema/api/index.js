@@ -8,8 +8,18 @@ const upload = require("./middlewares/upload");
 const uploadPostMedia = require("./middlewares/uploadPostMedia");
 const auditLog = require("./middlewares/auditLog");
 const {uploadFile} = require("./controllers/uploads");
-const { Login, Register, DeleteUser, UpdateUser} = require('./controllers/users')
-const {createPost, deletePost, updatePost, getPosts, getPostById, getReplies, toggleLike} = require('./controllers/posts')
+const { isAdmin } = require("./middlewares/isAdmin");
+const { banUser, unbanUser, adminDeletePost } = require("./controllers/admin");
+const {
+  Login,
+  Register,
+  DeleteUser,
+  UpdateUser,
+  GetMyProfile,
+  UpdateMyProfile,
+  GetUserProfile,
+} = require('./controllers/users')
+const {createPost, deletePost, updatePost, getPosts, getPostById, getReplies, toggleLike, getMyPostsCount, getMyProfilePosts, getMyProfileReplies, getMyProfileLikes, getUserProfilePosts, getUserProfileReplies, getUserProfileLikes} = require('./controllers/posts')
 const {createRole} = require('./controllers/roles')
 const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
 const {checkToken } = require('./middlewares/auth')
@@ -62,6 +72,10 @@ server.post('/CreateRole', createRole);
 
 server.post('/login', Login);
 server.post('/register', Register);
+
+server.get('/myProfile', checkToken, GetMyProfile);
+server.patch('/myProfile', checkToken, UpdateMyProfile);
+
 server.patch('/deleteUser/:id',checkToken, DeleteUser);
 server.patch('/updateUser/:id',checkToken, UpdateUser);
 
@@ -72,6 +86,18 @@ server.get('/GetPost', checkToken, getPosts);
 server.get('/GetPost/:id', checkToken, getPostById);
 server.get('/GetReplies/:id', checkToken, getReplies);
 server.post('/LikePost/:id', checkToken, toggleLike); 
+server.get("/posts/my/count", checkToken, getMyPostsCount);
+server.get("/posts/my/profile", checkToken, getMyProfilePosts);
+server.get("/posts/my/replies", checkToken, getMyProfileReplies);
+server.get("/posts/my/likes", checkToken, getMyProfileLikes);
+server.get("/posts/user/:userId/profile",checkToken,getUserProfilePosts);
+server.get("/posts/user/:userId/replies",checkToken,getUserProfileReplies);
+server.get("/posts/user/:userId/likes",checkToken,getUserProfileLikes);
+
+// === Rutas de administración ===
+server.patch("/admin/ban/:userId", checkToken, isAdmin, banUser);
+server.patch("/admin/unban/:userId", checkToken, isAdmin, unbanUser);
+server.patch("/admin/DeletePost/:id", checkToken, isAdmin, adminDeletePost);
 
 server.post('/CreateProduct', checkToken, createProduct);
 server.get('/GetProduct', checkToken, getProducts);
@@ -85,7 +111,7 @@ server.get("/messages/:otherUserId", checkToken, getMessages);
 
 server.get("/conversations", checkToken, getConversations);
 server.get("/users/search", checkToken, searchUsers);
-server.get("/users/:id", checkToken, getUserById);
+server.get("/users/:id", checkToken, GetUserProfile);
 server.put("/messages/read/:otherUserId", checkToken, markAsRead);
 server.delete("/conversations/:otherUserId", checkToken, deleteConversationForUser);
 
