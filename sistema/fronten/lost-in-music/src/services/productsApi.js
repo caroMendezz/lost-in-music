@@ -75,6 +75,9 @@ export function mapProduct(product) {
         rawPrice: firstValue(product.price),
         place: toArray(product.location).filter(Boolean).join(", "),
         images: toArray(product.image).filter(Boolean).map(resolveFileUrl),
+        // Rutas tal cual las guarda el backend: el formulario de edición las
+        // reenvía sin el prefijo del servidor.
+        rawImages: toArray(product.image).filter(Boolean),
         state: firstValue(product.condition) || "",
         category,
         subcategory: firstValue(product.subcategory) || "",
@@ -162,4 +165,54 @@ export async function createProduct({
     });
 
     return mapProduct(payload);
+}
+
+const BACKEND_CATEGORIES = ["Cuerda", "Viento", "Percusion", "Electronicos", "Complementos"];
+
+// PATCH /UpdateProduct/:id. La imagen va como array completo: las fotos que se
+// conservan (rutas viejas) más las nuevas ya subidas.
+// Si el formulario no trae subcategoría se conserva la que ya tenía la
+// publicación (fallbackSubcategory) y, si tampoco hay, su categoría
+// (fallbackCategory) en lugar de caer en "Complementos".
+export async function updateProduct({
+    id,
+    title,
+    images,
+    description,
+    subcategory,
+    condition,
+    price,
+    location,
+    fallbackCategory,
+    fallbackSubcategory
+}) {
+    const resolvedSubcategory = subcategory || fallbackSubcategory || "";
+    const category = resolvedSubcategory
+        ? mapCategory(resolvedSubcategory)
+        : BACKEND_CATEGORIES.includes(fallbackCategory)
+            ? fallbackCategory
+            : "Complementos";
+
+    const payload = await request(`/UpdateProduct/${encodeURIComponent(id)}`, {
+        method: "PATCH",
+        body: JSON.stringify({
+            title,
+            image: images,
+            description,
+            category,
+            subcategory: resolvedSubcategory,
+            condition: mapCondition(condition),
+            price: String(price),
+            location
+        })
+    });
+
+    return mapProduct(payload);
+}
+
+// PATCH /DeleteProduct/:id. Es una baja lógica y solo la puede hacer el dueño.
+export async function deleteProduct(id) {
+    return request(`/DeleteProduct/${encodeURIComponent(id)}`, {
+        method: "PATCH"
+    });
 }

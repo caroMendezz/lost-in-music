@@ -95,3 +95,75 @@
 .modalConfirm:hover {
   background: #1750b8;
 }
+
+/* ----------------------------------------------------------------------------
+   Skin Frutiger Aero: modales de la mensajeria
+   ---------------------------------------------------------------------------- */
+
+.modalOverlay {
+  background: radial-gradient(80% 60% at 50% 30%, rgba(214, 244, 255, 0.55), rgba(9, 52, 76, 0.45) 100%);
+  backdrop-filter: blur(6px);
+}
+
+.modal {
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, rgba(232, 248, 255, 0.94) 100%);
+  box-shadow:
+    0 24px 60px rgba(9, 52, 76, 0.35),
+    inset 0 1px 0 #ffffff;
+}
+
+.modalHeader {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.9);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(198, 239, 255, 0.7));
+}
+
+.modalTitle {
+  color: var(--aero-ink, #0b3a58);
+}
+
+.modalClose {
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  background: radial-gradient(circle at 50% 24%, #ffffff 0%, #ddf6ff 55%, #a8e3f7 100%);
+  color: #0b5a7a;
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 2px 6px rgba(13, 74, 110, 0.16);
+}
+
+.modalClose:hover {
+  background: radial-gradient(circle at 50% 24%, #ffffff 0%, #e9fbff 55%, #b9eafb 100%);
+}
+
+.modalBody {
+  color: var(--aero-ink, #0b3a58);
+}
+
+.modalCancel {
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff 0%, #e3f3fb 100%);
+  color: #2c6a87;
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 2px 8px rgba(13, 74, 110, 0.16);
+}
+
+.modalCancel:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #cfeaf7 100%);
+}
+
+.modalConfirm {
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  background: linear-gradient(160deg, #74e4f8 0%, #24b0e2 48%, #0b83b8 100%);
+  color: #ffffff;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.7),
+    0 6px 16px rgba(11, 124, 174, 0.3);
+}
+
+.modalConfirm:hover {
+  background: linear-gradient(160deg, #8cecfd 0%, #33bce9 48%, #0d8fc6 100%);
+}

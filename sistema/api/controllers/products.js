@@ -1,5 +1,21 @@
+const mongoose = require("mongoose")
 const Product = require("../models/Product")
 const {User} = require("../models/User")
+
+// Mismos valores que el enum de models/Product.js
+const PRODUCT_CATEGORIES = ["Cuerda", "Viento", "Percusion", "Electronicos", "Complementos"]
+const PRODUCT_CONDITIONS = ["Nuevo", "Usado"]
+const MAX_IMAGES = 10
+
+// Normaliza las fotos que llegan del formulario: array de rutas no vacías, sin repetir el tope.
+const normalizeImages = (image) => {
+    const list = Array.isArray(image) ? image : [image]
+
+    return list
+        .filter((url) => typeof url === "string" && url.trim())
+        .map((url) => url.trim())
+        .slice(0, MAX_IMAGES)
+}
 
 const createProduct = async (req, res) => {
 
@@ -149,24 +165,31 @@ const getProducts = async (req, res) => {
 }
 
 
+// PATCH /DeleteProduct/:id
+// La baja es lógica (eliminated = true) y solo puede hacerla el dueño.
 const deleteProduct = async (req, res) => {
 
     try {
 
         const productId = req.params.id
 
+        if (!mongoose.isValidObjectId(productId)) {
+            return res.status(400).json({
+                message: "El identificador de la publicación no es válido"
+            })
+        }
 
         const product = await Product.findById(productId)
 
-        if (!product) {
+        if (!product || product.eliminated) {
             return res.status(404).json({
                 message: "Publicación del producto no encontrada"
             })
         }
 
-        if (product.eliminated) {
-            return res.status(400).json({
-                message: "La publicación del producto ya está eliminada"
+        if (Number(product.userId) !== Number(req.user.userId)) {
+            return res.status(403).json({
+                message: "No podés eliminar una publicación que no es tuya"
             })
         }
 
@@ -175,7 +198,8 @@ const deleteProduct = async (req, res) => {
         await product.save()
 
         return res.status(200).json({
-            message: "Publicación del producto eliminada correctamente"
+            message: "Publicación del producto eliminada correctamente",
+            id: String(product._id)
         })
 
     } catch (error) {
@@ -190,73 +214,152 @@ const deleteProduct = async (req, res) => {
 
 }
 
+// PATCH /UpdateProduct/:id
+// Solo el dueño de la publicación puede editarla. Se pueden cambiar título, fotos,
+// descripción, precio, localidad, categoría, subcategoría y estado.
 const updateProduct = async (req, res) => {
 
     try {
-        console.log("1. req.params completos:", req.params);
-        const productId  = req.params.id
-        console.log("2. ID capturado:", productId);
-        const {
-            title,
-            image,
-            description,
-            price,
-            category,
-            location
-        } = req.body
-        console.log("3. Body recibido:", req.body);
-        const dataUpdate = {}
 
-        if (title !== undefined)
-            dataUpdate.title = title
-        if (image !== undefined)
-            dataUpdate.image = image
+        const productId = req.params.id
 
-        if (description !== undefined)
-            dataUpdate.description = description
-
-        if (price !== undefined)
-            dataUpdate.price = price
-
-        if (category !== undefined)
-            dataUpdate.category = category
-
-        if (location !== undefined)
-            dataUpdate.location = location
-
-        if (Object.keys(dataUpdate).length === 0) {
+        if (!mongoose.isValidObjectId(productId)) {
             return res.status(400).json({
-                message: "No se enviaron datos para actualizar"
+                message: "Identificador de publicación inválido"
             })
         }
-        console.log("4. Datos a actualizar:", dataUpdate);
 
-        const product = await Product.findOneAndUpdate(
-            {
-                _id: productId,
-                eliminated: false
-            },
-            dataUpdate,
-            {
-                new: true,
-                runValidators: true
-            }
-        )
-        console.log("5. Resultado de la base de datos:", product);
+        const product = await Product.findOne({
+            _id: productId,
+            eliminated: false
+        })
+
         if (!product) {
             return res.status(404).json({
                 message: "Publicación no encontrada"
             })
         }
 
-        res.status(200).json(product)
+        const userId = req.user?.userId
+
+        if (userId === undefined || userId === null || Number(product.userId) !== Number(userId)) {
+            return res.status(403).json({
+                message: "Solo el dueño de la publicación puede editarla"
+            })
+        }
+
+        const {
+            title,
+            image,
+            description,
+            price,
+            category,
+            subcategory,
+            condition,
+            location,
+            available
+        } = req.body
+
+        const dataUpdate = {}
+
+        if (title !== undefined) {
+            if (!String(title).trim()) {
+                return res.status(400).json({
+                    message: "El título es obligatorio"
+                })
+            }
+
+            dataUpdate.title = String(title).trim()
+        }
+
+        if (image !== undefined) {
+            const images = normalizeImages(image)
+
+            if (images.length === 0) {
+                return res.status(400).json({
+                    message: "La publicación necesita al menos una foto"
+                })
+            }
+
+            dataUpdate.image = images
+        }
+
+        if (description !== undefined) {
+            dataUpdate.description = String(description)
+        }
+
+        if (price !== undefined) {
+            if (price === null || String(price).trim() === "") {
+                return res.status(400).json({
+                    message: "El precio es obligatorio"
+                })
+            }
+
+            dataUpdate.price = String(price).trim()
+        }
+
+        if (category !== undefined) {
+            if (!PRODUCT_CATEGORIES.includes(category)) {
+                return res.status(400).json({
+                    message: "Categoría inválida"
+                })
+            }
+
+            dataUpdate.category = category
+        }
+
+        if (subcategory !== undefined) {
+            dataUpdate.subcategory = String(subcategory).trim()
+        }
+
+        if (condition !== undefined) {
+            if (!PRODUCT_CONDITIONS.includes(condition)) {
+                return res.status(400).json({
+                    message: "Estado del producto inválido"
+                })
+            }
+
+            dataUpdate.condition = condition
+        }
+
+        if (location !== undefined) {
+            dataUpdate.location = String(location).trim()
+        }
+
+        if (available !== undefined) {
+            dataUpdate.available = Boolean(available)
+        }
+
+        if (Object.keys(dataUpdate).length === 0) {
+            return res.status(400).json({
+                message: "No se enviaron datos para actualizar"
+            })
+        }
+
+        Object.assign(product, dataUpdate)
+
+        await product.save()
+
+        const seller = await User.findByPk(product.userId)
+
+        return res.status(200).json({
+            ...product.toObject(),
+            seller: seller
+                ? {
+                    userId: seller.userId,
+                    username: seller.username,
+                    profilePhoto: seller.profilePhoto || null
+                }
+                : null
+        })
 
     } catch (error) {
 
         console.error(error)
 
-        res.status(500).json({
-            message: "Error interno"
+        return res.status(500).json({
+            message: "Error interno",
+            error: error.message
         })
 
     }

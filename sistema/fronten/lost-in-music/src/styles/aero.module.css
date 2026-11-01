@@ -1536,6 +1536,15 @@
   white-space: pre-line;
 }
 
+/* La descripcion se renderiza con ExpandableText (.expandable-text), que no
+   tenia color propio y heredaba el texto claro de la pagina: se fija en negro. */
+.modal-section .expandable-text {
+  margin: 0;
+  color: #000000;
+  font-size: 13.5px;
+  line-height: 1.55;
+}
+
 .modal-desc.is-clamped {
   display: -webkit-box;
   -webkit-box-orient: vertical;
@@ -1768,6 +1777,72 @@
 /* Botones glossy: azul agua el principal, vidrio claro el secundario. */
 .modal-btn-message {
   background: linear-gradient(180deg, #93e6ff 0%, #3ba6e6 50%, #1d6fbb 100%);
+}
+
+.modal-btn:disabled {
+  opacity: 0.7;
+  cursor: progress;
+}
+
+.modal-btn-edit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(180deg, #b8f5a4 0%, #4fbe6b 50%, #1f8a45 100%);
+}
+
+/* Baja de la publicacion: separada del resto de las acciones, al final del detalle */
+.modal-danger {
+  margin-top: 6px;
+  padding-top: 12px;
+  border-top: 1px dashed rgba(150, 210, 235, 0.75);
+}
+
+.modal-btn-delete {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(180deg, #ffd9d9 0%, #f07a7a 50%, #c33b3b 100%);
+}
+
+.modal-confirm {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  border: 1px solid rgba(240, 122, 122, 0.55);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 245, 245, 0.96), rgba(255, 226, 226, 0.92));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.modal-confirm-text {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.45;
+  color: #5c1f1f;
+}
+
+.modal-confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.modal-btn-danger {
+  background: linear-gradient(180deg, #f68a8a 0%, #d84b4b 50%, #a92727 100%);
+  padding: 9px 12px;
+  font-size: 13px;
+}
+
+.modal-btn-ghost {
+  background: linear-gradient(180deg, #ffffff 0%, #d8effb 55%, #b6dbee 100%);
+  color: #10496a;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
+  padding: 9px 12px;
+  font-size: 13px;
 }
 
 .modal-btn-link {

@@ -3,6 +3,8 @@ import { Headphones, Guitar, Mic2, Piano, Search, Speaker, X } from "lucide-reac
 import GlassPanel from "./GlassPanel";
 import ProductCard from "./ProductCard";
 import ProductModal from "./ProductModal";
+import Toast from "./Toast";
+import { useToast } from "./useToast";
 import { getProducts, mapCategory } from "../../services/productsApi";
 import { CATEGORIES } from "../../data/categories";
 import aero from "../../styles/aero.module.css";
@@ -79,6 +81,7 @@ export default function ProductGrid({ refreshKey = 0, filter = { category: "" },
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const { toast, showToast } = useToast();
 
   const loadProducts = useCallback(async () => {
     setLoading(true);
@@ -101,6 +104,25 @@ export default function ProductGrid({ refreshKey = 0, filter = { category: "" },
     }
     loadProducts();
   }, [loadProducts, refreshKey]);
+
+  // Una publicación eliminada se saca de la lista apenas el backend confirma la
+  // baja, así no hace falta recargar todo el catálogo.
+  const handleProductDeleted = useCallback(
+    (id) => {
+      setProducts((current) => current.filter((product) => product.id !== id));
+      setSelected(null);
+      showToast("Publicación eliminada", "success");
+    },
+    [showToast]
+  );
+
+  // Una publicación editada vuelve mapeada desde el backend: se reemplaza en la
+  // grilla y en el detalle abierto sin recargar toda la lista.
+  const handleProductUpdated = useCallback((updated) => {
+    const next = { ...updated, icon: ICONS[updated.icon] || Headphones };
+    setProducts((current) => current.map((product) => (product.id === next.id ? next : product)));
+    setSelected(next);
+  }, []);
 
   const term = normalizeText(query);
   const filtered = useMemo(
@@ -190,8 +212,12 @@ export default function ProductGrid({ refreshKey = 0, filter = { category: "" },
           product={selected}
           key={selected.id}
           onClose={() => setSelected(null)}
+          onUpdated={handleProductUpdated}
+          onDeleted={handleProductDeleted}
         />
       )}
+
+      <Toast toast={toast} />
     </div>
   );
 }

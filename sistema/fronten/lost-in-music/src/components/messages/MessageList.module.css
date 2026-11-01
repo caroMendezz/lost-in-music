@@ -102,3 +102,52 @@
     transform: translateY(0);
   }
 }
+
+/* ----------------------------------------------------------------------------
+   Skin Frutiger Aero: conversacion (fondo de agua + detalles de vidrio)
+   ---------------------------------------------------------------------------- */
+
+.messageList {
+  background:
+    radial-gradient(80% 60% at 12% 8%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 60%),
+    radial-gradient(70% 60% at 88% 92%, rgba(154, 226, 250, 0.35), rgba(255, 255, 255, 0) 65%);
+}
+
+.messageListStatus {
+  color: var(--aero-ink-soft, #4a7793);
+}
+
+.messageListDay {
+  color: #3f7290;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(226, 246, 255, 0.9));
+  border-radius: 999px;
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 2px 6px rgba(13, 74, 110, 0.12);
+}
+
+.messageListReceipt {
+  color: var(--aero-ink-soft, #4a7793);
+}
+
+.messageListScrollDown {
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  background: radial-gradient(circle at 50% 22%, #ffffff 0%, #dff7ff 55%, #9fe2f7 100%);
+  color: #0b7cae;
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 6px 16px rgba(13, 74, 110, 0.3);
+}
+
+.messageListScrollDown:hover {
+  background: radial-gradient(circle at 50% 22%, #ffffff 0%, #ebfbff 55%, #b5ebfd 100%);
+}
+
+.messageListTypingBubble {
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  background: linear-gradient(180deg, #ffffff 0%, #e4f5fd 100%);
+  color: #3f7290;
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 3px 10px rgba(13, 74, 110, 0.12);
+}

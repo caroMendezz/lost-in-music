@@ -89,3 +89,89 @@
     grid-template-columns: 240px minmax(0, 1fr) 240px;
   }
 }
+/* ============================================================================
+   Skin Frutiger Aero de la mensajeria
+   Vidrio esmerilado, agua, brillos superiores y burbujas translucidas.
+   Solo cambia la estetica: la logica y los componentes quedan igual.
+   ============================================================================ */
+
+.messagesPage {
+  --aero-ink: #0b3a58;
+  --aero-ink-soft: #4a7793;
+  --aero-line: rgba(255, 255, 255, 0.92);
+  --aero-accent: #17a8d8;
+  --aero-accent-deep: #0b7cae;
+  --aero-glow: 0 16px 38px rgba(13, 74, 110, 0.16);
+  position: relative;
+  isolation: isolate;
+  color: var(--aero-ink);
+  background:
+    radial-gradient(120% 85% at 50% -18%, #ffffff 0%, #f2fdff 28%, #d3f1ff 58%, #a4e1f6 100%);
+}
+
+/* Burbujas de aire del fondo (decorativas, no capturan clics) */
+.messagesPage::before,
+.messagesPage::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.28) 40%, rgba(126, 214, 245, 0.2) 64%, rgba(255, 255, 255, 0.04) 80%);
+  box-shadow: inset 0 0 26px rgba(255, 255, 255, 0.75);
+}
+
+.messagesPage::before {
+  width: 340px;
+  height: 340px;
+  top: -110px;
+  right: -70px;
+  opacity: 0.7;
+}
+
+.messagesPage::after {
+  width: 220px;
+  height: 220px;
+  bottom: 40px;
+  left: -80px;
+  opacity: 0.5;
+}
+
+.messagesToolbar,
+.messagesLayout {
+  position: relative;
+  z-index: 1;
+}
+
+/* Boton "volver al feed": pastilla de vidrio con brillo superior */
+.backToFeed {
+  color: #0b4a68;
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff 0%, #dff6ff 55%, #b3e8fb 100%);
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 4px 12px rgba(13, 74, 110, 0.18);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.backToFeed:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #e8faff 55%, #c4efff 100%);
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 6px 16px rgba(13, 74, 110, 0.22);
+}
+
+.backToFeed:focus-visible {
+  outline: 2px solid var(--aero-accent-deep);
+  outline-offset: 2px;
+}
+
+.messagesPageNotice {
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 226, 223, 0.85));
+  box-shadow: var(--aero-glow);
+  backdrop-filter: blur(12px);
+}

@@ -1,14 +1,16 @@
-import React, { useEffect, useId, useRef } from "react";
+import React, { useEffect, useId, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, MapPin } from "lucide-react";
+import { X, MapPin, Pencil, Trash2 } from "lucide-react";
 import aero from "../../styles/aero.module.css";
 import ProductGallery from "./ProductGallery";
 import ExpandableText from "./ExpandableText";
 import SellerPopover from "./SellerPopover";
+import EditProductModal from "./EditProductModal";
 import Toast from "./Toast";
 import { useToast } from "./useToast";
 import { copyToClipboard, formatPostedAt, getProductUrl } from "./productUtils";
 import { getCurrentUserId } from "../../services/messageService";
+import { deleteProduct } from "../../services/productsApi";
 
 const FOCUSABLE =
   'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -21,8 +23,11 @@ const FOCUSABLE =
  * ProductGrid la monta con key={product.id}: al abrir otro producto todo el
  * estado interno (imagen activa, "Leer más", popover, aviso) arranca de cero.
  */
-export default function ProductModal({ product, onClose }) {
+export default function ProductModal({ product, onClose, onUpdated, onDeleted }) {
   const { toast, showToast } = useToast();
+  const [editing, setEditing] = useState(false);
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const boxRef = useRef(null);
   const closeRef = useRef(null);
   const pressStartedOnBackdrop = useRef(false);
@@ -54,13 +59,20 @@ export default function ProductModal({ product, onClose }) {
     };
   }, []);
 
+  // Con el formulario de edicion abierto, Escape lo cierra solo a el; con la
+  // confirmacion de borrado abierta, Escape cancela la confirmacion.
   useEffect(() => {
     const onKeyDown = (e) => {
-      if (e.key === "Escape") onClose();
+      if (e.key !== "Escape" || editing || deleting) return;
+      if (confirmingDelete) {
+        setConfirmingDelete(false);
+        return;
+      }
+      onClose();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [onClose]);
+  }, [onClose, editing, confirmingDelete, deleting]);
 
   // Tab y Shift+Tab no se escapan del modal
   const trapFocus = (e) => {
@@ -117,6 +129,22 @@ export default function ProductModal({ product, onClose }) {
       showToast("Enlace de la publicación copiado", "success");
     } catch {
       showToast("No se pudo copiar el enlace. Intentá de nuevo.", "error");
+    }
+  };
+
+  // Baja logica de la publicacion (PATCH /DeleteProduct/:id). Al terminar se
+  // avisa a la grilla para que saque la tarjeta y cierre el detalle.
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await deleteProduct(product.id);
+      // La grilla saca la tarjeta, cierra el detalle y muestra el aviso.
+      onDeleted?.(product.id);
+      onClose();
+    } catch (error) {
+      showToast(error?.message || "No se pudo eliminar la publicación.", "error");
+      setDeleting(false);
+      setConfirmingDelete(false);
     }
   };
 
@@ -194,15 +222,23 @@ export default function ProductModal({ product, onClose }) {
             </section>
 
             <div className={aero["modal-actions"]}>
-              <button
-                type="button"
-                className={`${aero["modal-btn"]} ${aero["modal-btn-message"]}`}
-                onClick={goToMessages}
-                aria-disabled={isOwnProduct || undefined}
-                title={isOwnProduct ? "No puedes enviarte un mensaje a ti mismo" : undefined}
-              >
-                Enviar mensaje
-              </button>
+              {isOwnProduct ? (
+                <button
+                  type="button"
+                  className={`${aero["modal-btn"]} ${aero["modal-btn-edit"]}`}
+                  onClick={() => setEditing(true)}
+                >
+                  <Pencil size={14} /> Editar publicación
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  className={`${aero["modal-btn"]} ${aero["modal-btn-message"]}`}
+                  onClick={goToMessages}
+                >
+                  Enviar mensaje
+                </button>
+              )}
               <button
                 type="button"
                 className={`${aero["modal-btn"]} ${aero["modal-btn-link"]}`}
@@ -211,8 +247,58 @@ export default function ProductModal({ product, onClose }) {
                 Link
               </button>
             </div>
+
+            {/* Baja de la publicacion: solo el dueño, al final del detalle */}
+            {isOwnProduct && (
+              <div className={aero["modal-danger"]}>
+                {confirmingDelete ? (
+                  <div className={aero["modal-confirm"]} role="alertdialog" aria-label="Confirmar eliminación">
+                    <p className={aero["modal-confirm-text"]}>
+                      ¿Eliminar esta publicación? Se va a quitar de Shop in vivo y no se puede deshacer.
+                    </p>
+                    <div className={aero["modal-confirm-actions"]}>
+                      <button
+                        type="button"
+                        className={`${aero["modal-btn"]} ${aero["modal-btn-ghost"]}`}
+                        onClick={() => setConfirmingDelete(false)}
+                        disabled={deleting}
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="button"
+                        className={`${aero["modal-btn"]} ${aero["modal-btn-danger"]}`}
+                        onClick={handleDelete}
+                        disabled={deleting}
+                      >
+                        {deleting ? "Eliminando…" : "Sí, eliminar"}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <button
+                    type="button"
+                    className={`${aero["modal-btn"]} ${aero["modal-btn-delete"]}`}
+                    onClick={() => setConfirmingDelete(true)}
+                  >
+                    <Trash2 size={14} /> Eliminar publicación
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         </div>
+
+        {editing && (
+          <EditProductModal
+            product={product}
+            onClose={() => setEditing(false)}
+            onUpdated={(updated) => {
+              onUpdated?.(updated);
+              showToast("Publicación actualizada", "success");
+            }}
+          />
+        )}
 
         <Toast toast={toast} />
       </div>

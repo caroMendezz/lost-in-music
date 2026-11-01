@@ -198,3 +198,110 @@
   opacity: 0.4;
   cursor: default;
 }
+
+/* ----------------------------------------------------------------------------
+   Skin Frutiger Aero: barra de escritura (vidrio esmerilado + burbujas)
+   ---------------------------------------------------------------------------- */
+
+.messageInputArea {
+  border-top: 1px solid rgba(255, 255, 255, 0.9);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55), rgba(214, 241, 255, 0.75));
+  box-shadow: inset 0 1px 0 #ffffff;
+}
+
+.messageInputField {
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffffff 0%, #eefaff 100%);
+  color: var(--aero-ink, #0b3a58);
+  box-shadow:
+    inset 0 2px 7px rgba(13, 74, 110, 0.1),
+    0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.messageInputField::placeholder {
+  color: #6d97ad;
+}
+
+.messageInputField:focus,
+.messageInputField:focus-visible,
+.messageInputField:focus-within {
+  outline: 2px solid var(--aero-accent, #17a8d8);
+  outline-offset: 1px;
+}
+
+.messageInputIcon {
+  color: #0b7cae;
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  background: radial-gradient(circle at 50% 24%, #ffffff 0%, #dff7ff 55%, #a5e2f7 100%);
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 3px 8px rgba(13, 74, 110, 0.16);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.messageInputIcon:hover:not(:disabled) {
+  transform: translateY(-1px);
+  background: radial-gradient(circle at 50% 24%, #ffffff 0%, #e9fbff 55%, #b9eafb 100%);
+}
+
+.messageInputIcon:focus-visible {
+  outline: 2px solid var(--aero-accent-deep, #0b7cae);
+  outline-offset: 2px;
+}
+
+.messageInputAdd {
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 24%, #ffffff 0%, #dff7ff 55%, #a5e2f7 100%);
+  color: #0b7cae;
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 3px 8px rgba(13, 74, 110, 0.16);
+}
+
+.messageInputAdd:hover:not(:disabled) {
+  background: radial-gradient(circle at 50% 24%, #ffffff 0%, #e9fbff 55%, #b9eafb 100%);
+}
+
+.messageInputThumb img {
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 10px;
+  box-shadow: 0 3px 8px rgba(13, 74, 110, 0.22);
+}
+
+.messageInputThumbRemove {
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  background: linear-gradient(180deg, #ffffff, #ddf6ff);
+  color: #0b5a7a;
+  box-shadow: 0 2px 5px rgba(13, 74, 110, 0.2);
+}
+
+.messageInputThumbRemove:hover {
+  border-color: rgba(23, 168, 216, 0.6);
+  background: linear-gradient(180deg, #ffffff, #c7eeff);
+}
+
+.messageInputEditTitle {
+  color: var(--aero-ink, #0b3a58);
+}
+
+.messageInputEditPreview {
+  color: var(--aero-ink-soft, #4a7793);
+}
+
+.messageInputEditClose {
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  background: linear-gradient(180deg, #ffffff, #ddeef7);
+  color: #2c6a87;
+  box-shadow: 0 2px 5px rgba(13, 74, 110, 0.16);
+}
+
+.messageInputEditClose:hover {
+  background: linear-gradient(180deg, #ffffff, #cbe9f7);
+}
+
+/* Con miniaturas el campo es una tarjeta: radio grande pero no una capsula */
+.messageInputFieldFiles {
+  border-radius: 22px;
+}

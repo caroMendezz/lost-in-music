@@ -35,3 +35,35 @@
 .filterChipMark {
   font-size: 11px;
 }
+
+/* ----------------------------------------------------------------------------
+   Skin Frutiger Aero: chips de filtros
+   ---------------------------------------------------------------------------- */
+
+.filterChip {
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  background: linear-gradient(180deg, #ffffff 0%, #e8f7ff 100%);
+  color: #3f7290;
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 2px 6px rgba(13, 74, 110, 0.12);
+}
+
+.filterChip:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #d9f3ff 100%);
+}
+
+.filterChip:focus-visible {
+  outline: 2px solid var(--aero-accent-deep, #0b7cae);
+  outline-offset: 2px;
+}
+
+.filterChipActive,
+.filterChipActive:hover {
+  color: #06374d;
+  border-color: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(180deg, #9fe6ff 0%, #46c1ea 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 3px 10px rgba(19, 120, 165, 0.3);
+}

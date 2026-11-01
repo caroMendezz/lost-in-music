@@ -114,3 +114,53 @@
   padding-bottom: 14px;
   border-bottom: 1px solid #eceef1;
 }
+
+/* ----------------------------------------------------------------------------
+   Skin Frutiger Aero: panel de informacion del contacto
+   ---------------------------------------------------------------------------- */
+
+.contactInfo {
+  border: 1px solid var(--aero-line, rgba(255, 255, 255, 0.92));
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(232, 248, 255, 0.68) 100%);
+  box-shadow:
+    var(--aero-glow, 0 16px 38px rgba(13, 74, 110, 0.16)),
+    inset 0 1px 0 #ffffff;
+  backdrop-filter: blur(16px) saturate(150%);
+}
+
+.contactInfoName {
+  color: var(--aero-ink, #0b3a58);
+  text-shadow: 0 1px 0 #ffffff;
+}
+
+.contactInfoToggle {
+  color: var(--aero-ink, #0b3a58);
+  border-radius: 12px;
+}
+
+.contactInfoToggle:hover {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+.contactInfoBack {
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  background: radial-gradient(circle at 50% 24%, #ffffff 0%, #ddf6ff 55%, #a8e3f7 100%);
+  color: #0b5a7a;
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 2px 6px rgba(13, 74, 110, 0.16);
+}
+
+.contactInfoBack:hover {
+  background: radial-gradient(circle at 50% 24%, #ffffff 0%, #e9fbff 55%, #b9eafb 100%);
+}
+
+.contactInfoContentTitle {
+  color: var(--aero-ink, #0b3a58);
+}
+
+.contactInfoFilters {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 1px 0 rgba(148, 200, 224, 0.28);
+}

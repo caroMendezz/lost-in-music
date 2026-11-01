@@ -469,3 +469,102 @@
   margin: 0 0 4px 4px;
   text-align: left;
 }
+
+/* ----------------------------------------------------------------------------
+   Skin Frutiger Aero: globos de mensaje (agua brillante / vidrio esmerilado)
+   ---------------------------------------------------------------------------- */
+
+.bubble {
+  border-radius: 18px;
+}
+
+.bubbleOwn {
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: linear-gradient(160deg, #74e4f8 0%, #24b0e2 48%, #0b83b8 100%);
+  box-shadow:
+    0 8px 18px rgba(11, 124, 174, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.7);
+  text-shadow: 0 1px 1px rgba(6, 60, 88, 0.35);
+}
+
+.bubbleOther {
+  color: var(--aero-ink, #0b3a58);
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  background: linear-gradient(180deg, #ffffff 0%, #e6f6fd 100%);
+  box-shadow:
+    0 6px 16px rgba(13, 74, 110, 0.12),
+    inset 0 1px 0 #ffffff;
+}
+
+.bubbleOwn .bubbleReadMore {
+  color: #eafcff;
+}
+
+.bubbleReadMore {
+  color: var(--aero-accent-deep, #0b7cae);
+}
+
+.bubbleMedia {
+  border: none;
+  background: transparent;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+.bubbleImage {
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(13, 74, 110, 0.22);
+}
+
+.imageCollageItem img,
+.imageStackItem img {
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 6px 16px rgba(13, 74, 110, 0.2);
+}
+
+.bubbleRevoked {
+  border: 1px dashed rgba(120, 170, 195, 0.75);
+  background: rgba(255, 255, 255, 0.55);
+  color: #4a7793;
+}
+
+.bubbleMenu {
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(232, 248, 255, 0.92));
+  box-shadow:
+    0 14px 32px rgba(13, 74, 110, 0.26),
+    inset 0 1px 0 #ffffff;
+  backdrop-filter: blur(14px) saturate(140%);
+}
+
+.bubbleMenuItem {
+  border-radius: 10px;
+  color: var(--aero-ink, #0b3a58);
+}
+
+.bubbleMenuItem:hover:not(:disabled) {
+  background: linear-gradient(180deg, #ffffff, #dcf4ff);
+}
+
+.bubbleMore,
+.bubbleReply {
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  background: linear-gradient(180deg, #ffffff, #e2f6ff);
+  color: #2c6a87;
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 2px 6px rgba(13, 74, 110, 0.16);
+}
+
+.bubbleMore:hover,
+.bubbleReply:hover {
+  background: linear-gradient(180deg, #ffffff, #cdefff);
+}
+
+.replyStack {
+  border-left: 3px solid rgba(23, 168, 216, 0.65);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(224, 245, 255, 0.82));
+}

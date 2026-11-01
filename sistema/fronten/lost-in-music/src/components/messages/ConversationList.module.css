@@ -88,3 +88,72 @@
   color: #65676b;
   font-size: 14px;
 }
+
+/* ----------------------------------------------------------------------------
+   Skin Frutiger Aero: panel de vidrio con la lista de conversaciones
+   ---------------------------------------------------------------------------- */
+
+.conversationList {
+  border: 1px solid var(--aero-line, rgba(255, 255, 255, 0.92));
+  border-radius: 20px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.9) 0%, rgba(232, 248, 255, 0.66) 100%);
+  box-shadow:
+    var(--aero-glow, 0 16px 38px rgba(13, 74, 110, 0.16)),
+    inset 0 1px 0 #ffffff;
+  backdrop-filter: blur(16px) saturate(150%);
+}
+
+.conversationListTitle {
+  color: var(--aero-ink, #0b3a58);
+  text-shadow: 0 1px 0 #ffffff;
+  letter-spacing: 0.2px;
+}
+
+.conversationListNew {
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  background: radial-gradient(circle at 50% 22%, #ffffff 0%, #dcf5ff 52%, #9fe0f5 100%);
+  color: #0b7cae;
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 4px 10px rgba(13, 74, 110, 0.18);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.conversationListNew:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 #ffffff,
+    0 6px 14px rgba(13, 74, 110, 0.24);
+}
+
+.conversationListSearch {
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  background: linear-gradient(180deg, #ffffff 0%, #e7f7ff 100%);
+  color: var(--aero-ink, #0b3a58);
+  box-shadow: inset 0 2px 6px rgba(13, 74, 110, 0.1);
+}
+
+.conversationListSearch::placeholder {
+  color: #6d97ad;
+}
+
+.conversationListSearch:focus-visible {
+  outline: 2px solid var(--aero-accent, #17a8d8);
+  outline-offset: 1px;
+}
+
+.conversationListTab {
+  color: #3f7290;
+}
+
+.conversationListTabActive {
+  color: #06374d;
+  background: linear-gradient(180deg, #9fe6ff 0%, #46c1ea 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    0 3px 8px rgba(19, 120, 165, 0.28);
+}
+
+.conversationListStatus {
+  color: #5b89a1;
+}

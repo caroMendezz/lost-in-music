@@ -81,15 +81,72 @@ export const getConversations = () => request("/conversations");
 // lista y de su historial, pero el otro participante conserva todos sus mensajes.
 export const deleteConversation = (otherUserId) =>
     request(`/conversations/${otherUserId}`, { method: "DELETE" });
-export const getUser = (userId) => request(`/users/${userId}`);
+// GET /users/:id (GetUserProfile) responde { user: {...} }: se devuelve el usuario plano
+// para que la mensajeria use username/profilePhoto directo (antes llegaba envuelto y el
+// avatar quedaba en "?" sin foto).
+export const getUser = async (userId) => {
+    const data = await request(`/users/${encodeURIComponent(userId)}`);
+    return data?.user || data;
+};
 export const markAsRead = (otherUserId) =>
     request(`/messages/read/${otherUserId}`, { method: "PUT" });
 
+// Valores que el backend usa para "sin foto". Si se pasan tal cual al <img> el navegador
+// pide http://localhost:3000/vacio y deja la imagen rota.
+const EMPTY_MEDIA = new Set(["", "vacio", "null", "undefined", "-"]);
+
+const cleanMediaValue = (url) => {
+    if (typeof url !== "string") return null;
+    const value = url.trim();
+    if (!value || EMPTY_MEDIA.has(value.toLowerCase())) return null;
+    return value;
+};
+
 // fileUrl / profilePhoto pueden ser una URL absoluta o una ruta relativa al backend.
 export function resolveFileUrl(url) {
-    if (!url) return null;
-    if (/^(https?:|data:|blob:)/i.test(url)) return url;
-    return `${API_URL}${url.startsWith("/") ? url : `/${url}`}`;
+    const value = cleanMediaValue(url);
+    if (!value) return null;
+    if (/^(https?:|data:|blob:)/i.test(value)) return value;
+
+    // Algunas rutas viejas guardadas en Windows vienen con backslashes.
+    const path = value.replace(/\\/g, "/");
+    return `${API_URL}${path.startsWith("/") ? path : `/${path}`}`;
+}
+
+// Las fotos se guardan de tres formas segun la epoca: data URL (base64 con prefijo),
+// ruta del backend (/uploads/archivo.jpg) o base64 pelado sin el prefijo `data:`.
+// Devuelve siempre algo que el navegador pueda mostrar, o null si no hay foto.
+const BASE64_BODY = /^[A-Za-z0-9+/]+={0,2}$/;
+
+const sniffImageMime = (base64) => {
+    if (base64.startsWith("iVBORw0KGgo")) return "image/png";
+    if (base64.startsWith("R0lGOD")) return "image/gif";
+    if (base64.startsWith("UklGR")) return "image/webp";
+    return "image/jpeg";
+};
+
+// Ruta absoluta de Windows (C:/Users/.../uploads/foto.jpg) -> /uploads/foto.jpg
+const toServerPath = (value) => {
+    const path = value.replace(/\\/g, "/");
+    const uploadsAt = path.toLowerCase().lastIndexOf("/uploads/");
+    if (uploadsAt !== -1) return path.slice(uploadsAt);
+    return path;
+};
+
+export function resolveImageUrl(url) {
+    const value = cleanMediaValue(url);
+    if (!value) return null;
+
+    if (/^data:image\//i.test(value)) return value;
+    if (/^(https?:|blob:)/i.test(value)) return value;
+
+    // base64 sin prefijo (cuentas viejas): se arma el data URL para que se vea la foto.
+    const base64 = value.replace(/\s+/g, "");
+    if (base64.length > 64 && BASE64_BODY.test(base64)) {
+        return `data:${sniffImageMime(base64)};base64,${base64}`;
+    }
+
+    return resolveFileUrl(toServerPath(value));
 }
 
 // Nuevo: GET /users/search?q=
