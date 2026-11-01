@@ -1,4 +1,5 @@
 import React, { useEffect, useId, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { X, MapPin } from "lucide-react";
 import aero from "../../styles/aero.module.css";
 import ProductGallery from "./ProductGallery";
@@ -7,6 +8,7 @@ import SellerPopover from "./SellerPopover";
 import Toast from "./Toast";
 import { useToast } from "./useToast";
 import { copyToClipboard, formatPostedAt, getProductUrl } from "./productUtils";
+import { getCurrentUserId } from "../../services/messageService";
 
 const FOCUSABLE =
   'button:not([disabled]), [href], input:not([disabled]), select, textarea, [tabindex]:not([tabindex="-1"])';
@@ -25,6 +27,18 @@ export default function ProductModal({ product, onClose }) {
   const closeRef = useRef(null);
   const pressStartedOnBackdrop = useRef(false);
   const titleId = useId();
+  const navigate = useNavigate();
+
+  // El backend entrega el vendedor poblado ({ userId, username, profilePhoto });
+  // las publicaciones viejas pueden traerlo como texto plano.
+  const sellerId =
+    typeof product.seller === "object" && product.seller ? product.seller.userId : null;
+
+  // Usuario logueado (id del JWT): sirve para impedir que te escribas a vos mismo.
+  // El backend devuelve userId numerico, por eso la comparacion se hace con Number().
+  const currentUserId = getCurrentUserId();
+  const isOwnProduct =
+    sellerId != null && currentUserId != null && Number(sellerId) === Number(currentUserId);
 
   // Mientras el modal esta abierto la pagina de atras no se desplaza; al
   // cerrarlo se restaura el valor anterior y el foco vuelve a la tarjeta.
@@ -76,9 +90,25 @@ export default function ProductModal({ product, onClose }) {
     if (pressStartedOnBackdrop.current && e.target === e.currentTarget) onClose();
   };
 
-  // Acciones provisorias: se reemplazan por navegacion cuando existan las rutas
-  const goToMessages = () => showToast("Redirigiendo a mensajes", "info");
-  const goToProfile = () => showToast("Redirigiendo al perfil", "info");
+  // Sin vendedor asociado no hay a quien escribir ni a quien ver.
+  const missingSeller = () =>
+    showToast("Esta publicación no tiene un vendedor asociado.", "error");
+
+  // Abre el chat con el vendedor en la pagina de mensajes.
+  // Si la publicación es tuya no se navega: un usuario no puede enviarse mensajes a si mismo.
+  const goToMessages = () => {
+    if (!sellerId) return missingSeller();
+    if (isOwnProduct) {
+      return showToast("No puedes enviarte un mensaje a ti mismo.", "error");
+    }
+    navigate(`/messages?user=${encodeURIComponent(sellerId)}`);
+  };
+
+  // Perfil publico del vendedor (route /perfil/:userId de main.jsx).
+  const goToProfile = () => {
+    if (!sellerId) return missingSeller();
+    navigate(`/perfil/${encodeURIComponent(sellerId)}`);
+  };
 
   const copyLink = async () => {
     const url = getProductUrl(product.id);
@@ -168,6 +198,8 @@ export default function ProductModal({ product, onClose }) {
                 type="button"
                 className={`${aero["modal-btn"]} ${aero["modal-btn-message"]}`}
                 onClick={goToMessages}
+                aria-disabled={isOwnProduct || undefined}
+                title={isOwnProduct ? "No puedes enviarte un mensaje a ti mismo" : undefined}
               >
                 Enviar mensaje
               </button>

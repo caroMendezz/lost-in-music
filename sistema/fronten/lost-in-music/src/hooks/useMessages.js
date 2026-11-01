@@ -15,8 +15,8 @@ const MAX_IMAGES_PER_MESSAGE = 10; // mismo limite que el backend (controllers/m
 
 // Une listas de mensajes sin duplicar por messageId y en orden cronologico.
 function mergeMessages(current, incoming) {
-    const byId = new Map(current.map((m) => [m.messageId, m]));
-    [].concat(incoming).forEach((m) => byId.set(m.messageId, m));
+    const byId = new Map((Array.isArray(current) ? current : []).map((m) => [m.messageId, m]));
+    [].concat(incoming ?? []).filter(Boolean).forEach((m) => byId.set(m.messageId, m));
 
     return [...byId.values()].sort(
         (a, b) =>
@@ -57,13 +57,16 @@ export default function useMessages(initialUserId = null) {
             const data = await getConversations();
 
             setConversations((prev) => {
+                // Una respuesta rara nunca deja la lista en null: eso rompia ConversationList
+                const list = Array.isArray(data) ? data : [];
+
                 // Conserva la conversacion abierta aunque aun no tenga mensajes
                 const open = prev.find(
                     (c) =>
                         c.user.userId === selectedRef.current &&
-                        !data.some((d) => d.user.userId === c.user.userId)
+                        !list.some((d) => d.user.userId === c.user.userId)
                 );
-                return open ? [open, ...data] : data;
+                return open ? [open, ...list] : list;
             });
         } catch (err) {
             handleError(err, "No se pudieron cargar las conversaciones");

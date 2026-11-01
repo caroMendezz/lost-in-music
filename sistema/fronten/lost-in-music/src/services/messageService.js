@@ -49,11 +49,18 @@ async function request(path, options = {}) {
         }
     });
 
+    // El cuerpo se lee como texto para distinguir "sin contenido" de una respuesta que no es
+    // JSON (por ejemplo el HTML de otro servidor). Un null acá rompía la pagina de mensajes.
+    const raw = await response.text().catch(() => "");
     let data = null;
-    try {
-        data = await response.json();
-    } catch {
-        // respuesta sin cuerpo JSON
+    if (raw.trim()) {
+        try {
+            data = JSON.parse(raw);
+        } catch {
+            if (response.ok) {
+                throw new ApiError("Respuesta inválida del servidor", response.status);
+            }
+        }
     }
 
     if (!response.ok) {

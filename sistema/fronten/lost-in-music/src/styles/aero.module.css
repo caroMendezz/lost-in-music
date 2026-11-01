@@ -386,7 +386,8 @@
   background: transparent;
   border: none;
   outline: none;
-  color: #99c0ff;
+  color: #ffffff;
+  caret-color: #ffffff;
   font-size: 14px;
   width: 100%;
   font-family: 'Nunito Sans', sans-serif;
@@ -1123,6 +1124,8 @@
 .upload-preview-link { background: #7f909d; }
 
 /* ---------- PRODUCT MODAL ---------- */
+/* ---------- MODAL DE PRODUCTO (FRUTIGER AERO) ---------- */
+/* Fondo acuoso con halos de cielo y pasto, como un escritorio de los 2000. */
 .modal-backdrop {
   position: fixed;
   inset: 0;
@@ -1131,30 +1134,47 @@
   align-items: center;
   justify-content: center;
   padding: 24px;
-  background: rgba(5, 15, 26, 0.72);
+  background:
+    radial-gradient(110% 80% at 15% 0%, rgba(126, 226, 255, 0.3), transparent 58%),
+    radial-gradient(90% 80% at 92% 100%, rgba(102, 224, 150, 0.26), transparent 62%),
+    rgba(4, 22, 38, 0.78);
+  backdrop-filter: blur(5px);
 }
 
+/* Cristal claro con reflejo superior y borde luminoso. */
 .modal-box {
   position: relative;
   display: flex;
   flex-direction: column;
   width: min(960px, 100%);
   max-height: min(680px, 100%);
-  background: #0f2f49;
-  border: 1px solid rgba(255, 255, 255, 0.16);
-  border-radius: 14px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.62), rgba(255, 255, 255, 0) 45%),
+    linear-gradient(165deg, #e6f6ff 0%, #c4e6fa 42%, #a7d5ee 100%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 22px;
   overflow: hidden;
-  box-shadow: 0 30px 70px -25px rgba(0, 0, 0, 0.85);
+  box-shadow:
+    0 0 0 1px rgba(96, 196, 236, 0.35),
+    0 30px 70px -22px rgba(2, 22, 38, 0.8),
+    0 0 46px -12px rgba(110, 214, 255, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -22px 46px -24px rgba(46, 134, 176, 0.6);
 }
 
+/* Cabecera "burbuja": gradiente cielo -> agua con brillo arriba. */
 .modal-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
   padding: 13px 16px;
-  background: #17456a;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  background: linear-gradient(180deg, #a4e4fb 0%, #5fb2e3 46%, #2f83bd 100%);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.75);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -10px 20px -12px rgba(9, 62, 96, 0.55),
+    0 6px 16px -12px rgba(9, 62, 96, 0.7);
 }
 
 .modal-head-title {
@@ -1162,8 +1182,10 @@
   font-weight: 700;
   font-size: 15px;
   color: #ffffff;
+  text-shadow: 0 1px 2px rgba(6, 50, 78, 0.45);
 }
 
+/* Boton de cerrar como orbe verde glossy. */
 .modal-close {
   width: 30px;
   height: 30px;
@@ -1171,16 +1193,21 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
-  border-radius: 6px;
-  background: #14a06f;
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  border-radius: 50%;
+  background: radial-gradient(120% 120% at 32% 18%, #c8ffe1 0%, #4fdd9f 38%, #12a06c 74%, #0a7a50 100%);
   color: #ffffff;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: filter 0.15s ease, transform 0.15s ease;
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.9),
+    inset 0 -7px 12px -7px rgba(2, 62, 40, 0.85),
+    0 6px 14px -6px rgba(6, 80, 55, 0.7);
 }
 
 .modal-close:hover {
-  background: #17b67e;
+  filter: brightness(1.08);
+  transform: translateY(-1px);
 }
 
 .modal-body {
@@ -1190,6 +1217,7 @@
   padding: 18px;
   flex: 1;
   min-height: 0;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.1));
 }
 
 .modal-media {
@@ -1211,6 +1239,7 @@
   min-width: 0;
 }
 
+/* Marco de la foto: vidrio blanco con reflejo, como una ventana aero. */
 .gallery-main {
   position: relative;
   display: flex;
@@ -1219,9 +1248,12 @@
   width: 100%;
   aspect-ratio: 1 / 1;
   overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  background: #f4f7fa;
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  background: linear-gradient(180deg, #ffffff 0%, #eaf7ff 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 12px 24px -16px rgba(9, 62, 96, 0.8);
 }
 
 .gallery-main img {
@@ -1268,14 +1300,15 @@
   height: 32px;
   padding: 0;
   border: 0;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.12);
-  color: #eaf4fb;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.75);
+  color: #0d5f9c;
   cursor: pointer;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 4px 10px -8px rgba(9, 62, 96, 0.9);
 }
 
 .gallery-arrow:hover {
-  background: rgba(255, 255, 255, 0.24);
+  background: #ffffff;
 }
 
 .gallery-strip {
@@ -1300,14 +1333,21 @@
   height: 42px;
   padding: 0;
   overflow: hidden;
-  border: 2px solid transparent;
-  border-radius: 6px;
-  background: #0b2337;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  border-radius: 10px;
+  background: #d8effb;
   cursor: pointer;
+  box-shadow: 0 6px 12px -10px rgba(9, 62, 96, 0.85);
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.gallery-thumb:hover {
+  transform: translateY(-1px);
 }
 
 .gallery-thumb.is-active {
-  border-color: #52e8db;
+  border-color: #1fa8e0;
+  box-shadow: 0 0 0 2px rgba(120, 220, 255, 0.55);
 }
 
 .gallery-thumb img {
@@ -1388,12 +1428,13 @@
 }
 
 .modal-scroll::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.45);
   border-radius: 999px;
 }
 
 .modal-scroll::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.35);
+  background: linear-gradient(180deg, #9fe0ff, #3f9fd6);
+  border: 1px solid rgba(255, 255, 255, 0.75);
   border-radius: 999px;
 }
 
@@ -1403,39 +1444,51 @@
   font-weight: 700;
   font-size: 26px;
   line-height: 1.15;
-  color: #ffffff;
+  color: #0a3a52;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
+/* Chip de precio tipo caramelo: degradado agua + brillo interior. */
 .modal-price {
   display: inline-block;
-  padding: 7px 15px;
-  border-radius: 8px;
-  background: #6b46f0;
+  padding: 7px 16px;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #8ee4ff 0%, #3ba6e6 52%, #1d74bd 100%);
   font-family: 'Baloo 2', sans-serif;
   font-weight: 700;
   font-size: 15px;
   color: #ffffff;
+  text-shadow: 0 1px 2px rgba(4, 48, 78, 0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -8px 14px -8px rgba(3, 52, 86, 0.75),
+    0 10px 18px -10px rgba(16, 92, 140, 0.85);
 }
 
 .modal-posted {
   margin: 12px 0 16px;
   font-size: 13px;
-  color: #a9c4d6;
+  color: #3f7590;
 }
 
+/* Tarjetas internas: vidrio blanco sobre el agua. */
 .modal-section {
-  background: #0b2337;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(223, 243, 255, 0.68));
+  border: 1px solid rgba(255, 255, 255, 0.95);
+  border-radius: 14px;
   padding: 14px 16px;
   margin-bottom: 14px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 10px 20px -16px rgba(9, 62, 96, 0.75);
 }
 
 .modal-section-title {
   margin-bottom: 8px;
   font-weight: 800;
   font-size: 14px;
-  color: #eaf4fb;
+  color: #0a3a52;
 }
 
 .modal-detail {
@@ -1444,11 +1497,42 @@
   color: #cfe1ee;
 }
 
+/* El bullet se dibuja con el span .modal-detail-bullet del JSX: se anula el
+   marcador nativo del <ul> para que no aparezcan dos puntos por linea. */
+.modal-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 13.5px;
+  color: #1d4a63;
+}
+
+.modal-details > li {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  line-height: 1.5;
+}
+
+.modal-detail-bullet {
+  color: #2f9ad4;
+  line-height: 1.5;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.modal-detail-icon {
+  vertical-align: -2px;
+  margin-right: 2px;
+}
+
 .modal-desc {
   margin: 0;
   font-size: 13.5px;
   line-height: 1.55;
-  color: #d7e6f1;
+  color: #1d4a63;
   white-space: pre-line;
 }
 
@@ -1468,7 +1552,7 @@
   font-family: inherit;
   font-weight: 700;
   font-size: 13px;
-  color: #52e8db;
+  color: #0d6ea8;
   cursor: pointer;
 }
 
@@ -1497,7 +1581,7 @@
 }
 
 .seller-label {
-  color: #eef4f9;
+  color: #0a3a52;
   font-size: 13px;
   font-weight: 800;
   line-height: 1.25;
@@ -1510,8 +1594,9 @@
   justify-content: center;
   overflow: hidden;
   border-radius: 50%;
-  color: #d3dbe2;
-  background: #465666;
+  color: #0d5f9c;
+  background: linear-gradient(180deg, #eaf8ff, #b7dcf0);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 4px 10px -8px rgba(9, 62, 96, 0.9);
 }
 
 .seller-avatar img {
@@ -1534,7 +1619,7 @@
   padding: 0;
   border: 0;
   background: transparent;
-  color: #9c8cff;
+  color: #0d5f9c;
   font: inherit;
   font-size: 12.5px;
   line-height: 1.25;
@@ -1556,10 +1641,14 @@
   gap: 8px;
   min-width: 236px;
   padding: 10px;
-  border: 1px solid rgba(176, 198, 216, 0.55);
-  background: #1b2938;
-  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.42);
-  color: #f4f7fa;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(219, 241, 253, 0.94));
+  backdrop-filter: blur(8px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    0 16px 32px -16px rgba(2, 22, 38, 0.75);
+  color: #0a3a52;
 }
 
 .seller-popover-head {
@@ -1588,19 +1677,22 @@
   gap: 4px;
   min-height: 30px;
   padding: 5px 8px;
-  border: 0;
-  border-radius: 2px;
-  background: #075da5;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  border-radius: 999px;
+  background: linear-gradient(180deg, #6cc4ec, #1d74bd);
   color: #fff;
   font-family: inherit;
   font-size: 12px;
   font-weight: 800;
   white-space: nowrap;
   cursor: pointer;
+  text-shadow: 0 1px 2px rgba(4, 48, 78, 0.45);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 6px 12px -10px rgba(9, 62, 96, 0.9);
+  transition: filter 0.15s ease;
 }
 
 .seller-popover-btn:hover {
-  background: #0874c9;
+  filter: brightness(1.1);
 }
 
 .toast-region {
@@ -1653,26 +1745,35 @@
 .modal-btn {
   width: 100%;
   padding: 11px 14px;
-  border: 1px solid transparent;
-  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  border-radius: 999px;
   font-family: 'Baloo 2', sans-serif;
   font-weight: 700;
   font-size: 14px;
   color: #ffffff;
   cursor: pointer;
-  transition: filter 0.15s ease;
+  transition: filter 0.15s ease, transform 0.15s ease;
+  text-shadow: 0 1px 2px rgba(4, 48, 78, 0.4);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -9px 16px -10px rgba(3, 52, 86, 0.8),
+    0 10px 20px -12px rgba(9, 62, 96, 0.85);
 }
 
 .modal-btn:hover {
   filter: brightness(1.12);
+  transform: translateY(-1px);
 }
 
+/* Botones glossy: azul agua el principal, vidrio claro el secundario. */
 .modal-btn-message {
-  background: #1d63d8;
+  background: linear-gradient(180deg, #93e6ff 0%, #3ba6e6 50%, #1d6fbb 100%);
 }
 
 .modal-btn-link {
-  background: #3b4a5f;
+  background: linear-gradient(180deg, #ffffff 0%, #d8effb 55%, #b6dbee 100%);
+  color: #10496a;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.85);
 }
 
 @media (max-width: 900px) {

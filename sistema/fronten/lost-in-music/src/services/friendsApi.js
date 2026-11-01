@@ -1,4 +1,5 @@
-const API_URL = 'http://localhost:3000';
+// Igual que messageService: se puede apuntar a otra API con VITE_API_URL
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 // Namespace de socket.io para la presencia (en línea / desconectado)
 export const PRESENCE_URL = `${API_URL}/presence`;
@@ -14,11 +15,20 @@ async function request(path, options = {}) {
     headers: { ...authHeaders(), ...(options.headers || {}) },
   });
 
+  // El cuerpo se lee como texto para distinguir "sin contenido" de una respuesta que no es
+  // JSON (por ejemplo el HTML de otro servidor). Eso nunca debe llegar como null a los componentes.
+  const raw = await response.text().catch(() => '');
   let data = null;
-  try {
-    data = await response.json();
-  } catch {
-    // respuesta sin cuerpo
+  if (raw.trim()) {
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      if (response.ok) {
+        const parseError = new Error('Respuesta inválida del servidor');
+        parseError.status = response.status;
+        throw parseError;
+      }
+    }
   }
 
   if (!response.ok) {

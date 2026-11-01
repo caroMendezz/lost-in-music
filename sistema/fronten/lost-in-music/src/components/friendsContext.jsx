@@ -35,9 +35,15 @@ export function FriendsProvider({ children }) {
         fetchFriends(),
         fetchFriendRequests(),
       ]);
-      setFriends(friendList);
-      setRequests(requestList);
-      setOnlineIds(new Set(friendList.filter((f) => f.online).map((f) => f.userId)));
+      // Si la respuesta no es una lista no se guarda null: un null acá tiraba abajo
+      // toda la app (filter/map sobre null dentro del provider).
+      const nextFriends = Array.isArray(friendList) ? friendList : [];
+      setFriends(nextFriends);
+      setRequests({
+        received: Array.isArray(requestList?.received) ? requestList.received : [],
+        sent: Array.isArray(requestList?.sent) ? requestList.sent : [],
+      });
+      setOnlineIds(new Set(nextFriends.filter((f) => f.online).map((f) => f.userId)));
     } catch (error) {
       console.error('Error al cargar amigos:', error);
     } finally {

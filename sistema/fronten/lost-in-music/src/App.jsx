@@ -194,6 +194,7 @@ export default function App() {
           <Route path="/shopinvivo" element={<Shopinvivo />} />
           <Route path="/marketplace" element={<Shopinvivo />} />
           <Route path="/amigos" element={<FriendsPage />} />
+          <Route path="/messages" element={<MessagesPage />} />
           <Route path="/post/:id" element={<PostPage />} />
           <Route path="/settings" element={<Configuracion />} />
           
