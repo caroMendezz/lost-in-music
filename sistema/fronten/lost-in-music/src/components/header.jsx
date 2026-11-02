@@ -193,6 +193,19 @@ function Header() {
               padding: '8px', zIndex: 1000, minWidth: '140px'
             }}>
               <button 
+                onClick={() => { setMenuOpen(false); navigate('/perfil'); }}
+                style={{
+                  width: '100%', padding: '8px 12px', border: 'none',
+                  background: 'transparent', textAlign: 'left', cursor: 'pointer',
+                  color: '#333', fontWeight: 'bold', borderRadius: '4px'
+                }}
+                onMouseEnter={(e) => e.target.style.background = '#f5f5f5'}
+                onMouseLeave={(e) => e.target.style.background = 'transparent'}
+              >
+                👤 Ver perfil
+              </button>
+
+              <button 
                 onClick={handleLogout}
                 style={{
                   width: '100%', padding: '8px 12px', border: 'none',
@@ -214,6 +227,14 @@ function Header() {
           onClick={() => navigate('/settings')}
         >
           ⚙️
+        </button>
+
+        <button
+          className="header-icon-btn"
+          title="Inicio"
+          onClick={() => navigate('/feed')}
+        >
+          🏠
         </button>
       </div>
     </header>
