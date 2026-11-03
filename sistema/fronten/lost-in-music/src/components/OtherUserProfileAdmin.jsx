@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../styles/UserProfile.css';
 import '../styles/userProfileAdmin.css';
+import '../styles/FriendsProfile.css'; // 👈 CSS de amigos
 import Post from './post.jsx';
 
 const API_URL = 'http://localhost:3000';
@@ -101,6 +102,10 @@ function OtherUserProfileAdmin() {
   const [friendMessage, setFriendMessage] = useState('');
   const [friendError, setFriendError] = useState('');
 
+  // 👇 ESTADOS PARA AMIGOS 👇
+  const [friends, setFriends] = useState([]);
+  const [showFriendsModal, setShowFriendsModal] = useState(false);
+
   // Estado del panel de administración.
   const [selectedDuration, setSelectedDuration] = useState('24h');
   const [processingBan, setProcessingBan] = useState(false);
@@ -142,6 +147,7 @@ function OtherUserProfileAdmin() {
       setFriendError('');
       setAdminMessage('');
       setAdminError('');
+      setFriends([]); // 👈 Limpiamos amigos al cambiar de perfil
 
       try {
         const headers = getHeaders();
@@ -153,6 +159,20 @@ function OtherUserProfileAdmin() {
           throw new Error('No se encontraron los datos de este usuario.');
         }
         setUser(profile);
+
+        // 👇 CARGAR AMIGOS DEL USUARIO VISITADO 👇
+        try {
+          const friendsData = await fetchData(
+            `/friends/user/${encodeURIComponent(userId)}`,
+            headers
+          );
+          if (!cancelled) {
+            setFriends(Array.isArray(friendsData) ? friendsData : []);
+          }
+        } catch (err) {
+          console.error('Error al cargar los amigos:', err);
+        }
+
       } catch (err) {
         if (!cancelled) {
           setError(err.message || 'No se pudo cargar el perfil.');
@@ -475,6 +495,16 @@ function OtherUserProfileAdmin() {
     if (tab !== activeTab) setActiveTab(tab);
   };
 
+  // 👇 LÓGICA PARA IR AL PERFIL DEL AMIGO 👇
+  const handleFriendClick = (friendId) => {
+    const idRole = localStorage.getItem('idRole');
+    if (String(idRole) === '2') {
+      navigate(`/admin/perfil/${friendId}`);
+    } else {
+      navigate(`/perfil/${friendId}`);
+    }
+  };
+
   // ── Render ─────────────────────────────────────────────────────────────
 
   if (loading) {
@@ -668,9 +698,43 @@ function OtherUserProfileAdmin() {
             <p>{description || 'Este usuario todavía no agregó una descripción.'}</p>
           </section>
 
+          {/* 👇 SECCIÓN DE AMIGOS MODIFICADA 👇 */}
           <section className="up-side-card up-friends">
             <h2>Amigos</h2>
-            <p>La lista de amigos todavía no está conectada a este perfil.</p>
+            {friends.length > 0 ? (
+              <>
+                <div className="up-friends-preview">
+                  {friends.slice(0, 3).map((friend) => (
+                    <div
+                      key={friend.userId}
+                      className="up-friend-item"
+                      onClick={() => handleFriendClick(friend.userId)}
+                    >
+                      {friend.profilePhoto && friend.profilePhoto !== 'vacio' ? (
+                        <img
+                          src={getMediaUrl(friend.profilePhoto)}
+                          alt={friend.username}
+                          className="up-friend-avatar"
+                        />
+                      ) : (
+                        <div className="up-friend-avatar">👤</div>
+                      )}
+                      <span className="up-friend-name">@{friend.username}</span>
+                    </div>
+                  ))}
+                </div>
+                {friends.length > 3 && (
+                  <button
+                    className="up-friends-see-all"
+                    onClick={() => setShowFriendsModal(true)}
+                  >
+                    Ver todos ({friends.length})
+                  </button>
+                )}
+              </>
+            ) : (
+              <p>Este usuario todavía no tiene amigos agregados.</p>
+            )}
           </section>
         </aside>
 
@@ -769,6 +833,43 @@ function OtherUserProfileAdmin() {
           )}
         </section>
       </div>
+
+      {/* 👇 MODAL PARA VER TODOS LOS AMIGOS 👇 */}
+      {showFriendsModal && (
+        <div
+          className="up-modal-overlay"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setShowFriendsModal(false);
+          }}
+        >
+          <section className="up-friends-modal" role="dialog" aria-modal="true">
+            <header className="up-friends-modal-header">
+              <h2>Amigos de {name} ({friends.length})</h2>
+              <button className="up-friends-modal-close" onClick={() => setShowFriendsModal(false)}>×</button>
+            </header>
+            <div className="up-friends-modal-body">
+              {friends.map((friend) => (
+                <div
+                  key={friend.userId}
+                  className="up-friend-card"
+                  onClick={() => handleFriendClick(friend.userId)}
+                >
+                  {friend.profilePhoto && friend.profilePhoto !== 'vacio' ? (
+                    <img
+                      src={getMediaUrl(friend.profilePhoto)}
+                      alt={friend.username}
+                      className="up-friend-avatar"
+                    />
+                  ) : (
+                    <div className="up-friend-avatar">👤</div>
+                  )}
+                  <span className="up-friend-name">@{friend.username}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   );
 }

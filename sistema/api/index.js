@@ -29,7 +29,7 @@ const setupChat = require("./sockets/chat");
 const { setupPresence } = require("./sockets/presence");
 const {
   getFriends, getFriendRequests, searchPeople,
-  sendFriendRequest, acceptFriendRequest, removeFriendship
+  sendFriendRequest, acceptFriendRequest, removeFriendship, getUserFriends
 } = require("./controllers/friends");
 const {
   getNotifications, markNotificationsRead, deleteNotification, clearNotifications
@@ -115,6 +115,7 @@ server.put("/messages/read/:otherUserId", checkToken, markAsRead);
 server.delete("/conversations/:otherUserId", checkToken, deleteConversationForUser);
 
 server.get("/friends", checkToken, getFriends);
+server.get("/friends/user/:userId", checkToken, getUserFriends);
 server.get("/friends/requests", checkToken, getFriendRequests);
 server.get("/friends/search", checkToken, searchPeople);
 server.post("/friends/request/:userId", checkToken, sendFriendRequest);

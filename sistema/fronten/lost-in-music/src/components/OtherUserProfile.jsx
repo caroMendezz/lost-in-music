@@ -1,8 +1,10 @@
-
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import '../styles/UserProfile.css';
+import '../styles/FriendsProfile.css'; // 👈 CSS importado
 import Post from './post.jsx';
+import SuspendedProfile from './SuspendedProfile';
+
 
 const API_URL = 'http://localhost:3000';
 
@@ -18,8 +20,6 @@ const EMPTY_MESSAGES = {
   likes: 'Este usuario todavía no indicó que le gusta ninguna publicación.',
 };
 
-// Estas tres rutas tienen que implementarse en el backend.
-// Actualmente no aparecen en tu index.js.
 const ENDPOINTS = {
   posts: (id) => `/posts/user/${encodeURIComponent(id)}/profile`,
   replies: (id) => `/posts/user/${encodeURIComponent(id)}/replies`,
@@ -28,11 +28,7 @@ const ENDPOINTS = {
 
 function getMediaUrl(url) {
   if (!url || url === 'vacio' || url === 'null') return '';
-
-  if (/^(https?:|data:|blob:)/.test(url)) {
-    return url;
-  }
-
+  if (/^(https?:|data:|blob:)/.test(url)) return url;
   return `${API_URL}${url.startsWith('/') ? '' : '/'}${url}`;
 }
 
@@ -60,13 +56,15 @@ function OtherUserProfile() {
   const [friendMessage, setFriendMessage] = useState('');
   const [friendError, setFriendError] = useState('');
 
+  // 👇 NUEVOS ESTADOS PARA AMIGOS 👇
+  const [friends, setFriends] = useState([]);
+  const [showFriendsModal, setShowFriendsModal] = useState(false);
+
   const getHeaders = useCallback(() => {
     const token = localStorage.getItem('token');
-
     if (!token) {
       throw new Error('Tenés que iniciar sesión para ver este perfil.');
     }
-
     return {
       Authorization: `Bearer ${token}`,
     };
@@ -110,7 +108,6 @@ function OtherUserProfile() {
 
         if (cancelled) return;
 
-        // Admite respuestas con forma { user: {...} } o {...}.
         const profile = data.user || data;
 
         if (!profile || typeof profile !== 'object') {
@@ -118,6 +115,20 @@ function OtherUserProfile() {
         }
 
         setUser(profile);
+
+        // 👇 CARGAR AMIGOS DEL USUARIO VISITADO 👇
+        try {
+          const friendsData = await fetchData(
+            `/friends/user/${encodeURIComponent(userId)}`,
+            headers
+          );
+          if (!cancelled) {
+            setFriends(Array.isArray(friendsData) ? friendsData : []);
+          }
+        } catch (err) {
+          console.error('Error al cargar los amigos:', err);
+        }
+
       } catch (err) {
         if (!cancelled) {
           setError(err.message || 'No se pudo cargar el perfil.');
@@ -193,7 +204,6 @@ function OtherUserProfile() {
     }
   }, [loading, user, activeTab, loadTab]);
 
-  
   // Dar o quitar Me gusta en una publicación.
   const handleLike = useCallback(async (postId) => {
     const id = String(postId);
@@ -205,7 +215,6 @@ function OtherUserProfile() {
 
     const previousPosts = postsByTab;
 
-    // Actualización optimista: cambia tu like, pero no elimina publicaciones.
     setPostsByTab((previous) => {
       const updated = {};
 
@@ -221,10 +230,7 @@ function OtherUserProfile() {
           return {
             ...post,
             liked: !wasLiked,
-            likesCount: Math.max(
-              0,
-              count + (wasLiked ? -1 : 1)
-            ),
+            likesCount: Math.max(0, count + (wasLiked ? -1 : 1)),
           };
         });
       }
@@ -244,13 +250,9 @@ function OtherUserProfile() {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(
-          data.message || 'No se pudo actualizar el Me gusta.'
-        );
+        throw new Error(data.message || 'No se pudo actualizar el Me gusta.');
       }
 
-      // Sincronizar el estado con el backend.
-      // Importante: NO filtrar ni eliminar el post de la pestaña "likes".
       setPostsByTab((previous) => {
         const updated = {};
 
@@ -262,12 +264,8 @@ function OtherUserProfile() {
 
             return {
               ...post,
-              ...(typeof data.liked === 'boolean'
-                ? { liked: data.liked }
-                : {}),
-              ...(data.likesCount !== undefined
-                ? { likesCount: data.likesCount }
-                : {}),
+              ...(typeof data.liked === 'boolean' ? { liked: data.liked } : {}),
+              ...(data.likesCount !== undefined ? { likesCount: data.likesCount } : {}),
             };
           });
         }
@@ -275,18 +273,12 @@ function OtherUserProfile() {
         return updated;
       });
     } catch (err) {
-      // Si falla la solicitud, restaurar el estado anterior.
       setPostsByTab(previousPosts);
-      setPostsError(
-        err.message || 'No se pudo actualizar el Me gusta.'
-      );
+      setPostsError(err.message || 'No se pudo actualizar el Me gusta.');
     } finally {
-      setLikingPosts((previous) =>
-        previous.filter((item) => item !== id)
-      );
+      setLikingPosts((previous) => previous.filter((item) => item !== id));
     }
   }, [getHeaders, likingPosts, postsByTab]);
-
 
   // Utiliza el endpoint de solicitudes de amistad que ya existe.
   const handleFriendRequest = async () => {
@@ -306,18 +298,12 @@ function OtherUserProfile() {
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(
-          data.message || 'No se pudo enviar la solicitud de amistad.'
-        );
+        throw new Error(data.message || 'No se pudo enviar la solicitud de amistad.');
       }
 
-      setFriendMessage(
-        data.message || 'Solicitud de amistad enviada correctamente.'
-      );
+      setFriendMessage(data.message || 'Solicitud de amistad enviada correctamente.');
     } catch (err) {
-      setFriendError(
-        err.message || 'No se pudo enviar la solicitud de amistad.'
-      );
+      setFriendError(err.message || 'No se pudo enviar la solicitud de amistad.');
     } finally {
       setSendingRequest(false);
     }
@@ -326,6 +312,17 @@ function OtherUserProfile() {
   const handleTabChange = (tab) => {
     if (tab !== activeTab) {
       setActiveTab(tab);
+    }
+  };
+
+  // 👇 LÓGICA PARA IR AL PERFIL DEL AMIGO 👇
+  const handleFriendClick = (friendId) => {
+    const idRole = localStorage.getItem('idRole');
+    // Si sos admin, te manda a la vista de admin, sino a la normal
+    if (String(idRole) === '2') {
+      navigate(`/admin/perfil/${friendId}`);
+    } else {
+      navigate(`/perfil/${friendId}`);
     }
   };
 
@@ -355,6 +352,12 @@ function OtherUserProfile() {
       </main>
     );
   }
+  const bannedDate = new Date(user.penaltyDate);
+  const isBanned = user.penaltyDate && user.penaltyDate !== 'nada' && !isNaN(bannedDate.getTime()) && bannedDate.getTime() > Date.now();
+
+  if (isBanned) {
+    return <SuspendedProfile />;
+  }
 
   const name = user.username || 'Usuario';
   const description = user.description || '';
@@ -370,10 +373,10 @@ function OtherUserProfile() {
           style={
             user.banner && user.banner !== 'vacio'
               ? {
-                  backgroundImage: `url("${getMediaUrl(user.banner)}")`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                }
+                backgroundImage: `url("${getMediaUrl(user.banner)}")`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+              }
               : undefined
           }
         >
@@ -400,10 +403,9 @@ function OtherUserProfile() {
 
             {description && <p>{description}</p>}
 
-            {user.ubication &&
-              user.ubication !== 'Agregar ubicacion' && (
-                <p>{user.ubication}</p>
-              )}
+            {user.ubication && user.ubication !== 'Agregar ubicacion' && (
+              <p>{user.ubication}</p>
+            )}
           </div>
 
           <div className="up-other-profile-actions">
@@ -413,9 +415,7 @@ function OtherUserProfile() {
               onClick={handleFriendRequest}
               disabled={sendingRequest}
             >
-              {sendingRequest
-                ? 'Enviando...'
-                : 'Agregar amigo'}
+              {sendingRequest ? 'Enviando...' : 'Agregar amigo'}
             </button>
 
             <button
@@ -465,11 +465,43 @@ function OtherUserProfile() {
             <p>{description || 'Este usuario todavía no agregó una descripción.'}</p>
           </section>
 
+          {/* 👇 SECCIÓN DE AMIGOS MODIFICADA 👇 */}
           <section className="up-side-card up-friends">
             <h2>Amigos</h2>
-            <p>
-              La lista de amigos todavía no está conectada a este perfil.
-            </p>
+            {friends.length > 0 ? (
+              <>
+                <div className="up-friends-preview">
+                  {friends.slice(0, 3).map((friend) => (
+                    <div
+                      key={friend.userId}
+                      className="up-friend-item"
+                      onClick={() => handleFriendClick(friend.userId)}
+                    >
+                      {friend.profilePhoto && friend.profilePhoto !== 'vacio' ? (
+                        <img
+                          src={getMediaUrl(friend.profilePhoto)}
+                          alt={friend.username}
+                          className="up-friend-avatar"
+                        />
+                      ) : (
+                        <div className="up-friend-avatar">👤</div>
+                      )}
+                      <span className="up-friend-name">@{friend.username}</span>
+                    </div>
+                  ))}
+                </div>
+                {friends.length > 3 && (
+                  <button
+                    className="up-friends-see-all"
+                    onClick={() => setShowFriendsModal(true)}
+                  >
+                    Ver todos ({friends.length})
+                  </button>
+                )}
+              </>
+            ) : (
+              <p>Este usuario todavía no tiene amigos agregados.</p>
+            )}
           </section>
         </aside>
 
@@ -479,9 +511,7 @@ function OtherUserProfile() {
               <button
                 key={tab.id}
                 type="button"
-                className={`up-tab ${
-                  activeTab === tab.id ? 'up-tab-active' : ''
-                }`}
+                className={`up-tab ${activeTab === tab.id ? 'up-tab-active' : ''}`}
                 aria-pressed={activeTab === tab.id}
                 onClick={() => handleTabChange(tab.id)}
               >
@@ -571,6 +601,43 @@ function OtherUserProfile() {
           )}
         </section>
       </div>
+
+      {/* 👇 MODAL PARA VER TODOS LOS AMIGOS 👇 */}
+      {showFriendsModal && (
+        <div
+          className="up-modal-overlay"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setShowFriendsModal(false);
+          }}
+        >
+          <section className="up-friends-modal" role="dialog" aria-modal="true">
+            <header className="up-friends-modal-header">
+              <h2>Amigos de {name} ({friends.length})</h2>
+              <button className="up-friends-modal-close" onClick={() => setShowFriendsModal(false)}>×</button>
+            </header>
+            <div className="up-friends-modal-body">
+              {friends.map((friend) => (
+                <div
+                  key={friend.userId}
+                  className="up-friend-card"
+                  onClick={() => handleFriendClick(friend.userId)}
+                >
+                  {friend.profilePhoto && friend.profilePhoto !== 'vacio' ? (
+                    <img
+                      src={getMediaUrl(friend.profilePhoto)}
+                      alt={friend.username}
+                      className="up-friend-avatar"
+                    />
+                  ) : (
+                    <div className="up-friend-avatar">👤</div>
+                  )}
+                  <span className="up-friend-name">@{friend.username}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      )}
     </main>
   );
 }
