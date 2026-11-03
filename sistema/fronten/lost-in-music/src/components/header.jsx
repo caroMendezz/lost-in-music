@@ -9,7 +9,7 @@ function Header() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userPhoto, setUserPhoto] = useState('');
-  
+
   // Estados para la búsqueda
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
@@ -21,7 +21,7 @@ function Header() {
 
   // Cargar datos del usuario logueado
   useEffect(() => {
-    const storedUser = localStorage.getItem('user'); 
+    const storedUser = localStorage.getItem('user');
     if (storedUser) {
       try {
         const parsedUser = JSON.parse(storedUser);
@@ -60,14 +60,14 @@ function Header() {
       setIsSearching(true);
       try {
         const token = localStorage.getItem('token');
-        
+
         // Llamada a tu backend
         const res = await fetch(`http://localhost:3000/users/search?q=${encodeURIComponent(searchQuery)}`, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
         });
-        
+
         if (res.ok) {
           const data = await res.json();
           setSearchResults(data);
@@ -87,15 +87,15 @@ function Header() {
   const handleUserClick = (userId) => {
     setShowResults(false);
     setSearchQuery('');
-    
+
     // Leemos el rol del localStorage
     const currentIdRole = localStorage.getItem('idRole');
-    
+
     // Si es Admin (2), va a la ruta de admin. Si no, a la normal.
     if (String(currentIdRole) === '2') {
-      navigate(`/admin/perfil/${userId}`); 
+      navigate(`/admin/perfil/${userId}`);
     } else {
-      navigate(`/perfil/${userId}`); 
+      navigate(`/perfil/${userId}`);
     }
   };
 
@@ -108,22 +108,22 @@ function Header() {
 
   return (
     <header className="header-container">
-      
+
       {/* --- BARRA DE BÚSQUEDA --- */}
       <div className="header-searchbar" ref={searchRef} style={{ position: 'relative' }}>
         <span>🔍</span>
-        <input 
-          type="text" 
-          placeholder="Buscar usuarios..." 
+        <input
+          type="text"
+          placeholder="Buscar usuarios..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          onFocus={() => { if(searchResults.length > 0) setShowResults(true) }}
-          style={{ 
-            border: 'none', background: 'transparent', outline: 'none', 
+          onFocus={() => { if (searchResults.length > 0) setShowResults(true) }}
+          style={{
+            border: 'none', background: 'transparent', outline: 'none',
             width: '100%', marginLeft: '8px', color: 'inherit'
           }}
         />
-        
+
         {/* DROPDOWN DE RESULTADOS */}
         {showResults && (
           <div style={{
@@ -135,11 +135,11 @@ function Header() {
               <div style={{ padding: '12px', color: '#888' }}>Buscando...</div>
             ) : searchResults.length > 0 ? (
               searchResults.map(user => (
-                <div 
-                  key={user.userId} 
+                <div
+                  key={user.userId}
                   onClick={() => handleUserClick(user.userId)}
                   style={{
-                    display: 'flex', alignItems: 'center', gap: '10px', 
+                    display: 'flex', alignItems: 'center', gap: '10px',
                     padding: '10px 12px', cursor: 'pointer', borderBottom: '1px solid #eee'
                   }}
                   onMouseEnter={(e) => e.currentTarget.style.background = '#f5f5f5'}
@@ -164,22 +164,46 @@ function Header() {
 
       {/* --- RESTO DEL HEADER (ICONOS Y PERFIL) --- */}
       <div className="header-icons">
+
+        {/* 1. Selector de idioma */}
         <LangSelector />
-        
+
+        {/* 2. Inicio */}
+        <button
+          className="header-icon-btn"
+          title="Inicio"
+          onClick={() => navigate('/feed')}
+        >
+          🏠
+        </button>
+
+        {/* 3. Notificaciones */}
         <NotificationsMenu />
 
+        {/* 4. Perfil */}
         <div className="header-profile-wrapper" ref={menuRef} style={{ position: 'relative' }}>
-          <button 
-            className="header-icon-btn profile-avatar-btn" 
+          <button
+            className="header-icon-btn profile-avatar-btn"
             title="Perfil"
             onClick={() => setMenuOpen(!menuOpen)}
-            style={{ overflow: 'hidden', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+            style={{
+              overflow: 'hidden',
+              padding: 0,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+            }}
           >
             {userPhoto ? (
-              <img 
-                src={userPhoto} 
-                alt="Perfil" 
-                style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} 
+              <img
+                src={userPhoto}
+                alt="Perfil"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  borderRadius: '50%'
+                }}
               />
             ) : (
               '👤'
@@ -188,39 +212,58 @@ function Header() {
 
           {menuOpen && (
             <div className="profile-dropdown-card" style={{
-              position: 'absolute', right: 0, top: '110%', background: 'white',
-              boxShadow: '0px 4px 12px rgba(0,0,0,0.15)', borderRadius: '8px',
-              padding: '8px', zIndex: 1000, minWidth: '140px'
+              position: 'absolute',
+              right: 0,
+              top: '110%',
+              background: 'white',
+              boxShadow: '0px 4px 12px rgba(0,0,0,0.15)',
+              borderRadius: '8px',
+              padding: '8px',
+              zIndex: 1000,
+              minWidth: '140px'
             }}>
-              <button 
+              <button
                 onClick={() => { setMenuOpen(false); navigate('/perfil'); }}
                 style={{
-                  width: '100%', padding: '8px 12px', border: 'none',
-                  background: 'transparent', textAlign: 'left', cursor: 'pointer',
-                  color: '#333', fontWeight: 'bold', borderRadius: '4px'
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: 'none',
+                  background: 'transparent',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  color: '#333',
+                  fontWeight: 'bold',
+                  borderRadius: '4px'
                 }}
                 onMouseEnter={(e) => e.target.style.background = '#f5f5f5'}
                 onMouseLeave={(e) => e.target.style.background = 'transparent'}
               >
-                👤 Ver perfil
+                Ver perfil
               </button>
 
-              <button 
+              <button
                 onClick={handleLogout}
                 style={{
-                  width: '100%', padding: '8px 12px', border: 'none',
-                  background: 'transparent', textAlign: 'left', cursor: 'pointer',
-                  color: '#d9534f', fontWeight: 'bold', borderRadius: '4px'
+                  width: '100%',
+                  padding: '8px 12px',
+                  border: 'none',
+                  background: 'transparent',
+                  textAlign: 'left',
+                  cursor: 'pointer',
+                  color: '#d9534f',
+                  fontWeight: 'bold',
+                  borderRadius: '4px'
                 }}
                 onMouseEnter={(e) => e.target.style.background = '#f5f5f5'}
                 onMouseLeave={(e) => e.target.style.background = 'transparent'}
               >
-                🚪 Cerrar sesión
+                Cerrar sesión
               </button>
             </div>
           )}
         </div>
 
+        {/* 5. Configuración */}
         <button
           className="header-icon-btn"
           title="Configuración"
@@ -229,13 +272,6 @@ function Header() {
           ⚙️
         </button>
 
-        <button
-          className="header-icon-btn"
-          title="Inicio"
-          onClick={() => navigate('/feed')}
-        >
-          🏠
-        </button>
       </div>
     </header>
   );
