@@ -3,16 +3,9 @@ const { Message } = require("../models/Message");
 const { User } = require("../models/User");
 
 const VALID_TYPES = ["text", "image", "file"];
-
-// Maximo de imagenes que puede llevar un solo mensaje (mismo limite que usa el frontend)
 const MAX_IMAGES_PER_MESSAGE = 10;
-
-// Un mensaje propio solo se puede editar durante los primeros 15 minutos desde su envio.
-// Se calcula siempre contra la fecha de envio almacenada (sent_at), no contra el momento
-// en que se carga la pagina ni contra cuanto tiempo esta abierta la conversacion.
 const EDIT_WINDOW_MS = 15 * 60 * 1000;
 
-// Campos publicos del usuario (nunca password, email, DVH, etc.)
 const PUBLIC_USER_FIELDS = [
     "userId",
     "username",
@@ -24,8 +17,14 @@ const PUBLIC_USER_FIELDS = [
     "followingAmount"
 ];
 
-// Mensaje tal como se envia al cliente: si fue anulado para todos NO se expone su contenido
-// (en la base de datos el registro y su contenido se conservan).
+// 👇 HELPER PARA VERIFICAR BANEOS 👇
+const isUserBanned = (penaltyDate) => {
+    if (!penaltyDate || penaltyDate === 'nada') return false;
+    const banDate = new Date(penaltyDate);
+    if (Number.isNaN(banDate.getTime())) return false;
+    return banDate.getTime() > Date.now();
+};
+
 const toClientMessage = (message) => {
     const data = typeof message.toJSON === "function" ? message.toJSON() : { ...message };
 
@@ -35,7 +34,6 @@ const toClientMessage = (message) => {
         data.fileName = null;
         data.fileUrls = null;
     } else {
-        // En la base se guarda como JSON (TEXT); el cliente siempre recibe lista o null
         let urls = data.fileUrls;
         if (typeof urls === "string") {
             try {
@@ -52,16 +50,10 @@ const toClientMessage = (message) => {
     return data;
 };
 
-// true si el mensaje fue eliminado "para ti" por ese usuario (no afecta al otro participante)
 const isHiddenForUser = (message, userId) =>
     (Number(message.senderId) === Number(userId) && Boolean(message.deletedBySender)) ||
     (Number(message.receiverId) === Number(userId) && Boolean(message.deletedByReceiver));
 
-// Mensajes tal como se envian al cliente + referencia liviana al mensaje original de cada respuesta:
-//   replyTo: { messageId, senderId, deletedForAll }
-// NUNCA incluye contenido ni flags de "eliminado para ti" (privados de cada participante).
-// Sirve para que el cliente sepa quien escribio el original y si fue anulado para todos aunque
-// el original ya no este visible para el, sin exponer contenido que no deberia ver.
 const serializeMessages = async (messages) => {
     const list = [].concat(messages);
     const originalIds = [...new Set(list.map((m) => m.replyToMessageId).filter(Boolean))];
@@ -93,9 +85,7 @@ const serializeMessages = async (messages) => {
 };
 
 const createMessage = async (data) => {
-
     try {
-
         const {
             senderId,
             receiverId,
@@ -107,41 +97,23 @@ const createMessage = async (data) => {
             replyToMessageId
         } = data;
 
-        if (!VALID_TYPES.includes(messageType)) {
-            throw new Error("Invalid message type");
+        if (!VALID_TYPES.includes(messageType)) throw new Error("Invalid message type");
+
+        const sender = await User.findByPk(senderId);
+        if (!sender) throw new Error("Sender not found");
+
+        const receiver = await User.findByPk(receiverId);
+        if (!receiver) throw new Error("Receiver not found");
+        
+        // 👇 NO PERMITIR ENVIAR MENSAJES A UN BANEADO 👇
+        if (isUserBanned(receiver.penaltyDate)) {
+            throw new Error("No puedes enviar mensajes a un usuario suspendido");
         }
 
-        const sender =
-            await User.findByPk(senderId);
-
-        if (!sender) {
-            throw new Error("Sender not found");
+        if (messageType === "text" && (!content || content.trim() === "")) {
+            throw new Error("Message content cannot be empty");
         }
 
-
-        const receiver =
-            await User.findByPk(receiverId);
-
-        if (!receiver) {
-            throw new Error("Receiver not found");
-        }
-
-
-        if (
-            messageType === "text" &&
-            (!content || content.trim() === "")
-        ) {
-
-            throw new Error(
-                "Message content cannot be empty"
-            );
-
-        }
-
-
-        // Lista de imagenes del mensaje (solo mensajes "image").
-        // Se normaliza aqui para que el cliente viejo (fileUrl unico) y el nuevo
-        // (fileUrls) convivan sin cambios en el resto de las funcionalidades.
         const imageUrls = Array.isArray(fileUrls)
             ? fileUrls.filter((u) => typeof u === "string" && u.trim() !== "")
             : [];
@@ -150,32 +122,23 @@ const createMessage = async (data) => {
             throw new Error(`A message can include at most ${MAX_IMAGES_PER_MESSAGE} images`);
         }
 
-        // fileUrl siempre conserva la primera imagen (compatibilidad con lo existente)
         const storedFileUrl = fileUrl || imageUrls[0] || null;
 
         if (messageType !== "text" && !storedFileUrl) {
             throw new Error("File URL is required");
         }
 
-
-        // Respuesta a un mensaje existente: se guarda SOLO la referencia (id).
-        // El mensaje original debe existir y pertenecer a la misma conversacion
-        // (misma pareja de usuarios) a la que se esta enviando el mensaje.
         let replyTo = null;
         const hasReply = replyToMessageId !== undefined && replyToMessageId !== null && replyToMessageId !== "";
 
         if (hasReply) {
             const originalId = Number(replyToMessageId);
 
-            if (!Number.isInteger(originalId)) {
-                throw new Error("Invalid reply reference");
-            }
+            if (!Number.isInteger(originalId)) throw new Error("Invalid reply reference");
 
             replyTo = await Message.findByPk(originalId);
 
-            if (!replyTo) {
-                throw new Error("The message you are replying to does not exist");
-            }
+            if (!replyTo) throw new Error("The message you are replying to does not exist");
 
             const originalParticipants = [Number(replyTo.senderId), Number(replyTo.receiverId)];
             const sameConversation =
@@ -183,110 +146,53 @@ const createMessage = async (data) => {
                 originalParticipants.includes(Number(senderId)) &&
                 originalParticipants.includes(Number(receiverId));
 
-            if (!sameConversation) {
-                throw new Error("You cannot reply with a message from another conversation");
-            }
+            if (!sameConversation) throw new Error("You cannot reply with a message from another conversation");
 
-            // Un mensaje que el usuario elimino "para ti" ya no es visible para el: no se puede citar
-            if (isHiddenForUser(replyTo, senderId)) {
-                throw new Error("The message you are replying to is no longer available");
-            }
+            if (isHiddenForUser(replyTo, senderId)) throw new Error("The message you are replying to is no longer available");
         }
-
 
         const message = await Message.create({
-
             senderId,
             receiverId,
-
             content: content || null,
-
             messageType,
-
             fileUrl: storedFileUrl,
-
             fileName: fileName || null,
-
-            fileUrls:
-                messageType === "image" && imageUrls.length > 0
-                    ? JSON.stringify(imageUrls)
-                    : null,
-
+            fileUrls: messageType === "image" && imageUrls.length > 0 ? JSON.stringify(imageUrls) : null,
             replyToMessageId: replyTo ? replyTo.messageId : null,
-
             sent_at: new Date()
-
         });
 
-
         return message;
-
     } catch (error) {
-
         console.error(error);
-
         throw error;
-
     }
-
 };
-
-
-
-
 
 const deleteMessage = async (messageId, userId) => {
-
     try {
-
         const message = await Message.findByPk(messageId);
-
-        if (!message) {
-            throw new Error("Message not found");
-        }
-
-        if (Number(message.senderId) !== Number(userId)) {
-            throw new Error("You cannot delete this message");
-        }
+        if (!message) throw new Error("Message not found");
+        if (Number(message.senderId) !== Number(userId)) throw new Error("You cannot delete this message");
 
         await message.destroy();
-
         return message;
-
     } catch (error) {
-
         console.error(error);
         throw error;
-
     }
-
 };
 
-// Editar: solo el emisor, solo mensajes de texto no anulados. Actualiza el MISMO registro.
 const editMessage = async (messageId, userId, content) => {
-
     try {
-
         const message = await Message.findByPk(messageId);
 
-        if (!message || message.deletedBySender) {
-            throw new Error("Message not found");
-        }
+        if (!message || message.deletedBySender) throw new Error("Message not found");
+        if (Number(message.senderId) !== Number(userId)) throw new Error("You cannot edit this message");
+        if (message.deletedForAll) throw new Error("You cannot edit a deleted message");
+        if (message.messageType !== "text") throw new Error("Only text messages can be edited");
 
-        if (Number(message.senderId) !== Number(userId)) {
-            throw new Error("You cannot edit this message");
-        }
-
-        if (message.deletedForAll) {
-            throw new Error("You cannot edit a deleted message");
-        }
-
-        if (message.messageType !== "text") {
-            throw new Error("Only text messages can be edited");
-        }
-
-        // Limite de edicion: 15 minutos desde el envio, medidos contra sent_at.
-        // Se valida en el backend tambien para que no se pueda evadir con una peticion directa.
         const sentAt = new Date(message.sent_at).getTime();
         if (!Number.isFinite(sentAt) || Date.now() - sentAt > EDIT_WINDOW_MS) {
             throw new Error("A message can only be edited during the first 15 minutes after being sent");
@@ -294,89 +200,47 @@ const editMessage = async (messageId, userId, content) => {
 
         const newContent = typeof content === "string" ? content.trim() : "";
 
-        if (newContent === "") {
-            throw new Error("Message content cannot be empty");
-        }
-
-        // Sin cambios: no se marca como editado
-        if (newContent === message.content) {
-            return message;
-        }
+        if (newContent === "") throw new Error("Message content cannot be empty");
+        if (newContent === message.content) return message;
 
         await message.update({ content: newContent, editedAt: new Date() });
-
         return message;
-
     } catch (error) {
-
         console.error(error);
         throw error;
-
     }
-
 };
 
-// Anular envio para todos: solo el emisor. No se borra el registro.
 const revokeMessage = async (messageId, userId) => {
-
     try {
-
         const message = await Message.findByPk(messageId);
+        if (!message) throw new Error("Message not found");
+        if (Number(message.senderId) !== Number(userId)) throw new Error("You cannot revoke this message");
 
-        if (!message) {
-            throw new Error("Message not found");
-        }
-
-        if (Number(message.senderId) !== Number(userId)) {
-            throw new Error("You cannot revoke this message");
-        }
-
-        if (!message.deletedForAll) {
-            await message.update({ deletedForAll: true });
-        }
-
+        if (!message.deletedForAll) await message.update({ deletedForAll: true });
         return message;
-
     } catch (error) {
-
         console.error(error);
         throw error;
-
     }
-
 };
 
-// Eliminar para ti: oculta el mensaje solo para quien lo pide (emisor o receptor).
 const deleteMessageForUser = async (messageId, userId) => {
-
     try {
-
         const message = await Message.findByPk(messageId);
-
-        if (!message) {
-            throw new Error("Message not found");
-        }
+        if (!message) throw new Error("Message not found");
 
         const isSender = Number(message.senderId) === Number(userId);
         const isReceiver = Number(message.receiverId) === Number(userId);
 
-        if (!isSender && !isReceiver) {
-            throw new Error("You cannot delete this message");
-        }
+        if (!isSender && !isReceiver) throw new Error("You cannot delete this message");
 
-        await message.update(
-            isSender ? { deletedBySender: true } : { deletedByReceiver: true }
-        );
-
+        await message.update(isSender ? { deletedBySender: true } : { deletedByReceiver: true });
         return message;
-
     } catch (error) {
-
         console.error(error);
         throw error;
-
     }
-
 };
 
 const getMessages = async (req, res) => {
@@ -384,9 +248,17 @@ const getMessages = async (req, res) => {
         const userId = Number(req.user.userId);
         const otherUserId = Number(req.params.otherUserId);
 
+        // 👇 VERIFICAR SI EL OTRO USUARIO ESTÁ BANEADO 👇
+        const otherUser = await User.findByPk(otherUserId);
+        if (otherUser && isUserBanned(otherUser.penaltyDate)) {
+            return res.status(403).json({ 
+                message: "Este usuario se encuentra suspendido. No podés ver ni enviar mensajes.", 
+                code: "OTHER_USER_BANNED" 
+            });
+        }
+
         const messages = await Message.findAll({
             where: {
-                // Se excluyen los mensajes que el usuario elimino "para ti"
                 [Op.or]: [
                     { senderId: userId, receiverId: otherUserId, deletedBySender: false },
                     { senderId: otherUserId, receiverId: userId, deletedByReceiver: false }
@@ -402,11 +274,6 @@ const getMessages = async (req, res) => {
     }
 };
 
-
-// ---------------------------------------------------------------
-// NUEVO: GET /conversations
-// Devuelve [{ user, lastMessage, unreadCount }] ordenado por ultimo mensaje (mas reciente primero)
-// ---------------------------------------------------------------
 const getConversations = async (req, res) => {
     try {
         const userId = Number(req.user.userId);
@@ -421,34 +288,33 @@ const getConversations = async (req, res) => {
             order: [["sent_at", "DESC"]]
         });
 
-        // Map conserva el orden de insercion: el primer mensaje visto por contacto es el ultimo
         const byContact = new Map();
 
         for (const m of messages) {
-            const otherId =
-                Number(m.senderId) === userId
-                    ? Number(m.receiverId)
-                    : Number(m.senderId);
-
+            const otherId = Number(m.senderId) === userId ? Number(m.receiverId) : Number(m.senderId);
             if (!byContact.has(otherId)) {
                 byContact.set(otherId, { lastMessage: toClientMessage(m), unreadCount: 0 });
             }
-
             if (Number(m.receiverId) === userId && !m.is_read && !m.deletedForAll) {
                 byContact.get(otherId).unreadCount += 1;
             }
         }
 
-        if (byContact.size === 0) {
-            return res.json([]);
-        }
+        if (byContact.size === 0) return res.json([]);
 
-        const users = await User.findAll({
+        // 👇 FILTRAR USUARIOS BANEADOS DE LA LISTA DE CHATS 👇
+        const usersRaw = await User.findAll({
             where: { userId: [...byContact.keys()] },
-            attributes: PUBLIC_USER_FIELDS
+            attributes: [...PUBLIC_USER_FIELDS, "penaltyDate"] // Traemos la fecha de ban
         });
 
-        const usersById = new Map(users.map((u) => [Number(u.userId), u]));
+        const usersById = new Map();
+        usersRaw.forEach((u) => {
+            if (!isUserBanned(u.penaltyDate)) {
+                const { penaltyDate, ...user } = u.toJSON();
+                usersById.set(Number(user.userId), user);
+            }
+        });
 
         const conversations = [...byContact.entries()]
             .filter(([otherId]) => usersById.has(otherId))
@@ -465,13 +331,6 @@ const getConversations = async (req, res) => {
     }
 };
 
-
-// ---------------------------------------------------------------
-// NUEVO: DELETE /conversations/:otherUserId
-// Elimina la conversacion SOLO para el usuario autenticado: se marcan sus mensajes
-// como ocultos para el (deletedBySender / deletedByReceiver). Los mensajes del otro
-// participante NO se tocan, por lo que su historial sigue intacto.
-// ---------------------------------------------------------------
 const deleteConversationForUser = async (req, res) => {
     try {
         const userId = Number(req.user.userId);
@@ -481,9 +340,6 @@ const deleteConversationForUser = async (req, res) => {
             return res.status(400).json({ message: "Conversacion invalida" });
         }
 
-        // Un solo UPDATE por direccion: los mensajes enviados por el usuario quedan
-        // ocultos para el (deletedBySender) y los recibidos tambien (deletedByReceiver).
-        // Los mensajes del otro participante no se tocan: su historial sigue intacto.
         const [sent] = await Message.update(
             { deletedBySender: true },
             { where: { senderId: userId, receiverId: otherUserId, deletedBySender: false } }
@@ -501,32 +357,32 @@ const deleteConversationForUser = async (req, res) => {
     }
 };
 
-
-// ---------------------------------------------------------------
-// NUEVO: GET /users/:id  (datos publicos de un usuario)
-// ---------------------------------------------------------------
 const getUserById = async (req, res) => {
     try {
         const user = await User.findByPk(Number(req.params.id), {
-            attributes: PUBLIC_USER_FIELDS
+            attributes: [...PUBLIC_USER_FIELDS, "penaltyDate"]
         });
 
         if (!user) {
             return res.status(404).json({ message: "Usuario no encontrado" });
         }
 
-        res.json(user);
+        // 👇 SI EL USUARIO BUSCADO ESTÁ BANEADO, NO MOSTRAR SUS DATOS 👇
+        if (isUserBanned(user.penaltyDate)) {
+            return res.status(403).json({ 
+                message: "Este usuario está suspendido.", 
+                code: "OTHER_USER_BANNED" 
+            });
+        }
+
+        const { penaltyDate, ...userData } = user.toJSON();
+        res.json(userData);
     } catch (error) {
         console.error(error);
         res.status(500).json({ message: "Error fetching user" });
     }
 };
 
-
-// ---------------------------------------------------------------
-// NUEVO: PUT /messages/read/:otherUserId
-// Marca como leidos los mensajes que otherUserId le envio al usuario autenticado
-// ---------------------------------------------------------------
 const markAsRead = async (req, res) => {
     try {
         const userId = Number(req.user.userId);
@@ -543,7 +399,6 @@ const markAsRead = async (req, res) => {
             }
         );
 
-        // Avisa en tiempo real al emisor para que su "Enviado" pase a "Visto"
         if (updated > 0) {
             const io = req.app.get("io");
             if (io) {
@@ -558,32 +413,36 @@ const markAsRead = async (req, res) => {
     }
 };
 
-// ---------------------------------------------------------------
-// NUEVO: GET /users/search?q=texto
-// Busca usuarios por username para iniciar una conversacion nueva (excluye al propio usuario)
-// ---------------------------------------------------------------
 const searchUsers = async (req, res) => {
     try {
         const userId = Number(req.user.userId);
+        const isAdmin = Number(req.user.idRole) === 2; // 👈 Verificamos si es admin
         const q = String(req.query.q || "").trim();
 
         if (q.length < 2) {
             return res.json([]);
         }
 
-        // escapa comodines de LIKE para que el texto se busque literalmente
         const safeQuery = q.replace(/[\\%_]/g, "\\$&");
 
-        const users = await User.findAll({
+        const usersRaw = await User.findAll({
             where: {
                 username: { [Op.like]: `%${safeQuery}%` },
                 userId: { [Op.ne]: userId },
                 eliminated: 0
             },
-            attributes: PUBLIC_USER_FIELDS,
+            attributes: [...PUBLIC_USER_FIELDS, "penaltyDate"],
             order: [["username", "ASC"]],
             limit: 10
         });
+
+        // 👇 FILTRAR BANEADOS SOLO SI NO ES ADMIN 👇
+        const users = usersRaw
+            .filter((u) => isAdmin || !isUserBanned(u.penaltyDate))
+            .map((u) => {
+                const { penaltyDate, ...userData } = u.toJSON();
+                return userData;
+            });
 
         res.json(users);
     } catch (error) {
@@ -591,7 +450,6 @@ const searchUsers = async (req, res) => {
         res.status(500).json({ message: "Error searching users" });
     }
 };
-
 
 module.exports = {
     createMessage,

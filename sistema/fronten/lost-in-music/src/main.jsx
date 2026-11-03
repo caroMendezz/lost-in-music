@@ -1,4 +1,3 @@
-
 import React, { useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 
@@ -19,6 +18,31 @@ import Acceso from './pages/registerlogin/registerlogin';
 import UserProfilePage from './pages/userProfilePage';
 import UserOtherProfilePage from './pages/UserOtherProfilePage';
 import UserOtherProfilePageAdmin from './pages/OtherUserProfilePageAdmin';
+
+// --- INTERCEPTOR GLOBAL DE FETCH (Para expulsar baneados) ---
+const originalFetch = window.fetch;
+window.fetch = async (...args) => {
+  const response = await originalFetch(...args);
+  
+  // Si el backend responde 403 y el código es USER_BANNED
+  if (response.status === 403) {
+    const clone = response.clone();
+    try {
+      const data = await clone.json();
+      if (data.code === 'USER_BANNED') {
+        alert(data.message); // Le mostramos por qué lo echamos
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        localStorage.removeItem('idRole');
+        window.location.href = '/acceso'; // Lo mandamos al login
+      }
+    } catch (e) {
+      // Si la respuesta no es un JSON válido (ej. error de red), ignoramos
+    }
+  }
+  return response;
+};
+// -------------------------------------------------------------
 
 function TitleManager() {
   const location = useLocation();

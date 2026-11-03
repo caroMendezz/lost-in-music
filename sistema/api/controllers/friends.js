@@ -5,7 +5,8 @@ const { getFriendIds, findRelation } = require("../services/friendsService");
 const { isOnline, emitToUser } = require("../sockets/presence");
 const { notifyUser, removeNotifications } = require("../services/notificationsService");
 
-const USER_ATTRS = ["userId", "username", "profilePhoto", "ubication"];
+// 👇 AGREGAMOS "penaltyDate" ACÁ PARA PODER FILTRAR 👇
+const USER_ATTRS = ["userId", "username", "profilePhoto", "ubication", "penaltyDate"];
 
 const getCurrentUserId = (req) => req.user.userId || req.user.id;
 
@@ -26,6 +27,14 @@ const loadUsers = async (ids) => {
   return new Map(users.map((u) => [u.userId, u]));
 };
 
+// Helper para saber si está baneado
+const isUserBanned = (penaltyDate) => {
+  if (!penaltyDate || penaltyDate === 'nada') return false;
+  const banDate = new Date(penaltyDate);
+  if (Number.isNaN(banDate.getTime())) return false;
+  return banDate.getTime() > Date.now();
+};
+
 // Avisa en tiempo real a los dos usuarios que su lista de amigos/solicitudes cambió
 const notifyChange = (a, b) => {
   emitToUser(a, "friends:changed");
@@ -40,8 +49,13 @@ const getFriends = async (req, res) => {
     const users = await loadUsers(friendIds);
 
     const friends = [...users.values()]
+      .filter((u) => !isUserBanned(u.penaltyDate)) // 👈 FILTRO DE BANEADOS
       .sort((a, b) => a.username.localeCompare(b.username))
-      .map((u) => ({ ...u, online: isOnline(u.userId) }));
+      .map((u) => {
+        // Ocultamos penaltyDate de la respuesta
+        const { penaltyDate, ...userData } = u;
+        return { ...userData, online: isOnline(u.userId) };
+      });
 
     return res.status(200).json(friends);
   } catch (error) {
@@ -69,8 +83,13 @@ const getFriendRequests = async (req, res) => {
 
     const build = (list) =>
       list
-        .map((r) => ({ ...users.get(otherId(r)), requestedAt: r.createdAt }))
-        .filter((u) => u.userId); // descarta usuarios que ya no existen
+        .map((r) => {
+           const u = users.get(otherId(r));
+           if (!u || isUserBanned(u.penaltyDate)) return null; // Filtramos baneados
+           const { penaltyDate, ...userData } = u;
+           return { ...userData, requestedAt: r.createdAt };
+        })
+        .filter(Boolean);
 
     return res.status(200).json({
       received: build(rows.filter((r) => r.addresseeId === me)),
@@ -82,19 +101,17 @@ const getFriendRequests = async (req, res) => {
   }
 };
 
-// GET /friends/search?q=texto -> personas por nombre de usuario, con su relación conmigo
 const searchPeople = async (req, res) => {
   try {
     const me = getCurrentUserId(req);
+    const isAdmin = Number(req.user.idRole) === 2; // 👈 Verificamos si es admin
     const q = String(req.query.q || "").trim();
 
-    // Mínimo 2 caracteres: evita listar a todos los usuarios
     if (q.length < 2) return res.status(200).json([]);
 
-    // Los % y _ del texto buscado no deben actuar como comodines de LIKE
     const escaped = q.replace(/[\\%_]/g, "\\$&");
 
-    const users = await User.findAll({
+    const usersRaw = await User.findAll({
       where: {
         userId: { [Op.ne]: me },
         eliminated: 0,
@@ -105,6 +122,9 @@ const searchPeople = async (req, res) => {
       limit: 20,
       raw: true,
     });
+
+    // 👇 FILTRAR BANEADOS SOLO SI NO ES ADMIN 👇
+    const users = usersRaw.filter((u) => isAdmin || !isUserBanned(u.penaltyDate));
 
     if (users.length === 0) return res.status(200).json([]);
 
@@ -119,7 +139,6 @@ const searchPeople = async (req, res) => {
       raw: true,
     });
 
-    // none | friend | pending_sent (yo envié) | pending_received (me enviaron)
     const relationOf = new Map();
     relations.forEach((r) => {
       const other = r.requesterId === me ? r.addresseeId : r.requesterId;
@@ -130,10 +149,10 @@ const searchPeople = async (req, res) => {
     return res.status(200).json(
       users.map((u) => {
         const relation = relationOf.get(u.userId) || "none";
+        const { penaltyDate, ...userData } = u;
         return {
-          ...u,
+          ...userData,
           relation,
-          // El estado de conexión solo se ve entre amigos
           online: relation === "friend" ? isOnline(u.userId) : false,
         };
       })
@@ -144,7 +163,7 @@ const searchPeople = async (req, res) => {
   }
 };
 
-// POST /friends/request/:userId -> enviar solicitud de amistad
+// POST /friends/request/:userId
 const sendFriendRequest = async (req, res) => {
   try {
     const me = getCurrentUserId(req);
@@ -157,9 +176,13 @@ const sendFriendRequest = async (req, res) => {
 
     const target = await User.findOne({
       where: { userId: other, eliminated: 0 },
-      attributes: ["userId"],
+      attributes: ["userId", "penaltyDate"],
     });
+    
     if (!target) return res.status(404).json({ message: "Usuario no encontrado" });
+    if (isUserBanned(target.penaltyDate)) {
+       return res.status(403).json({ message: "No podés enviar una solicitud a un usuario suspendido" });
+    }
 
     const existing = await findRelation(me, other);
 
@@ -170,7 +193,6 @@ const sendFriendRequest = async (req, res) => {
       if (existing.requesterId === me) {
         return res.status(409).json({ message: "Ya enviaste una solicitud a este usuario" });
       }
-      // La otra persona ya me había enviado una solicitud: al agregarla, quedan como amigos
       existing.status = "accepted";
       await existing.save();
       await removeNotifications({ userId: me, actorId: other, type: "friend_request" });
@@ -192,7 +214,7 @@ const sendFriendRequest = async (req, res) => {
   }
 };
 
-// PATCH /friends/accept/:userId -> aceptar la solicitud que me envió :userId
+// PATCH /friends/accept/:userId
 const acceptFriendRequest = async (req, res) => {
   try {
     const me = getCurrentUserId(req);
@@ -218,12 +240,7 @@ const acceptFriendRequest = async (req, res) => {
   }
 };
 
-/**
- * DELETE /friends/:userId -> elimina la relación con :userId, sea cual sea:
- *   - amistad aceptada        => eliminar amigo
- *   - solicitud que envié     => cancelar solicitud
- *   - solicitud que recibí    => rechazar solicitud
- */
+// DELETE /friends/:userId
 const removeFriendship = async (req, res) => {
   try {
     const me = getCurrentUserId(req);
@@ -237,7 +254,6 @@ const removeFriendship = async (req, res) => {
     const { requesterId, addresseeId } = relation;
     await relation.destroy();
 
-    // Si era una solicitud (cancelada o rechazada), se quita la notificación del destinatario
     if (wasPending) {
       await removeNotifications({ userId: addresseeId, actorId: requesterId, type: "friend_request" });
     }
@@ -250,6 +266,43 @@ const removeFriendship = async (req, res) => {
   }
 };
 
+const getUserFriends = async (req, res) => {
+  try {
+    const targetId = Number(req.params.userId);
+    if (!Number.isInteger(targetId) || targetId <= 0) {
+      return res.status(400).json({ message: "Usuario inválido" });
+    }
+
+    // 👇 VERIFICAMOS SI EL QUE PREGUNTA ES ADMIN 👇
+    const isAdmin = Number(req.user.idRole) === 2;
+
+    const targetUser = await User.findByPk(targetId);
+    
+    // Si el dueño del perfil está baneado y el que mira NO es admin -> ocultar lista
+    if (targetUser && !isAdmin && isUserBanned(targetUser.penaltyDate)) {
+       return res.status(200).json([]);
+    }
+
+    const friendIds = await getFriendIds(targetId);
+    const users = await loadUsers(friendIds);
+
+    const friends = [...users.values()]
+      // Si el que mira NO es admin, ocultamos a los amigos que estén baneados. 
+      // Si ES admin, le mostramos todo.
+      .filter((u) => isAdmin || !isUserBanned(u.penaltyDate))
+      .sort((a, b) => a.username.localeCompare(b.username))
+      .map((u) => {
+        const { penaltyDate, ...userData } = u;
+        return userData;
+      });
+
+    return res.status(200).json(friends);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "Error al obtener los amigos del usuario" });
+  }
+};
+
 module.exports = {
   getFriends,
   getFriendRequests,
@@ -257,4 +310,5 @@ module.exports = {
   sendFriendRequest,
   acceptFriendRequest,
   removeFriendship,
+  getUserFriends,
 };

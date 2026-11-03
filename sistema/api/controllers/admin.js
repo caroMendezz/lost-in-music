@@ -1,6 +1,7 @@
 const { User } = require("../models/User");
 const Post = require("../models/Post");
 const { removeNotifications } = require("../services/notificationsService");
+const { getFriendIds } = require("../services/friendsService"); // 👈 NECESARIO PARA EL DESBANEO
 
 const HOUR = 60 * 60 * 1000;
 const DAY = 24 * HOUR;
@@ -18,7 +19,6 @@ const PERMANENT_DATE = "9999-12-31T23:59:59.999Z";
 
 /**
  * PATCH /admin/ban/:userId
- * body: { duration: '1h' | '6h' | '24h' | '7d' | '30d' | 'perm' }
  */
 const banUser = async (req, res) => {
   try {
@@ -41,17 +41,20 @@ const banUser = async (req, res) => {
     }
 
     if (Number(target.idRole) === 2) {
-      return res
-        .status(403)
-        .json({ message: "No se puede banear a un administrador" });
+      return res.status(403).json({ message: "No se puede banear a un administrador" });
     }
 
+    // Calcular la fecha de expiración del ban
     const penaltyDate =
       duration === "perm"
         ? PERMANENT_DATE
         : new Date(Date.now() + DURATIONS[duration]).toISOString();
 
+    // Aplicar el baneo y ocultar sus contadores (estilo Twitter)
     target.penaltyDate = penaltyDate;
+    target.followerAmount = 0;
+    target.followingAmount = 0;
+
     await target.save();
 
     return res.status(200).json({
@@ -81,7 +84,17 @@ const unbanUser = async (req, res) => {
       return res.status(404).json({ message: "Usuario no encontrado" });
     }
 
+    // Restaurar el estado normal
     target.penaltyDate = "nada";
+
+    // Recalcular los seguidores/siguiendo basándonos en las amistades reales
+    // (Al no haberse borrado la tabla Friendship, todo vuelve a la normalidad)
+    const friendIds = await getFriendIds(target.userId);
+    const amount = friendIds.length;
+
+    target.followerAmount = amount;
+    target.followingAmount = amount;
+
     await target.save();
 
     return res.status(200).json({
@@ -93,6 +106,8 @@ const unbanUser = async (req, res) => {
     return res.status(500).json({ message: "Error al desbanear usuario" });
   }
 };
+
+// ... acá abajo sigue tu función adminDeletePost ...
 
 /**
  * PATCH /admin/DeletePost/:id

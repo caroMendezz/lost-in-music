@@ -230,25 +230,38 @@ const updatePost = async (req, res) => {
     }
 }
 
-// Feed: solo posts "raíz" (las respuestas se ven dentro de cada post)
 const getPosts = async (req, res) => {
-    try {
-        const currentUserId = getCurrentUserId(req)
+  try {
+    const currentUserId = getCurrentUserId(req);
+    const friendIds = await getFriendIds(currentUserId);
+    const authorIds = [currentUserId, ...friendIds];
 
-        // El feed muestra tus publicaciones y las de tus amigos
-        const friendIds = await getFriendIds(currentUserId)
-        const authorIds = [currentUserId, ...friendIds]
+    // 👇 FILTRAMOS A LOS AUTORES BANEADOS 👇
+    const authors = await User.findAll({
+      where: { userId: authorIds, eliminated: 0 },
+      attributes: ["userId", "penaltyDate"],
+      raw: true
+    });
+    
+    const validAuthorIds = authors.filter(a => {
+      const banDate = new Date(a.penaltyDate);
+      const isBanned = a.penaltyDate && a.penaltyDate !== 'nada' && !isNaN(banDate.getTime()) && banDate.getTime() > Date.now();
+      return !isBanned;
+    }).map(a => a.userId);
 
-        // parentId: null también matchea los posts viejos que no tienen ese campo
-        const posts = await Post.find({ eliminated: false, parentId: null, userId: { $in: authorIds } })
-            .sort({ createdAt: -1 })
-            .lean()
+    // Usamos validAuthorIds en la consulta de Mongo
+    const posts = await Post.find({ 
+      eliminated: false, 
+      parentId: null, 
+      userId: { $in: validAuthorIds } 
+    })
+    .sort({ createdAt: -1 })
+    .lean()
 
-        return res.status(200).json(await decoratePosts(posts, currentUserId))
-    } catch (error) {
-        console.error(error)
-        return res.status(500).json({ message: "Error al obtener las publicaciones", error: error.message })
-    }
+    return res.status(200).json(await decoratePosts(posts, currentUserId))
+  } catch (error) {
+    // ...
+  }
 }
 
 // Un post puntual (es lo que abre el link compartido /post/:id)

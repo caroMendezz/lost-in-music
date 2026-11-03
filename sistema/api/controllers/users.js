@@ -7,11 +7,6 @@ const jwt = require("jsonwebtoken");
 const Login = async (req, res) => {
   const { username, password } = req.body;
 
-  console.log({
-    username: req.body.username,
-    hasPassword: Boolean(req.body.password),
-  });
-
   if (!username || !password) {
     return res.status(400).json({ message: "username o password faltante" });
   }
@@ -28,6 +23,26 @@ const Login = async (req, res) => {
     const compare = await bcrypt.compare(password, user.password);
     if (!compare)
       return res.status(400).json({ message: "Usuario o password incorrecta" });
+
+    // 👇 VALIDACIÓN DE BANEO 👇
+    if (user.penaltyDate && user.penaltyDate !== "nada") {
+      const banDate = new Date(user.penaltyDate);
+      
+      // Verificamos que sea una fecha válida y que sea mayor a la fecha actual
+      if (!isNaN(banDate.getTime()) && banDate.getTime() > Date.now()) {
+        
+        // Si es el año 9999 o más, es un ban permanente
+        const isPermanent = banDate.getFullYear() >= 9000;
+        const formattedDate = isPermanent 
+          ? "Permanente" 
+          : banDate.toLocaleString('es-AR', { day: 'numeric', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+
+        return res.status(403).json({ 
+          message: `Tu cuenta está suspendida hasta: ${formattedDate}. Contactá al soporte si creés que es un error.` 
+        });
+      }
+    }
+    // 👆 FIN VALIDACIÓN DE BANEO 👆
 
     const token = jwt.sign(
       { userId: user.userId, idRole: user.idRole },
