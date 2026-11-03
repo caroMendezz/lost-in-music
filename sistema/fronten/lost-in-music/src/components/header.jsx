@@ -4,11 +4,13 @@ import '../styles/Header.css';
 import { useLang } from './LangContext';
 import LangSelector from './Langselector';
 import NotificationsMenu from './NotificationsMenu';
+import { useMyProfilePhoto } from '../hooks/useMyProfilePhoto';
 
 function Header() {
   const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [userPhoto, setUserPhoto] = useState('');
+  // Foto de perfil del usuario logueado (se refresca al editarla en el perfil)
+  const userPhoto = useMyProfilePhoto();
 
   // Estados para la búsqueda
   const [searchQuery, setSearchQuery] = useState('');
@@ -18,21 +20,6 @@ function Header() {
 
   const menuRef = useRef(null);
   const searchRef = useRef(null);
-
-  // Cargar datos del usuario logueado
-  useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    if (storedUser) {
-      try {
-        const parsedUser = JSON.parse(storedUser);
-        if (parsedUser.profilePhoto) {
-          setUserPhoto(parsedUser.profilePhoto);
-        }
-      } catch (e) {
-        console.error("Error al parsear el usuario", e);
-      }
-    }
-  }, []);
 
   // Cerrar menús al hacer clic afuera
   useEffect(() => {

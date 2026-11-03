@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import '../styles/UserProfile.css';
 import '../styles/FriendsProfile.css'; // 👈 Nuevo CSS importado
 import Post from './post.jsx';
+import { notifyProfileUpdated } from '../hooks/useMyProfilePhoto';
 
 const API_URL = 'http://localhost:3000';
 
@@ -333,6 +334,8 @@ function UserProfile() {
       if (!data.user) throw new Error('El servidor no devolvió los datos actualizados.');
 
       setUser((previous) => ({ ...previous, ...data.user }));
+      // El header y "Crear publicación" muestran la foto nueva sin recargar.
+      notifyProfileUpdated(data.user);
       setEditSuccess('¡Perfil actualizado correctamente!');
       setEditOpen(false);
     } catch (err) {

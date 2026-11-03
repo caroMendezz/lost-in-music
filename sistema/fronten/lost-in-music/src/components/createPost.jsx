@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useLang } from './LangContext';
+import { useMyProfilePhoto } from '../hooks/useMyProfilePhoto';
 import '../styles/CreatePost.css';
 
 const MAX_POST_LENGTH = 2000;
@@ -16,6 +17,8 @@ function getTextareaSizeClass(text) {
 function CreatePost({ onPost, title, placeholder, publishLabel, autoFocus = false }) {
   const { t } = useLang();
   const cp = t.createPost;
+  // Foto de perfil del usuario logueado para el avatar del cuadro de publicación
+  const myPhoto = useMyProfilePhoto();
 
   const [content, setContent] = useState('');
   // [{ file, preview, type: 'image' | 'video' }]
@@ -109,7 +112,13 @@ function CreatePost({ onPost, title, placeholder, publishLabel, autoFocus = fals
       <div className="createpost-title">{title ?? cp.title}</div>
 
       <div className="createpost-user-row">
-        <div className="createpost-avatar">👤</div>
+        <div className="createpost-avatar">
+          {myPhoto ? (
+            <img src={myPhoto} alt="Tu foto de perfil" />
+          ) : (
+            '👤'
+          )}
+        </div>
 
         <div className="createpost-input-wrap">
           <textarea
