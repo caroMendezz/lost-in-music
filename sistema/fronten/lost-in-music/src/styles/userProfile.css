@@ -233,6 +233,16 @@
   background: linear-gradient(#7d9caf, #46667d);
 }
 
+/* Botón para reportar al usuario del perfil */
+.up-report-button {
+  background: linear-gradient(#c05a4d, #8f2f24);
+  border-color: #e0a49c;
+}
+
+.up-report-button:hover {
+  background: linear-gradient(#d06c5e, #a63a2d);
+}
+
 /* Estadísticas */
 
 .up-stats {

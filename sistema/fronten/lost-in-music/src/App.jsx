@@ -25,6 +25,7 @@ import MessagesPage from "./pages/messages/MessagesPage";
 // 👇 IMPORT NUEVO DEL PERFIL 👇
 import UserProfile from "./pages/userProfilePage";
 import AdminPage from "./pages/admin";
+import AdminReportsPage from "./pages/adminReports";
 import SessionGuard from "./components/SessionGuard";
 
 function Marketplace() {
@@ -218,6 +219,7 @@ export default function App() {
 
           {/* Resto de la red social */}
           <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/reports" element={<AdminReportsPage />} />
           <Route path="/amigos" element={<FriendsPage />} />
           <Route path="/messages" element={<MessagesPage />} />
           <Route path="/post/:id" element={<PostPage />} />

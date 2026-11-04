@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import { Link } from "react-router-dom";
 import "../styles/FondoAcceso.css";
 import MusicPlayerMini from "./MusicPlayerMini";
 
@@ -40,6 +41,11 @@ export default function FondoAcceso({ children }) {
       ))}
 
       {children}
+
+      {/* Acceso a la ayuda: en la pantalla de acceso es un enlace fijo abajo a la izquierda */}
+      <Link to="/ayuda" className="acceso-help-link">
+        <span aria-hidden="true">❓</span> Ayuda y contacto
+      </Link>
 
     </div>
   );

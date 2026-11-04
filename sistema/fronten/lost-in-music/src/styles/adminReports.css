@@ -1,0 +1,285 @@
+/* =====================================================
+   Panel de administración · Reportes
+   ===================================================== */
+
+.admin-success {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #e7f7ee;
+  border: 1px solid #b6e3ca;
+  color: #1f7a4d;
+  font-size: 14px;
+}
+
+.admin-btn--ok {
+  background: #1f7a4d;
+  color: #fff;
+}
+
+.rep-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.rep-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 4px;
+  border-radius: 12px;
+  background: #eef4f9;
+  border: 1px solid #d7e6f2;
+}
+
+.rep-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: none;
+  border-radius: 9px;
+  padding: 8px 12px;
+  background: transparent;
+  color: #2f5c79;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.rep-tab:hover {
+  background: #e3eef6;
+}
+
+.rep-tab--active {
+  background: #fff;
+  color: #1b2733;
+  box-shadow: 0 2px 8px rgba(31, 78, 110, 0.12);
+}
+
+.rep-tab-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #d7e6f2;
+  color: #2f5c79;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.rep-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rep-filters .admin-search {
+  min-width: 180px;
+  flex: 0 1 220px;
+}
+
+.rep-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.rep-item {
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid #e3eef6;
+  background: #f9fcfe;
+}
+
+.rep-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.rep-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.rep-type {
+  font-size: 12px;
+  font-weight: 800;
+  color: #2f5c79;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rep-status {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rep-status--pending {
+  background: #fff1d6;
+  color: #8a6100;
+}
+
+.rep-status--resolved {
+  background: #e7f7ee;
+  color: #1f7a4d;
+}
+
+.rep-status--dismissed {
+  background: #eef0f2;
+  color: #5b6b79;
+}
+
+.rep-date {
+  font-size: 12px;
+  color: #7b8b98;
+}
+
+.rep-number {
+  font-size: 12px;
+  font-weight: 700;
+  color: #9aa8b4;
+}
+
+.rep-people {
+  margin: 0 0 8px;
+  font-size: 14px;
+  color: #3f4d5b;
+  line-height: 1.5;
+}
+
+.rep-people strong {
+  color: #1b2733;
+}
+
+.rep-link {
+  color: #2f7fb5;
+  text-decoration: none;
+}
+
+.rep-link:hover {
+  text-decoration: underline;
+}
+
+.rep-reason {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-left: 4px solid #5aa9d8;
+  border-radius: 8px;
+  background: #fff;
+  color: #1b2733;
+  font-size: 14px;
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+.rep-post {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  padding: 10px;
+  border-radius: 11px;
+  border: 1px solid #e3eef6;
+  background: #fff;
+}
+
+.rep-post-image {
+  flex: 0 0 auto;
+  width: 96px;
+  height: 96px;
+  border-radius: 9px;
+  object-fit: cover;
+  background: #eef4f9;
+}
+
+.rep-post-body {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.rep-post-text {
+  margin: 0 0 6px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #3f4d5b;
+  word-break: break-word;
+}
+
+.rep-post-link {
+  font-size: 12px;
+  font-weight: 700;
+  color: #2f7fb5;
+  text-decoration: none;
+}
+
+.rep-post-link:hover {
+  text-decoration: underline;
+}
+
+.rep-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed #d7e6f2;
+}
+
+.rep-target-state {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.rep-reviewed {
+  font-size: 12px;
+  color: #7b8b98;
+}
+
+.rep-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@media (max-width: 620px) {
+  .rep-post {
+    flex-direction: column;
+  }
+
+  .rep-post-image {
+    width: 100%;
+    height: 160px;
+  }
+
+  .rep-footer {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rep-actions .admin-btn {
+    flex: 1 1 auto;
+  }
+}

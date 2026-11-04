@@ -18,6 +18,7 @@ import Acceso from './pages/registerlogin/registerlogin';
 import UserProfilePage from './pages/userProfilePage';
 import UserOtherProfilePage from './pages/UserOtherProfilePage';
 import UserOtherProfilePageAdmin from './pages/OtherUserProfilePageAdmin';
+import HelpPage from './pages/help';
 
 // --- INTERCEPTOR GLOBAL DE FETCH (Para expulsar baneados) ---
 const originalFetch = window.fetch;
@@ -60,6 +61,10 @@ function TitleManager() {
       document.title = 'Lost In Music - Perfil de usuario';
     } else if (path.startsWith('/admin/perfil/')) {
       document.title = 'Lost In Music - Admin · Perfil de usuario';
+    } else if (path === '/admin/reports') {
+      document.title = 'Lost In Music - Admin · Reportes';
+    } else if (path === '/ayuda') {
+      document.title = 'Lost In Music - Ayuda';
     }
     else {
       document.title = 'Lost In Music';
@@ -93,6 +98,10 @@ const router = createBrowserRouter([
       {
         path: '/admin/perfil/:userId',
         element: <UserOtherProfilePageAdmin />,
+      },
+      {
+        path: '/ayuda',
+        element: <HelpPage />,
       },
       {
         path: '/*',

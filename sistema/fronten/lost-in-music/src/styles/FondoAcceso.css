@@ -125,3 +125,53 @@
   animation-duration: 9.5s;
   animation-delay: 2.5s;
 }
+
+/* Enlace de ayuda de la pantalla de acceso: fijo en la esquina inferior izquierda */
+.acceso-help-link {
+  position: fixed;
+  bottom: 22px;
+  left: 22px;
+  z-index: 300;
+
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 8px 14px;
+
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  background: rgba(255, 255, 255, 0.62);
+  backdrop-filter: blur(10px);
+
+  color: #1d5b86;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.7);
+  box-shadow: 0 4px 14px rgba(25, 70, 105, 0.18);
+
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.acceso-help-link:hover {
+  background: rgba(255, 255, 255, 0.9);
+  transform: translateY(-1px);
+}
+
+.acceso-help-link:active {
+  transform: translateY(0);
+}
+
+.acceso-help-link:focus-visible {
+  outline: 3px solid rgba(90, 169, 216, 0.6);
+  outline-offset: 2px;
+}
+
+@media (max-width: 520px) {
+  .acceso-help-link {
+    bottom: 14px;
+    left: 14px;
+    padding: 7px 12px;
+    font-size: 12px;
+  }
+}

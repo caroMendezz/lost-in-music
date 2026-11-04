@@ -3,10 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../services/http';
 import '../styles/register.css';
 import MusicPlayerMini from './MusicPlayerMini';
-import ImageCropperModal from "./ImageCropperModal";
-
-// Mismo límite que se muestra en el formulario para la foto de perfil
-const MAX_PHOTO_MB = 5;
 
 const calcPasswordStrength = (pwd) => {
   if (!pwd) return 0;
@@ -74,7 +70,6 @@ export default function Register({ onLoginClick, goToLogin }) {
   const [showPassword,setShowPassword] = useState(false);
   const [showConfirm,setShowConfirm]= useState(false);
   const [touched,setTouched] = useState({});
-
   const [isPlaying,setIsPlaying] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -109,47 +104,18 @@ export default function Register({ onLoginClick, goToLogin }) {
 
   const handleBlur = (name) => setTouched((p) => ({ ...p, [name]: true }));
 
-  // Foto de perfil: se valida el archivo y se abre el modal de recorte
+  // Foto de perfil
   const handleFile = (e) => {
-    const file = e.target.files?.[0];
-    e.target.value = ""; // permite volver a elegir el mismo archivo
+    const file = e.target.files[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (ev) =>
       setFormData((p) => ({ ...p, fotoPerfil: file, fotoPreview: ev.target.result }));
     reader.readAsDataURL(file);
-
-    if (!file.type.startsWith("image/")) {
-      setPhotoError("El archivo debe ser una imagen (PNG, JPG, etc.).");
-      return;
-    }
-
-    if (file.size > MAX_PHOTO_MB * 1024 * 1024) {
-      setPhotoError(`La imagen no puede superar los ${MAX_PHOTO_MB} MB.`);
-      return;
-    }
-
-    setPhotoError(null);
-    setCropFile(file);
   };
 
-  // El modal devuelve la imagen ya recortada en formato cuadrado
-  const handleCropConfirm = (croppedPreview) => {
-    setFormData((p) => ({
-      ...p,
-      fotoPerfil: null,
-      fotoPreview: croppedPreview,
-    }));
-    setCropFile(null);
-  };
-
-  // Si cancela la edición no se guarda ni se asigna la imagen elegida
-  const handleCropCancel = () => setCropFile(null);
-
-  const removePhoto = () => {
-    setPhotoError(null);
+  const removePhoto = () =>
     setFormData((p) => ({ ...p, fotoPerfil: null, fotoPreview: null }));
-  };
 
   //Validaciones card 1
   const errors = {
@@ -495,12 +461,7 @@ export default function Register({ onLoginClick, goToLogin }) {
                         Quitar
                       </button>
                     )}
-                    <p className="photo-hint">
-                      PNG, JPG hasta {MAX_PHOTO_MB}MB
-                    </p>
-                    {photoError && (
-                      <p className="register-hint hint-error">{photoError}</p>
-                    )}
+                    <p className="photo-hint">PNG, JPG hasta 5MB</p>
                   </div>
                 </div>
 
@@ -608,20 +569,12 @@ export default function Register({ onLoginClick, goToLogin }) {
 
               </form>
             </div>
-          </div>
-          {/* /reg-slider */}
-        </div>
-        {/* /reg-slider-viewport */}
-      </div>
-      {/* /register-card */}
 
-      {cropFile && (
-        <ImageCropperModal
-          file={cropFile}
-          onConfirm={handleCropConfirm}
-          onCancel={handleCropCancel}
-        />
-      )}
+
+          </div>{/* /reg-slider */}
+        </div>{/* /reg-slider-viewport */}
+
+      </div>{/* /register-card */}
     </div>
   );
 }
