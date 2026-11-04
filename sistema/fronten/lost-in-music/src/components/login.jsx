@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { clearSession, fetchSession } from "../services/session";
+import { useLang } from "./LangContext";
+import LangSelector from "./LangSelector";
 import "../styles/login.css";
 
 function Login({ goToRegister, goToResetPassword }) {
   const navigate = useNavigate();
+  const { t } = useLang();
 
   const [emailUser, setEmailUser] = useState("");
   const [password, setPassword] = useState("");
@@ -58,7 +61,7 @@ function Login({ goToRegister, goToResetPassword }) {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        setSubmitError(data.message || "Credenciales inválidas");
+        setSubmitError(data.message || t.login.errorCredentials);
         return;
       }
 
@@ -66,7 +69,7 @@ function Login({ goToRegister, goToResetPassword }) {
       if (data.idRole) localStorage.setItem("idRole", data.idRole);
       navigate("/feed", { replace: true });
     } catch {
-      setSubmitError("No se pudo conectar con el servidor");
+      setSubmitError(t.login.errorConnection);
     } finally {
       setSubmitting(false);
     }
@@ -92,7 +95,12 @@ function Login({ goToRegister, goToResetPassword }) {
   };
 
   return (
-    <div className="login-card">
+    <div className="login-card" style={{ position: 'relative' }}>
+      {/* Selector de idioma en la esquina */}
+      <div style={{ position: 'absolute', top: 15, right: 15, zIndex: 10 }}>
+        <LangSelector />
+      </div>
+
       <div className="login-shine"></div>
 
       <div className="login-inner">
@@ -106,22 +114,20 @@ function Login({ goToRegister, goToResetPassword }) {
 
         <h1 className="login-logo-title">Lost In Music</h1>
 
-        <div className="login-welcome">Tu red social musical</div>
+        <div className="login-welcome">{t.login.welcome}</div>
 
-        <h2 className="login-section-title">Inicia Sesión</h2>
+        <h2 className="login-section-title">{t.login.title}</h2>
 
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="login-input-group">
-            <label className="">Correo electrónico o Usuario</label>
+            <label className="login-label">{t.login.emailLabel}</label>
 
             <div style={{ position: "relative" }}>
               <input
                 type="text"
-                className={`login-input ${
-                  touched.emailUser && errors.emailUser ? "input-error" : ""
-                }`}
+                className={`login-input ${touched.emailUser && errors.emailUser ? "input-error" : ""}`}
                 onBlur={() => handleBlur("emailUser")}
-                placeholder="tu@email.com"
+                placeholder={t.login.emailPlaceholder}
                 value={emailUser}
                 onChange={(e) => setEmailUser(e.target.value)}
               />
@@ -130,12 +136,7 @@ function Login({ goToRegister, goToResetPassword }) {
                 <span className="login-status-icon login-input-cross">
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="12" r="11" fill="#f06060" />
-                    <path
-                      d="M8 8l8 8M16 8l-8 8"
-                      stroke="#fff"
-                      strokeWidth="2.2"
-                      strokeLinecap="round"
-                    />
+                    <path d="M8 8l8 8M16 8l-8 8" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" />
                   </svg>
                 </span>
               )}
@@ -143,24 +144,24 @@ function Login({ goToRegister, goToResetPassword }) {
 
             {touched.emailUser && errors.emailUser && (
               <div className="login-error-text">
-                Ingresa tu correo o usuario
+                {t.login.emailError}
               </div>
             )}
 
             <div className="login-hint-text">
-              Usá tu email o nombre de usuario.
+              {t.login.emailHint}
             </div>
           </div>
 
           <div className="login-input-group">
-            <label className="login-label">Contraseña</label>
+            <label className="login-label">{t.login.passwordLabel}</label>
 
             <div className="login-password-wrapper">
               <input
                 type={showPassword ? "text" : "password"}
                 className={`login-input login-password-input ${touched.password && errors.password ? "input-error" : ""}`}
                 onBlur={() => handleBlur("password")}
-                placeholder="Escribe tu contraseña"
+                placeholder={t.login.passwordPlaceholder}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -169,12 +170,7 @@ function Login({ goToRegister, goToResetPassword }) {
                 <span className="login-status-icon login-input-cross password-error-icon">
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
                     <circle cx="12" cy="12" r="11" fill="#f06060" />
-                    <path
-                      d="M8 8l8 8M16 8l-8 8"
-                      stroke="#fff"
-                      strokeWidth="2.2"
-                      strokeLinecap="round"
-                    />
+                    <path d="M8 8l8 8M16 8l-8 8" stroke="#fff" strokeWidth="2.2" strokeLinecap="round" />
                   </svg>
                 </span>
               )}
@@ -183,49 +179,18 @@ function Login({ goToRegister, goToResetPassword }) {
                   type="button"
                   className="login-password-toggle"
                   onClick={() => setShowPassword((prev) => !prev)}
-                  title={
-                    showPassword ? "Ocultar contraseña" : "Mostrar contraseña"
-                  }
+                  title={showPassword ? t.login.hidePassword : t.login.showPassword}
                 >
                   {showPassword ? (
                     <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
-                        stroke="#7ab8d8"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                      />
-                      <circle
-                        cx="12"
-                        cy="12"
-                        r="3"
-                        stroke="#7ab8d8"
-                        strokeWidth="2"
-                      />
+                      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round" />
+                      <circle cx="12" cy="12" r="3" stroke="#7ab8d8" strokeWidth="2" />
                     </svg>
                   ) : (
                     <svg width="19" height="19" viewBox="0 0 24 24" fill="none">
-                      <path
-                        d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"
-                        stroke="#7ab8d8"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                      />
-                      <path
-                        d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"
-                        stroke="#7ab8d8"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                      />
-                      <line
-                        x1="1"
-                        y1="1"
-                        x2="23"
-                        y2="23"
-                        stroke="#7ab8d8"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                      />
+                      <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round" />
+                      <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round" />
+                      <line x1="1" y1="1" x2="23" y2="23" stroke="#7ab8d8" strokeWidth="2" strokeLinecap="round" />
                     </svg>
                   )}
                 </button>
@@ -234,37 +199,33 @@ function Login({ goToRegister, goToResetPassword }) {
 
             {touched.password && errors.password && (
               <div className="login-error-text-pass">
-                Ingresa tu contraseña
+                {t.login.passwordError}
               </div>
             )}
           </div>
-          <div className="login-hint-text">Escribe tu contraseña</div>
+          <div className="login-hint-text">{t.login.passwordHint}</div>
 
           <div className="login-forgot-link">
             <a href="#" onClick={handleForgotPassword} className="login-link">
-              ¿Olvidaste tu contraseña?
+              {t.login.forgotPassword}
             </a>
           </div>
 
           <button type="submit" className="login-button" disabled={submitting}>
-            {submitting ? "Ingresando…" : "Iniciar Sesión"}
+            {submitting ? t.login.submitting : t.login.submit}
           </button>
 
           {submitError && (
-            <div
-              className="login-error-text"
-              style={{ textAlign: "center", marginTop: 10 }}
-            >
+            <div className="login-error-text" style={{ textAlign: "center", marginTop: 10 }}>
               {submitError}
             </div>
           )}
         </form>
 
         <div className="login-register-link">
-          <span>¿No tenes cuenta? </span>
-
+          <span>{t.login.noAccount}</span>
           <a href="#" onClick={handleRegister} className="login-link">
-            Registrate
+            {t.login.registerLink}
           </a>
         </div>
       </div>

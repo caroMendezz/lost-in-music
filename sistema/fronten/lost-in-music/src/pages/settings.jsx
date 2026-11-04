@@ -1,7 +1,7 @@
-// File: src/pages/Configuracion.jsx
 import React, { useState } from "react";
 import Header from "../components/header";
 import Footer from "../components/footer";
+import { useLang } from "../components/LangContext"; // Ajustá la ruta si es necesario
 
 import ChangeEmail from "../components/settings/changeEmail";
 import ChangePassword from "../components/settings/changePassword";
@@ -10,6 +10,7 @@ import DeleteAccount from "../components/settings/deleteAccount";
 import "../styles/settings.css";
 
 function Configuracion() {
+  const { t } = useLang();
   const [user] = useState(null);
 
   return (
@@ -20,9 +21,9 @@ function Configuracion() {
         <div className="config-main-card">
           <div className="config-header">
             <div className="config-title">
-              <h1>Configuración</h1>
+              <h1>{t.settings.title}</h1>
               <p className="subtitle">
-                Ajusta tu cuenta y la seguridad de tu perfil.
+                {t.settings.subtitle}
               </p>
             </div>
           </div>
@@ -37,10 +38,9 @@ function Configuracion() {
             <aside className="right-col" aria-label="Panel secundario">
               <div className="sticky-aside">
                 <div className="card help-card">
-                  <h4>Ayuda rápida</h4>
+                  <h4>{t.settings.helpTitle}</h4>
                   <p className="muted small">
-                    Desde esta sección podrás modificar la información de tu
-                    cuenta cuando estas funciones estén disponibles.
+                    {t.settings.helpText}
                   </p>
                 </div>
               </div>

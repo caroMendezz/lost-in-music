@@ -1,7 +1,8 @@
-
 import React, { useState } from 'react';
+import { useLang } from '../LangContext';
 
 function ChangePassword() {
+  const { t } = useLang();
   const [currentPwd, setCurrentPwd] = useState('');
   const [newPwd, setNewPwd] = useState('');
   const [confirmPwd, setConfirmPwd] = useState('');
@@ -20,17 +21,17 @@ function ChangePassword() {
     setError('');
 
     if (newPwd !== confirmPwd) {
-      setError('Las nuevas contraseñas no coinciden.');
+      setError(t.settings.changePassword.errorMismatch);
       return;
     }
 
     if (newPwd.length < 8) {
-      setError('La nueva contraseña debe tener al menos 8 caracteres.');
+      setError(t.settings.changePassword.errorLength);
       return;
     }
 
     if (!token) {
-      setError('Tu sesión expiró. Iniciá sesión nuevamente.');
+      setError(t.settings.changePassword.errorSession);
       return;
     }
 
@@ -56,13 +57,13 @@ function ChangePassword() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'No se pudo enviar el código.');
+        throw new Error(data.message || t.settings.changePassword.errorGeneric);
       }
 
       setStep('code');
-      setMessage(data.message || 'Revisá tu correo para obtener el código.');
+      setMessage(data.message || t.settings.changePassword.msgCodeSent);
     } catch (err) {
-      setError(err.message || 'No se pudo conectar con el servidor.');
+      setError(err.message || t.settings.changePassword.errorGeneric);
     } finally {
       setLoading(false);
     }
@@ -74,12 +75,12 @@ function ChangePassword() {
     setError('');
 
     if (!/^\d{6}$/.test(code.trim())) {
-      setError('Ingresá el código de seis dígitos.');
+      setError(t.settings.changePassword.errorCode);
       return;
     }
 
     if (!token) {
-      setError('Tu sesión expiró. Iniciá sesión nuevamente.');
+      setError(t.settings.changePassword.errorSession);
       return;
     }
 
@@ -101,17 +102,17 @@ function ChangePassword() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'No se pudo verificar el código.');
+        throw new Error(data.message || t.settings.changePassword.errorGeneric);
       }
 
-      setMessage(data.message || '¡Contraseña cambiada correctamente!');
+      setMessage(data.message || t.settings.changePassword.msgSuccess);
       setCurrentPwd('');
       setNewPwd('');
       setConfirmPwd('');
       setCode('');
       setStep('success');
     } catch (err) {
-      setError(err.message || 'No se pudo conectar con el servidor.');
+      setError(err.message || t.settings.changePassword.errorGeneric);
     } finally {
       setLoading(false);
     }
@@ -119,12 +120,12 @@ function ChangePassword() {
 
   return (
     <section className="config-section">
-      <h3>Cambiar contraseña</h3>
+      <h3>{t.settings.changePassword.title}</h3>
 
       {step === 'form' && (
         <form className="config-form" onSubmit={handleRequestCode}>
           <label>
-            Contraseña actual
+            {t.settings.changePassword.currentPass}
             <input
               type="password"
               value={currentPwd}
@@ -135,7 +136,7 @@ function ChangePassword() {
           </label>
 
           <label>
-            Nueva contraseña
+            {t.settings.changePassword.newPass}
             <input
               type="password"
               value={newPwd}
@@ -147,7 +148,7 @@ function ChangePassword() {
           </label>
 
           <label>
-            Confirmar nueva contraseña
+            {t.settings.changePassword.confirmPass}
             <input
               type="password"
               value={confirmPwd}
@@ -163,7 +164,7 @@ function ChangePassword() {
 
           <div className="form-actions">
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Enviando código...' : 'Enviar código de verificación'}
+              {loading ? t.settings.changePassword.sendingCode : t.settings.changePassword.btnSendCode}
             </button>
           </div>
         </form>
@@ -172,10 +173,10 @@ function ChangePassword() {
       {step === 'code' && (
         <form className="config-form" onSubmit={handleConfirmCode}>
           <p>{message}</p>
-          <p>Ingresá el código de seis dígitos que enviamos a tu correo registrado. Vence en 5 minutos.</p>
+          <p>{t.settings.changePassword.codeInstruction}</p>
 
           <label>
-            Código de verificación
+            {t.settings.changePassword.codeLabel}
             <input
               type="text"
               inputMode="numeric"
@@ -184,7 +185,7 @@ function ChangePassword() {
               pattern="[0-9]{6}"
               value={code}
               onChange={(e) => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-              placeholder="123456"
+              placeholder={t.settings.changePassword.placeholderCode}
               required
             />
           </label>
@@ -193,7 +194,7 @@ function ChangePassword() {
 
           <div className="form-actions">
             <button type="submit" className="btn-primary" disabled={loading}>
-              {loading ? 'Verificando...' : 'Verificar y cambiar contraseña'}
+              {loading ? t.settings.changePassword.verifying : t.settings.changePassword.btnVerify}
             </button>
 
             <button
@@ -207,7 +208,7 @@ function ChangePassword() {
                 setError('');
               }}
             >
-              Volver
+              {t.settings.changePassword.btnBack}
             </button>
           </div>
         </form>
@@ -225,7 +226,7 @@ function ChangePassword() {
               setError('');
             }}
           >
-            Listo
+            {t.settings.changePassword.btnDone}
           </button>
         </div>
       )}

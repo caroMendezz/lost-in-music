@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { useLang } from './LangContext';
+import LangSelector from './LangSelector';
 import '../styles/login.css';
 
-// Cambiá esto si tu backend corre en otra URL (o definí VITE_API_URL en el .env)
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 async function post(path, body) {
@@ -10,18 +11,14 @@ async function post(path, body) {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
-
   const data = await res.json().catch(() => ({}));
-
-  if (!res.ok) {
-    throw new Error(data.message || 'Algo salió mal. Probá de nuevo.');
-  }
-
+  if (!res.ok) throw new Error(data.message || 'ERROR');
   return data;
 }
 
 function PasswordRecovery({ goToLogin }) {
-  const [step, setStep] = useState('contact'); // 'contact' | 'code' | 'done'
+  const { t } = useLang();
+  const [step, setStep] = useState('contact');
   const [contact, setContact] = useState('');
   const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
@@ -33,23 +30,18 @@ function PasswordRecovery({ goToLogin }) {
 
   const enviarCodigo = async (e) => {
     if (e) e.preventDefault();
-
     if (!contact.trim()) {
-      setError('Ingresá un correo o teléfono.');
+      setError(t.reset.errorContact);
       return;
     }
-
-    setLoading(true);
-    setError('');
-    setInfo('');
+    setLoading(true); setError(''); setInfo('');
 
     try {
       const data = await post('/password/forgot', { contact: contact.trim() });
-
       setInfo(
         data.sentTo
-          ? `Te enviamos un código a ${data.sentTo}. Vence en ${data.expiresInMinutes || 10} minutos.`
-          : data.message || 'Si los datos coinciden con una cuenta, te enviamos un código.'
+          ? `${t.reset.btnSend} ${data.sentTo}. ${data.expiresInMinutes || 10} min.`
+          : data.message || 'OK'
       );
       setStep('code');
     } catch (err) {
@@ -61,34 +53,15 @@ function PasswordRecovery({ goToLogin }) {
 
   const cambiarPassword = async (e) => {
     e.preventDefault();
+    if (!code.trim()) { setError(t.reset.errorCode); return; }
+    if (password.length < 6) { setError(t.reset.errorPassLength); return; }
+    if (password !== repeat) { setError(t.reset.errorPassMatch); return; }
 
-    if (!code.trim()) {
-      setError('Ingresá el código que llegó a tu correo.');
-      return;
-    }
-
-    if (password.length < 6) {
-      setError('La contraseña debe tener al menos 6 caracteres.');
-      return;
-    }
-
-    if (password !== repeat) {
-      setError('Las contraseñas no coinciden.');
-      return;
-    }
-
-    setLoading(true);
-    setError('');
+    setLoading(true); setError('');
 
     try {
-      await post('/password/reset', {
-        contact: contact.trim(),
-        code: code.trim(),
-        password,
-      });
-
-      setInfo('');
-      setStep('done');
+      await post('/password/reset', { contact: contact.trim(), code: code.trim(), password });
+      setInfo(''); setStep('done');
     } catch (err) {
       setError(err.message);
     } finally {
@@ -98,194 +71,99 @@ function PasswordRecovery({ goToLogin }) {
 
   return (
     <>
-      <div className="login-card">
+      <div className="login-card" style={{ position: 'relative' }}>
+        {/* Selector de idioma en la esquina */}
+        <div style={{ position: 'absolute', top: 15, right: 15, zIndex: 10 }}>
+          <LangSelector />
+        </div>
+
         <div className="login-shine"></div>
 
         <div className="login-inner">
-
           <div className="login-logo">
-            <img
-              src="/logoo.png"
-              alt="Logo Lost In Music"
-              className="login-logo-img"
-            />
+            <img src="/logoo.png" alt="Logo Lost In Music" className="login-logo-img" />
           </div>
 
-          <h1 className="login-logo-title">
-            Lost In Music
-          </h1>
+          <h1 className="login-logo-title">Lost In Music</h1>
+          <div className="login-welcome">{t.login.welcome}</div>
+          <h2 className="login-section-title">{t.reset.title}</h2>
 
-          <div className="login-welcome">
-            Tu red social musical
-          </div>
-
-          <h2 className="login-section-title">
-            Recuperar contraseña
-          </h2>
-
-          {error && (
-            <div className="login-hint-text" style={{ color: '#ff6b6b' }}>
-              {error}
-            </div>
-          )}
-
-          {info && (
-            <div className="login-hint-text">
-              {info}
-            </div>
-          )}
+          {error && <div className="login-hint-text" style={{ color: '#ff6b6b' }}>{error}</div>}
+          {info && <div className="login-hint-text">{info}</div>}
 
           {step === 'contact' && (
             <form className="login-form" onSubmit={enviarCodigo}>
-
               <div className="login-input-group">
-                <label className="login-label">
-                  Correo electrónico
-                </label>
-
+                <label className="login-label">{t.reset.contactTitle}</label>
                 <input
-                  type="text"
-                  className="login-input"
-                  placeholder="tu@email.com"
-                  value={contact}
-                  onChange={(e) => setContact(e.target.value)}
-                  autoComplete="username"
+                  type="text" className="login-input" placeholder={t.reset.contactPlaceholder}
+                  value={contact} onChange={(e) => setContact(e.target.value)}
                 />
-
-                <div className="login-hint-text">
-                  Te enviaremos un código para recuperar tu cuenta.
-                </div>
+                <div className="login-hint-text">{t.reset.contactHint}</div>
               </div>
-
-              <button
-                type="submit"
-                className="login-button"
-                disabled={loading}
-              >
-                {loading ? 'Enviando...' : 'Enviar código'}
+              <button type="submit" className="login-button" disabled={loading}>
+                {loading ? t.reset.sending : t.reset.btnSend}
               </button>
-
             </form>
           )}
 
           {step === 'code' && (
             <form className="login-form" onSubmit={cambiarPassword}>
-
               <div className="login-input-group">
-                <label className="login-label">
-                  Código de verificación
-                </label>
-
+                <label className="login-label">{t.reset.codeTitle}</label>
                 <input
-                  type="text"
-                  inputMode="numeric"
-                  maxLength={6}
-                  className="login-input"
-                  placeholder="123456"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  autoComplete="one-time-code"
+                  type="text" inputMode="numeric" maxLength={6} className="login-input"
+                  placeholder={t.reset.codePlaceholder} value={code} onChange={(e) => setCode(e.target.value)}
                 />
               </div>
 
               <div className="login-input-group">
-                <label className="login-label">
-                  Nueva contraseña
-                </label>
-
+                <label className="login-label">{t.reset.newPassTitle}</label>
                 <input
-                  type="password"
-                  className="login-input"
-                  placeholder="Mínimo 6 caracteres"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  autoComplete="new-password"
+                  type="password" className="login-input" placeholder={t.reset.newPassPlaceholder}
+                  value={password} onChange={(e) => setPassword(e.target.value)}
                 />
               </div>
 
               <div className="login-input-group">
-                <label className="login-label">
-                  Repetí la nueva contraseña
-                </label>
-
+                <label className="login-label">{t.reset.repeatTitle}</label>
                 <input
-                  type="password"
-                  className="login-input"
-                  placeholder="Repetí la contraseña"
-                  value={repeat}
-                  onChange={(e) => setRepeat(e.target.value)}
-                  autoComplete="new-password"
+                  type="password" className="login-input" placeholder={t.reset.repeatPlaceholder}
+                  value={repeat} onChange={(e) => setRepeat(e.target.value)}
                 />
               </div>
 
-              <button
-                type="submit"
-                className="login-button"
-                disabled={loading}
-              >
-                {loading ? 'Guardando...' : 'Cambiar contraseña'}
+              <button type="submit" className="login-button" disabled={loading}>
+                {loading ? t.reset.saving : t.reset.btnChange}
               </button>
 
               <div className="login-register-link">
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (!loading) enviarCodigo();
-                  }}
-                  className="login-link"
-                >
-                  Reenviar código
+                <a href="#" onClick={(e) => { e.preventDefault(); if (!loading) enviarCodigo(); }} className="login-link">
+                  {t.reset.resend}
                 </a>
                 <span> · </span>
-                <a
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    setStep('contact');
-                    setError('');
-                    setInfo('');
-                  }}
-                  className="login-link"
-                >
-                  Cambiar correo o teléfono
+                <a href="#" onClick={(e) => { e.preventDefault(); setStep('contact'); setError(''); setInfo(''); }} className="login-link">
+                  {t.reset.changeContact}
                 </a>
               </div>
-
             </form>
           )}
 
           {step === 'done' && (
             <div className="login-form">
-              <div className="login-hint-text">
-                Tu contraseña se actualizó. Ya podés iniciar sesión.
-              </div>
-
-              <button
-                type="button"
-                className="login-button"
-                onClick={() => goToLogin?.()}
-              >
-                Iniciar sesión
+              <div className="login-hint-text">{t.reset.success}</div>
+              <button type="button" className="login-button" onClick={() => goToLogin?.()}>
+                {t.reset.btnLogin}
               </button>
             </div>
           )}
 
           <div className="login-register-link">
-            <span>¿Recordaste tu contraseña? </span>
-
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                goToLogin?.();
-              }}
-              className="login-link"
-            >
-              Iniciar sesión
+            <span>{t.reset.remember}</span>
+            <a href="#" onClick={(e) => { e.preventDefault(); goToLogin?.(); }} className="login-link">
+              {t.reset.btnLogin}
             </a>
           </div>
-
         </div>
       </div>
     </>

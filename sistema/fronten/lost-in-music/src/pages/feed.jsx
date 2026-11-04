@@ -3,15 +3,15 @@ import CreatePost from '../components/createPost';
 import Post from '../components/post';
 import { fetchPosts, createPostRequest } from '../services/postsApi';
 import { usePostActions } from '../hooks/usePostActions';
+import { useLang } from '../components/LangContext'; // 👈 Importamos idioma
 
 const idOf = (post) => post._id || post.id;
 
 function Feed({ posts: externalPosts = [], now: externalNow }) {
-  // Estado local con los posts cargados desde el backend y los nuevos creados
+  const { t } = useLang(); // 👈 Hook de idioma
   const [posts, setPosts] = useState(externalPosts);
   const [now, setNow] = useState(externalNow ?? Date.now());
 
-  // Like, editar y eliminar (con actualización local del feed)
   const { handleLike, handleEdit, handleDelete } = usePostActions({
     onPatch: (id, patch) =>
       setPosts((prev) =>
@@ -22,7 +22,6 @@ function Feed({ posts: externalPosts = [], now: externalNow }) {
     onRemove: (id) => setPosts((prev) => prev.filter((p) => idOf(p) !== id)),
   });
 
-  // Carga los posts existentes (con autor, foto y si les diste like)
   useEffect(() => {
     fetchPosts()
       .then(setPosts)
@@ -43,7 +42,7 @@ function Feed({ posts: externalPosts = [], now: externalNow }) {
       const newPost = await createPostRequest({ content, image, videos });
       setPosts((prev) => [newPost, ...prev]);
     } catch (error) {
-      alert(error.message || 'Error al crear la publicación');
+      alert(error.message || t.feed.errorCreate); // 👈 Traducido
     }
   };
 

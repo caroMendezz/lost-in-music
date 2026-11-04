@@ -16,11 +16,10 @@ function Header() {
   const navigate = useNavigate();
   const session = useSession();
   const isAdmin = Number(session?.user?.idRole) === 2;
+  const { t } = useLang(); // 👈 Hook de idioma
   const [menuOpen, setMenuOpen] = useState(false);
-  // Foto de perfil del usuario logueado (se refresca al editarla en el perfil)
   const userPhoto = useMyProfilePhoto();
 
-  // Estados para la búsqueda
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -58,7 +57,6 @@ function Header() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  // Lógica de búsqueda con Debounce
   useEffect(() => {
     if (searchQuery.trim().length < 2) {
       setSearchResults([]);
@@ -70,12 +68,8 @@ function Header() {
       setIsSearching(true);
       try {
         const token = localStorage.getItem('token');
-
-        // Llamada a tu backend
         const res = await fetch(`http://localhost:3000/users/search?q=${encodeURIComponent(searchQuery)}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
+          headers: { 'Authorization': `Bearer ${token}` }
         });
 
         if (res.ok) {
@@ -93,15 +87,10 @@ function Header() {
     return () => clearTimeout(timeoutId);
   }, [searchQuery]);
 
-  // Al hacer clic en un usuario, vamos a su perfil (Admin o Normal)
   const handleUserClick = (userId) => {
     setShowResults(false);
     setSearchQuery('');
-
-    // Leemos el rol del localStorage
     const currentIdRole = localStorage.getItem('idRole');
-
-    // Si es Admin (2), va a la ruta de admin. Si no, a la normal.
     if (String(currentIdRole) === '2') {
       navigate(`/admin/perfil/${userId}`);
     } else {
@@ -128,13 +117,11 @@ function Header() {
 
   return (
     <header className="header-container">
-
-      {/* --- BARRA DE BÚSQUEDA --- */}
       <div className="header-searchbar" ref={searchRef} style={{ position: 'relative' }}>
         <span>🔍</span>
         <input
           type="text"
-          placeholder="Buscar usuarios..."
+          placeholder={t.header.searchPlaceholder} // 👈 Traducido
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           onFocus={() => { if (searchResults.length > 0) setShowResults(true) }}
@@ -144,7 +131,6 @@ function Header() {
           }}
         />
 
-        {/* DROPDOWN DE RESULTADOS */}
         {showResults && (
           <div style={{
             position: 'absolute', top: '120%', left: 0, right: 0,
@@ -152,7 +138,7 @@ function Header() {
             maxHeight: '300px', overflowY: 'auto', zIndex: 1000, color: 'black'
           }}>
             {isSearching ? (
-              <div style={{ padding: '12px', color: '#888' }}>Buscando...</div>
+              <div style={{ padding: '12px', color: '#888' }}>{t.header.searching}</div> // 👈 Traducido
             ) : searchResults.length > 0 ? (
               searchResults.map(user => (
                 <div
@@ -176,71 +162,42 @@ function Header() {
                 </div>
               ))
             ) : (
-              <div style={{ padding: '12px', color: '#888', textAlign: 'center' }}>No se encontraron usuarios</div>
+              <div style={{ padding: '12px', color: '#888', textAlign: 'center' }}>{t.header.noUsers}</div> // 👈 Traducido
             )}
           </div>
         )}
       </div>
 
-      {/* --- RESTO DEL HEADER (ICONOS Y PERFIL) --- */}
       <div className="header-icons">
-
-        {/* 1. Selector de idioma */}
         <LangSelector />
 
-        {/* 2. Inicio */}
         <button
           className="header-icon-btn"
-          title="Inicio"
+          title={t.header.home} // 👈 Traducido
           onClick={() => navigate('/feed')}
         >
           🏠
         </button>
 
-        {/* 3. Notificaciones */}
         <NotificationsMenu />
 
-        {/* 4. Perfil */}
         <div className="header-profile-wrapper" ref={menuRef} style={{ position: 'relative' }}>
           <button
             className="header-icon-btn profile-avatar-btn"
-            title="Perfil"
+            title={t.header.profile} // 👈 Traducido
             onClick={() => setMenuOpen(!menuOpen)}
-            style={{
-              overflow: 'hidden',
-              padding: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center'
-            }}
+            style={{ overflow: 'hidden', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
           >
             {userPhoto ? (
-              <img
-                src={userPhoto}
-                alt="Perfil"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  borderRadius: '50%'
-                }}
-              />
-            ) : (
-              '👤'
-            )}
+              <img src={userPhoto} alt="Perfil" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} />
+            ) : ('👤')}
           </button>
 
           {menuOpen && (
             <div className="profile-dropdown-card" style={{
-              position: 'absolute',
-              right: 0,
-              top: '110%',
-              background: 'white',
-              boxShadow: '0px 4px 12px rgba(0,0,0,0.15)',
-              borderRadius: '8px',
-              padding: '8px',
-              zIndex: 1000,
-              minWidth: '140px'
+              position: 'absolute', right: 0, top: '110%', background: 'white',
+              boxShadow: '0px 4px 12px rgba(0,0,0,0.15)', borderRadius: '8px',
+              padding: '8px', zIndex: 1000, minWidth: '140px'
             }}>
               {isAdmin && (
                 <button
@@ -278,48 +235,35 @@ function Header() {
               <button
                 onClick={handleViewOwnProfile}
                 style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  border: 'none',
-                  background: 'transparent',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  color: '#333',
-                  fontWeight: 'bold',
-                  borderRadius: '4px'
+                  width: '100%', padding: '8px 12px', border: 'none',
+                  background: 'transparent', textAlign: 'left', cursor: 'pointer',
+                  color: '#333', fontWeight: 'bold', borderRadius: '4px'
                 }}
                 onMouseEnter={(e) => e.target.style.background = '#f5f5f5'}
                 onMouseLeave={(e) => e.target.style.background = 'transparent'}
               >
-                Ver perfil
+                {t.header.viewProfile} {/* 👈 Traducido */}
               </button>
 
               <button
                 onClick={handleLogout}
                 style={{
-                  width: '100%',
-                  padding: '8px 12px',
-                  border: 'none',
-                  background: 'transparent',
-                  textAlign: 'left',
-                  cursor: 'pointer',
-                  color: '#d9534f',
-                  fontWeight: 'bold',
-                  borderRadius: '4px'
+                  width: '100%', padding: '8px 12px', border: 'none',
+                  background: 'transparent', textAlign: 'left', cursor: 'pointer',
+                  color: '#d9534f', fontWeight: 'bold', borderRadius: '4px'
                 }}
                 onMouseEnter={(e) => e.target.style.background = '#f5f5f5'}
                 onMouseLeave={(e) => e.target.style.background = 'transparent'}
               >
-                Cerrar sesión
+                {t.header.logout} {/* 👈 Traducido */}
               </button>
             </div>
           )}
         </div>
 
-        {/* 5. Configuración */}
         <button
           className="header-icon-btn"
-          title="Configuración"
+          title={t.header.settings} // 👈 Traducido
           onClick={() => navigate('/settings')}
         >
           ⚙️
