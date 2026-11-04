@@ -2,7 +2,79 @@ const { User, DEFAULT_PROFILE_PHOTO } = require("../models/User");
 const { Op } = require("sequelize");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 const { buildBanPayload, clearExpiredBan } = require("../services/banService");
+
+// ───────────────────────── DVH (Dígito Verificador Horizontal) ─────────────────────────
+// Hash SHA-256 (64 caracteres hex) calculado a partir de los campos "estables" de
+// UNA fila de User. Si alguien modifica la base a mano, el hash guardado deja de coincidir.
+//
+// Se excluyen a propósito los campos que cambian desde otros módulos
+// (followerAmount, followingAmount, penaltyDate) para no invalidar el DVH cada vez
+// que alguien sigue a un usuario o se aplica/vence una sanción.
+// Si querés incluirlos, agregalos acá y llamá a recalcularDVH() donde se modifiquen.
+const DVH_FIELDS = [
+  "userId",
+  "email",
+  "username",
+  "password",
+  "gender",
+  "birthDate",
+  "idRole",
+  "eliminated",
+  "description",
+  "profilePhoto",
+  "banner",
+  "ubication",
+];
+
+const normalizarCampoDVH = (field, value) => {
+  if (value === null || value === undefined) return "";
+
+  // Las fechas se normalizan a YYYY-MM-DD para que el hash sea igual
+  // sin importar si llegan como string o como Date.
+  if (field === "birthDate") {
+    const d = new Date(value);
+    return isNaN(d.getTime()) ? String(value) : d.toISOString().slice(0, 10);
+  }
+
+  return String(value);
+};
+
+// Recibe un objeto plano (o una instancia de Sequelize) y devuelve el DVH.
+const calcularDVH = (data) => {
+  const plain = typeof data.get === "function" ? data.get({ plain: true }) : data;
+  const cadena = DVH_FIELDS.map((f) => normalizarCampoDVH(f, plain[f])).join("|");
+  return crypto.createHash("sha256").update(cadena, "utf8").digest("hex");
+};
+
+// Compara el DVH guardado contra el recalculado.
+const verificarDVH = (user) => {
+  const guardado = String(user.DVH || "");
+  const calculado = calcularDVH(user);
+  const a = Buffer.from(guardado);
+  const b = Buffer.from(calculado);
+  return a.length === b.length && crypto.timingSafeEqual(a, b);
+};
+
+// Recalcula y guarda el DVH de un usuario ya persistido.
+const recalcularDVH = async (user) => {
+  await user.update({ DVH: calcularDVH(user) });
+};
+
+// Utilidad de migración: recalcula el DVH de TODOS los usuarios (por ejemplo,
+// los que tienen el valor de relleno "1234567890..."). Ejecutarla una sola vez.
+const recalcularTodosLosDVH = async () => {
+  const users = await User.findAll();
+  for (const u of users) {
+    await recalcularDVH(u);
+  }
+  return users.length;
+};
+
+// Si es true, un DVH inválido bloquea el login. Dejalo en false hasta correr
+// recalcularTodosLosDVH(), si no los usuarios viejos no van a poder entrar.
+const ENFORCE_DVH = process.env.ENFORCE_DVH === "true";
 
 
 const Login = async (req, res) => {
@@ -52,6 +124,16 @@ const Login = async (req, res) => {
 
     // Sanción vencida: se limpia y el usuario puede volver a ingresar normalmente.
     await clearExpiredBan(user);
+
+    // Verificación de integridad de la fila (DVH).
+    if (!verificarDVH(user)) {
+      console.warn(`DVH inválido para el usuario ${user.userId}`);
+      if (ENFORCE_DVH) {
+        return res.status(403).json({
+          message: "Se detectó una inconsistencia en los datos de la cuenta. Contactá al soporte.",
+        });
+      }
+    }
 
     const token = jwt.sign(
       { userId: user.userId, idRole: user.idRole },
@@ -122,8 +204,16 @@ const Register = async (req, res) => {
       banner: "vacio",
       friendId: 2,
       ubication: "Agregar ubicacion",
-      DVH: "1234567890123456789012345678901234567890123456789012345678901234", // Por ahora no tenemos el cálculo para hacer los dígitos verificadores
+      // Valor temporal de 64 caracteres: el userId lo genera la base al insertar,
+      // así que el DVH real se calcula justo después.
+      DVH: "0".repeat(64),
     });
+
+    // reload() trae los valores tal como quedaron en la base (defaults, tipos, fechas)
+    // para que el DVH coincida con el que se verifica después en el login.
+    await user.reload();
+    await recalcularDVH(user);
+
     return res.status(201).json(user)
   } catch (error) {
     if (error.name === 'SequelizeValidationError') {
@@ -186,6 +276,8 @@ const UpdateUser = async (req, res) => {
     if (banner !== undefined) dataUpdate.banner = banner;
     if (ubication !== undefined) dataUpdate.ubication = ubication;
 
+    // Recalcula el DVH con los valores nuevos y lo guarda en el mismo UPDATE.
+    dataUpdate.DVH = calcularDVH({ ...user.get({ plain: true }), ...dataUpdate });
     await user.update(dataUpdate);
 
     return res.status(200).json({
@@ -408,6 +500,8 @@ const UpdateMyProfile = async (req, res) => {
       });
     }
 
+    // Recalcula el DVH con los valores nuevos y lo guarda en el mismo UPDATE.
+    dataUpdate.DVH = calcularDVH({ ...user.get({ plain: true }), ...dataUpdate });
     await user.update(dataUpdate);
 
     return res.status(200).json({
@@ -495,5 +589,9 @@ module.exports = {
   GetMyProfile,
   UpdateMyProfile,
   GetUserProfile,
-  GetSession
+  GetSession,
+  calcularDVH,
+  verificarDVH,
+  recalcularDVH,
+  recalcularTodosLosDVH,
 };
