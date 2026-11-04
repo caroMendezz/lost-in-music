@@ -1,4 +1,6 @@
 const jwt = require("jsonwebtoken");
+const { User } = require("../models/User");
+const { buildBanPayload } = require("../services/banService");
 const { getFriendIds } = require("../services/friendsService");
 
 /**
@@ -46,10 +48,17 @@ function setupPresence(io) {
   presenceNs = io.of("/presence");
 
   // Solo usuarios con un JWT válido
-  presenceNs.use((socket, next) => {
+  presenceNs.use(async (socket, next) => {
     try {
       const token = socket.handshake.auth?.token;
       const payload = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await User.findByPk(payload.userId);
+
+      if (!user) return next(new Error("No autorizado"));
+
+      // Un usuario sancionado no puede conectarse a la presencia.
+      if (buildBanPayload(user)) return next(new Error("account banned"));
+
       socket.userId = Number(payload.userId);
       next();
     } catch {

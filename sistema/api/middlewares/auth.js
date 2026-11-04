@@ -1,83 +1,106 @@
-const jwt = require('jsonwebtoken');
-const {User} = require('../models/User');
 
+const jwt = require('jsonwebtoken');
+const { User } = require('../models/User');
+const Role = require('../models/Role');
+const {
+    buildBanPayload,
+    clearExpiredBan
+} = require('../services/banService');
 
 const checkToken = async (req, res, next) => {
-  try {
-    const authHeader = req.headers.authorization;
+    try {
+        const authHeader = req.headers.authorization;
 
-    if (!authHeader) {
-      return res.status(401).json({
-        message: 'Token no proporcionado'
-      });
-    }
+        if (!authHeader) {
+            return res.status(401).json({
+                message: 'Token no proporcionado'
+            });
+        }
 
-    const token = authHeader.replace(/^Bearer\s+/i, '').trim();
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const token = authHeader.replace(/^Bearer\s+/i, '').trim();
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await User.findByPk(decoded.userId);
+        const user = await User.findByPk(decoded.userId);
 
-    if (!user) {
-      return res.status(404).json({
-        message: 'Usuario no encontrado',
-      });
-    }
+        if (!user) {
+            return res.status(404).json({
+                message: 'Usuario no encontrado'
+            });
+        }
 
-    // 👇 VALIDACIÓN DE BANEO EN CADA PETICIÓN 👇
-    if (user.penaltyDate && user.penaltyDate !== "nada") {
-      const banDate = new Date(user.penaltyDate);
-      
-      if (!isNaN(banDate.getTime()) && banDate.getTime() > Date.now()) {
-        const isPermanent = banDate.getFullYear() >= 9000;
-        const formattedDate = isPermanent 
-          ? "Permanente" 
-          : banDate.toLocaleString('es-AR', { day: 'numeric', month: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+        // Comprueba si el usuario tiene una sanción vigente.
+        const ban = buildBanPayload(user);
 
-        return res.status(403).json({ 
-          message: `Tu cuenta está suspendida hasta: ${formattedDate}.`,
-          code: 'USER_BANNED' // Código útil para el frontend
+        if (ban) {
+            return res.status(403).json(ban);
+        }
+
+        // Limpia las sanciones que ya vencieron.
+        await clearExpiredBan(user);
+
+        req.user = user;
+
+        return next();
+
+    } catch (error) {
+        console.error(error);
+
+        return res.status(401).json({
+            message: 'Token inválido o expirado'
         });
-      }
     }
-    // 👆 FIN VALIDACIÓN DE BANEO 👆
+};
 
-    req.user = user;
-    next();
+// Debe utilizarse siempre después de checkToken.
+const checkAdmin = async (req, res, next) => {
+    try {
+        const role = await Role.findByPk(req.user.idRole);
 
-  } catch (error) {
-    console.error(error);
-    return res.status(401).json({
-      message: 'Token inválido o expirado'
-    });
-  }
+        if (!role || role.role !== 'Admin') {
+            return res.status(403).json({
+                message: 'No está autorizado para realizar esta acción'
+            });
+        }
+
+        return next();
+
+    } catch (error) {
+        console.error(error);
+
+        return res.status(500).json({
+            message: 'Error al verificar los permisos'
+        });
+    }
 };
 
 const IsAuth = async (req, res, next) => {
-    const permission = req.permission
-    const idRole = req.user.idRole
-    console.log(permission)
+    const permission = req.permission;
+    const idRole = req.user.idRole;
 
-    const [rows] = await pool.query(`SELECT p.permission FROM Permission p 
-        JOIN PermissionRole pr 
-        ON pr.permissionId = p.permissionId
-        WHERE pr.idRole = ?`, [idRole]); 
+    console.log(permission);
 
-    permissionList = rows.map(p => p.permission)
+    const [rows] = await pool.query(`
+        SELECT p.permission
+        FROM Permission p
+        JOIN PermissionRole pr
+            ON pr.permissionId = p.permissionId
+        WHERE pr.idRole = ?
+    `, [idRole]);
 
-    const hasPermission = permissionList.includes(permission)
+    const permissionList = rows.map(p => p.permission);
+    const hasPermission = permissionList.includes(permission);
 
-    if (!hasPermission){
-        return res.status(403).json({message : "No está autorizado"})
+    if (!hasPermission) {
+        return res.status(403).json({
+            message: "No está autorizado"
+        });
     }
-    else(
-        res.send(200).json({message: "permiso concedido"})
-    )
-    
-    next()
 
-} 
+    return next();
+};
 
 module.exports = {
     checkToken,
+    checkAdmin,
     IsAuth
 };

@@ -1,0 +1,270 @@
+.admin-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #eaf4fb;
+}
+
+.admin-main {
+  flex: 1;
+  width: 100%;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 24px 20px 40px;
+}
+
+.admin-card {
+  background: #fff;
+  border-radius: 16px;
+  border: 1px solid #d7e6f2;
+  box-shadow: 0 10px 30px rgba(31, 78, 110, 0.08);
+  padding: 24px;
+}
+
+.admin-card--notice {
+  text-align: center;
+  margin-top: 40px;
+  color: #3f4d5b;
+}
+
+.admin-card--notice h1 {
+  margin-top: 0;
+  color: #b23a2f;
+}
+
+.admin-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+  justify-content: space-between;
+  margin-bottom: 18px;
+}
+
+.admin-header h1 {
+  margin: 0 0 6px;
+  font-size: 22px;
+  color: #1b2733;
+}
+
+.admin-subtitle {
+  margin: 0;
+  max-width: 560px;
+  font-size: 14px;
+  line-height: 1.45;
+  color: #5b6b79;
+}
+
+.admin-search {
+  min-width: 240px;
+  flex: 0 1 280px;
+  padding: 10px 12px;
+  border: 1px solid #c8dbe9;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  color: #1b2733;
+}
+
+.admin-search:focus {
+  border-color: #5aa9d8;
+  box-shadow: 0 0 0 3px rgba(90, 169, 216, 0.18);
+}
+
+.admin-status {
+  padding: 22px 0;
+  text-align: center;
+  color: #5b6b79;
+  font-size: 14px;
+}
+
+.admin-error {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: #fdecea;
+  border: 1px solid #f3b7b2;
+  color: #a53227;
+  font-size: 14px;
+}
+
+.admin-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-user {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 11px;
+  border: 1px solid #e3eef6;
+  background: #f9fcfe;
+}
+
+.admin-user-info {
+  flex: 1 1 220px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-user-info strong {
+  font-size: 15px;
+  color: #1b2733;
+  word-break: break-word;
+}
+
+.admin-user-email {
+  font-size: 13px;
+  color: #5b6b79;
+  word-break: break-word;
+}
+
+.admin-user-role {
+  font-size: 12px;
+  font-weight: 700;
+  color: #2f7fb5;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.admin-user-state {
+  flex: 0 1 auto;
+}
+
+.admin-badge {
+  display: inline-block;
+  padding: 5px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.admin-badge--active {
+  background: #e7f7ee;
+  color: #1f7a4d;
+}
+
+.admin-badge--banned {
+  background: #fdecea;
+  color: #a53227;
+}
+
+.admin-user-actions {
+  flex: 0 0 auto;
+}
+
+.admin-muted {
+  color: #9aa8b4;
+}
+
+.admin-btn {
+  border: none;
+  border-radius: 9px;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.admin-btn:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.admin-btn--danger {
+  background: #c0392b;
+  color: #fff;
+}
+
+.admin-btn--ghost {
+  background: #eef4f9;
+  color: #2f5c79;
+  border: 1px solid #c8dbe9;
+}
+
+.admin-btn:hover:not(:disabled) {
+  filter: brightness(0.96);
+}
+
+/* Modal de sanción */
+.admin-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(12, 24, 36, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+.admin-dialog {
+  width: 100%;
+  max-width: 420px;
+  padding: 24px;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.admin-dialog h3 {
+  margin: 0 0 18px;
+  font-size: 18px;
+  color: #1b2733;
+}
+
+.admin-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #3f4d5b;
+}
+
+.admin-field select,
+.admin-field input {
+  padding: 10px 12px;
+  border: 1px solid #c8dbe9;
+  border-radius: 9px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #1b2733;
+  outline: none;
+}
+
+.admin-field select:focus,
+.admin-field input:focus {
+  border-color: #5aa9d8;
+  box-shadow: 0 0 0 3px rgba(90, 169, 216, 0.18);
+}
+
+.admin-dialog-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 18px;
+}
+
+@media (max-width: 560px) {
+  .admin-user-actions,
+  .admin-user-state {
+    flex: 1 1 100%;
+  }
+
+  .admin-dialog-actions {
+    flex-direction: column-reverse;
+  }
+}

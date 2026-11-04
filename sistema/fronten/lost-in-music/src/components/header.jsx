@@ -2,12 +2,20 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Header.css';
 import { useLang } from './LangContext';
-import LangSelector from './Langselector';
-import NotificationsMenu from './NotificationsMenu';
+
 import { useMyProfilePhoto } from '../hooks/useMyProfilePhoto';
+import LangSelector from './LangSelector';
+import NotificationsMenu from './NotificationsMenu';
+import { useSession } from '../hooks/sessionContext';
+import { clearSession } from '../services/session';
+import { resolveMedia } from '../services/friendsApi';
+import { disconnectAccountSocket } from '../services/accountSocket';
+import { disconnectSocket } from '../services/socket';
 
 function Header() {
   const navigate = useNavigate();
+  const session = useSession();
+  const isAdmin = Number(session?.user?.idRole) === 2;
   const [menuOpen, setMenuOpen] = useState(false);
   // Foto de perfil del usuario logueado (se refresca al editarla en el perfil)
   const userPhoto = useMyProfilePhoto();
@@ -20,6 +28,21 @@ function Header() {
 
   const menuRef = useRef(null);
   const searchRef = useRef(null);
+
+  // Cargar datos del usuario logueado
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) {
+      try {
+        const parsedUser = JSON.parse(storedUser);
+        if (parsedUser.profilePhoto) {
+          setUserPhoto(resolveMedia(parsedUser.profilePhoto));
+        }
+      } catch (e) {
+        console.error("Error al parsear el usuario", e);
+      }
+    }
+  }, []);
 
   // Cerrar menús al hacer clic afuera
   useEffect(() => {
@@ -90,6 +113,9 @@ function Header() {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     localStorage.removeItem('idRole'); // 👈 Agregado para limpiar el rol al salir
+    disconnectSocket();
+    disconnectAccountSocket();
+    clearSession();
     navigate('/acceso');
   };
 
@@ -133,7 +159,7 @@ function Header() {
                   onMouseLeave={(e) => e.currentTarget.style.background = 'white'}
                 >
                   {user.profilePhoto ? (
-                    <img src={user.profilePhoto} alt={user.username} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
+                    <img src={resolveMedia(user.profilePhoto)} alt={user.username} style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
                   ) : (
                     <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: '#ccc', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>👤</div>
                   )}
@@ -210,7 +236,26 @@ function Header() {
               minWidth: '140px'
             }}>
               <button
-                onClick={() => { setMenuOpen(false); navigate('/perfil'); }}
+                onClick={() => { setMenuOpen(false); navigate('/perfil'); }}></button>
+              {isAdmin && (
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate('/admin');
+                  }}
+                  style={{
+                    width: '100%', padding: '8px 12px', border: 'none',
+                    background: 'transparent', textAlign: 'left', cursor: 'pointer',
+                    color: '#2f5c79', fontWeight: 'bold', borderRadius: '4px'
+                  }}
+                >
+                  🛡️ Administración
+                </button>
+              )}
+
+
+              <button
+                onClick={handleLogout}
                 style={{
                   width: '100%',
                   padding: '8px 12px',

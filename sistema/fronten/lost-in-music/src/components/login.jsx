@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { clearSession, fetchSession } from "../services/session";
 import "../styles/login.css";
 
 function Login({ goToRegister, goToResetPassword }) {
@@ -14,9 +15,29 @@ function Login({ goToRegister, goToResetPassword }) {
   const [submitError, setSubmitError] = useState("");
 
   useEffect(() => {
-    if (localStorage.getItem("token")) {
-      window.location.href = "/feed";
-    }
+    let cancelled = false;
+
+    // Solo se redirige si la sesión guardada sigue siendo válida. Si la cuenta
+    // está sancionada (403 BANNED), se queda en el login y el backend informa
+    // el motivo y la duración al intentar ingresar.
+    const checkStoredSession = async () => {
+      if (!localStorage.getItem("token")) return;
+
+      const result = await fetchSession();
+      if (cancelled) return;
+
+      if (result.ok) {
+        window.location.href = "/feed";
+      } else if (result.status === 401 || result.status === 404) {
+        clearSession();
+      }
+    };
+
+    checkStoredSession();
+
+    return () => {
+      cancelled = true;
+    };
   }, [navigate]);
 
   const handleSubmit = async (e) => {
@@ -91,7 +112,7 @@ function Login({ goToRegister, goToResetPassword }) {
 
         <form className="login-form" onSubmit={handleSubmit}>
           <div className="login-input-group">
-            <label className="login-label">Correo electrónico o Usuario</label>
+            <label className="">Correo electrónico o Usuario</label>
 
             <div style={{ position: "relative" }}>
               <input

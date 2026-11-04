@@ -1,4 +1,7 @@
 const jwt = require("jsonwebtoken");
+const { User } = require("../models/User");
+const { buildBanPayload } = require("../services/banService");
+const { isUserBanned } = require("./account");
 const {
     createMessage,
     deleteMessage,
@@ -10,7 +13,7 @@ const {
 } = require("../controllers/messages");
 
 function setupChat(io) {
-    io.use((socket, next) => {
+    io.use(async (socket, next) => {
         const token = socket.handshake.auth?.token;
 
         if (!token) {
@@ -19,12 +22,36 @@ function setupChat(io) {
 
         try {
             const payload = jwt.verify(token, process.env.JWT_SECRET);
+            const user = await User.findByPk(payload.userId);
+
+            if (!user) {
+                return next(new Error("Usuario no encontrado"));
+            }
+
+            // Un usuario sancionado no puede abrir ni reconectar el chat.
+            if (buildBanPayload(user) || isUserBanned(user.userId)) {
+                return next(new Error("account banned"));
+            }
+
             socket.userId = payload.userId;
             next();
         } catch (error) {
             next(new Error("Invalid token"));
         }
     });
+
+    // La sanción puede aplicarse mientras el socket ya está conectado:
+    // se verifica la caché antes de permitir cualquier acción.
+    const ensureNotBanned = (socket) => {
+        if (!isUserBanned(socket.userId)) return true;
+
+        socket.emit("messageError", {
+            code: "BANNED",
+            message: "Tu cuenta está suspendida temporalmente."
+        });
+        socket.disconnect(true);
+        return false;
+    };
 
     io.on("connection", (socket) => {
 
@@ -36,6 +63,7 @@ function setupChat(io) {
 
 
         socket.on("sendMessage", async (data) => {
+            if (!ensureNotBanned(socket)) return;
 
             try {
                 const message = await createMessage({
@@ -64,6 +92,7 @@ function setupChat(io) {
         socket.on(
             "deleteMessage",
             async ({ messageId }) => {
+                if (!ensureNotBanned(socket)) return;
 
                 try {
 
@@ -94,6 +123,7 @@ function setupChat(io) {
 
         // Anular envio para todos: no borra el registro, lo marca como anulado y avisa a ambos usuarios
         socket.on("revokeMessage", async (data) => {
+            if (!ensureNotBanned(socket)) return;
 
             try {
                 const message = await revokeMessage(data?.messageId, socket.userId);
@@ -122,6 +152,7 @@ function setupChat(io) {
 
         // Eliminar para ti: solo se oculta para el usuario que lo pidio (y sus otras pestañas)
         socket.on("deleteMessageForMe", async (data) => {
+            if (!ensureNotBanned(socket)) return;
 
             try {
                 await deleteMessageForUser(data?.messageId, socket.userId);
@@ -139,6 +170,7 @@ function setupChat(io) {
 
         // Editar mensaje: actualiza el registro existente y avisa a ambos usuarios
         socket.on("editMessage", async (data) => {
+            if (!ensureNotBanned(socket)) return;
 
             try {
                 const message = await editMessage(data?.messageId, socket.userId, data?.content);

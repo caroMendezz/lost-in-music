@@ -1,0 +1,130 @@
+.ban-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(12, 24, 36, 0.78);
+  backdrop-filter: blur(6px);
+}
+
+.ban-card {
+  width: 100%;
+  max-width: 460px;
+  padding: 30px 28px 26px;
+  border-radius: 20px;
+  background: linear-gradient(180deg, #ffffff 0%, #eef6fd 100%);
+  border: 1px solid rgba(122, 184, 216, 0.55);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+  text-align: center;
+  color: #1b2733;
+  animation: ban-card-in 0.25s ease-out;
+}
+
+@keyframes ban-card-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.ban-icon {
+  width: 64px;
+  height: 64px;
+  margin: 0 auto 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 30px;
+  border-radius: 50%;
+  background: #fdecea;
+  border: 2px solid #f3b7b2;
+}
+
+.ban-title {
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 800;
+  color: #b23a2f;
+}
+
+.ban-text {
+  margin: 0 0 18px;
+  font-size: 15px;
+  line-height: 1.5;
+  color: #3f4d5b;
+}
+
+.ban-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 16px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  background: #f3f8fc;
+  border: 1px solid #d7e6f2;
+}
+
+.ban-detail-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #5a7d96;
+}
+
+.ban-detail-value {
+  font-size: 16px;
+  color: #1d5b86;
+}
+
+.ban-remaining {
+  font-size: 14px;
+  color: #b23a2f;
+  font-weight: 600;
+}
+
+.ban-reason {
+  margin: 0 0 16px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: #fff6e5;
+  border: 1px solid #f1d9a8;
+  font-size: 14px;
+  color: #6b5124;
+  text-align: left;
+  word-break: break-word;
+}
+
+.ban-button {
+  width: 100%;
+  padding: 13px 18px;
+  border: none;
+  border-radius: 11px;
+  background: linear-gradient(180deg, #5aa9d8 0%, #2f7fb5 100%);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: filter 0.2s ease, transform 0.2s ease;
+}
+
+.ban-button:hover {
+  filter: brightness(1.07);
+}
+
+.ban-button:active {
+  transform: translateY(1px);
+}
+
+.ban-button:focus-visible {
+  outline: 3px solid rgba(90, 169, 216, 0.5);
+  outline-offset: 2px;
+}

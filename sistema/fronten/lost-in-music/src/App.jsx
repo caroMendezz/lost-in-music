@@ -24,6 +24,23 @@ import FriendsPage from "./pages/friendsPage";
 import MessagesPage from "./pages/messages/MessagesPage";
 // 👇 IMPORT NUEVO DEL PERFIL 👇
 import UserProfile from "./pages/userProfilePage";
+import AdminPage from "./pages/admin";
+import SessionGuard from "./components/SessionGuard";
+
+function Marketplace() {
+  return (
+    <div className="aero-root">
+      <div className="frame">
+        <Navbar />
+        <div className="body-grid">
+          <AeroSidebar />
+          <ProductGrid />
+          <RightSidebar />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function FeedPage({
   rootPosts,
@@ -149,8 +166,9 @@ export default function App() {
 
   return (
     <LangProvider>
-      <FriendsProvider>
-        <Routes>
+      <SessionGuard>
+        <FriendsProvider>
+          <Routes>
           <Route
             path="/"
             element={
@@ -193,6 +211,13 @@ export default function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/shopinvivo" element={<Shopinvivo />} />
           <Route path="/marketplace" element={<Shopinvivo />} />
+          <Route path="/marketplace" element={<Marketplace />} />
+
+          {/* Mensajería */}
+          <Route path="/messages" element={<MessagesPage />} />
+
+          {/* Resto de la red social */}
+          <Route path="/admin" element={<AdminPage />} />
           <Route path="/amigos" element={<FriendsPage />} />
           <Route path="/messages" element={<MessagesPage />} />
           <Route path="/post/:id" element={<PostPage />} />
@@ -202,30 +227,32 @@ export default function App() {
           <Route path="/profile" element={<UserProfile />} />
           {/* Si querés que sea por username, cambialo a: path="/:username" */}
 
-        <Route
-          path="/photo/:postId/:imageIndex"
-          element={
-            <PhotoPage
-              posts={rootPosts}
-              getReplies={getReplies}
-              onComment={addComment}
-              onLike={toggleLike}
-            />
-          }
-        />
-        <Route
-          path="/comment/:id"
-          element={
-            <CommentPage
-              getPost={getPost}
-              getReplies={getReplies}
-              onComment={addComment}
-              onLike={toggleLike}
-            />
-          }
-        />
-      </Routes>
-      </FriendsProvider>
+          <Route
+            path="/photo/:postId/:imageIndex"
+            element={
+              <PhotoPage
+                posts={rootPosts}
+                getReplies={getReplies}
+                onComment={addComment}
+                onLike={toggleLike}
+              />
+            }
+          />
+
+          <Route
+            path="/comment/:id"
+            element={
+              <CommentPage
+                getPost={getPost}
+                getReplies={getReplies}
+                onComment={addComment}
+                onLike={toggleLike}
+              />
+            }
+          />
+          </Routes>
+        </FriendsProvider>
+      </SessionGuard>
     </LangProvider>
   );
 }
