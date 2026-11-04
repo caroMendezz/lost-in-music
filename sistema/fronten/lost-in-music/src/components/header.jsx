@@ -253,6 +253,22 @@ function Header() {
                 </button>
               )}
 
+              {isAdmin && (
+                <button
+                  onClick={() => {
+                    setMenuOpen(false);
+                    navigate('/admin/reports');
+                  }}
+                  style={{
+                    width: '100%', padding: '8px 12px', border: 'none',
+                    background: 'transparent', textAlign: 'left', cursor: 'pointer',
+                    color: '#b23a2f', fontWeight: 'bold', borderRadius: '4px'
+                  }}
+                >
+                  🚩 Reportes
+                </button>
+              )}
+
 
               <button
                 onClick={handleLogout}
@@ -302,6 +318,16 @@ function Header() {
           onClick={() => navigate('/settings')}
         >
           ⚙️
+        </button>
+
+        {/* 6. Ayuda y contacto */}
+        <button
+          className="header-icon-btn"
+          title="Ayuda y contacto"
+          aria-label="Ayuda y contacto"
+          onClick={() => navigate('/ayuda')}
+        >
+          ❓
         </button>
 
       </div>

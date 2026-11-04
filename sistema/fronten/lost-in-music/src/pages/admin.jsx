@@ -1,18 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Header from "../components/header";
 import Footer from "../components/footer";
 import { useSession } from "../hooks/sessionContext";
-import { banUser, getAdminUsers, unbanUser } from "../services/adminApi";
+import { getAdminUsers, unbanUser } from "../services/adminApi";
+import { getReportsCount } from "../services/reportsApi";
+import BanDialog from "../components/BanDialog";
 import "../styles/admin.css";
-
-const DURATIONS = [
-  { value: 15, label: "15 minutos" },
-  { value: 60, label: "1 hora" },
-  { value: 360, label: "6 horas" },
-  { value: 1440, label: "24 horas" },
-  { value: 10080, label: "7 días" },
-  { value: 43200, label: "30 días" },
-];
 
 const formatDate = (value) => {
   const date = new Date(value);
@@ -26,87 +20,6 @@ const formatDate = (value) => {
   });
 };
 
-function BanDialog({ user, onClose, onDone }) {
-  const [durationMinutes, setDurationMinutes] = useState(60);
-  const [reason, setReason] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState("");
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    setSubmitting(true);
-    setError("");
-
-    try {
-      await banUser(user.userId, Number(durationMinutes), reason.trim());
-      onDone();
-    } catch (err) {
-      setError(err.message || "No se pudo aplicar la sanción");
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  return (
-    <div className="admin-dialog-overlay">
-      <form
-        className="admin-dialog"
-        onSubmit={handleSubmit}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="admin-dialog-title"
-      >
-        <h3 id="admin-dialog-title">Sancionar a @{user.username}</h3>
-
-        <label className="admin-field">
-          <span>Duración de la suspensión</span>
-          <select
-            value={durationMinutes}
-            onChange={(event) => setDurationMinutes(event.target.value)}
-          >
-            {DURATIONS.map((duration) => (
-              <option key={duration.value} value={duration.value}>
-                {duration.label}
-              </option>
-            ))}
-          </select>
-        </label>
-
-        <label className="admin-field">
-          <span>Motivo (opcional)</span>
-          <input
-            type="text"
-            maxLength={255}
-            value={reason}
-            placeholder="Ej.: incumplimiento de las normas"
-            onChange={(event) => setReason(event.target.value)}
-          />
-        </label>
-
-        {error && <p className="admin-error">{error}</p>}
-
-        <div className="admin-dialog-actions">
-          <button
-            type="button"
-            className="admin-btn admin-btn--ghost"
-            onClick={onClose}
-            disabled={submitting}
-          >
-            Cancelar
-          </button>
-          <button
-            type="submit"
-            className="admin-btn admin-btn--danger"
-            disabled={submitting}
-          >
-            {submitting ? "Aplicando…" : "Aplicar sanción"}
-          </button>
-        </div>
-      </form>
-    </div>
-  );
-}
-
 export default function AdminPage() {
   const session = useSession();
   const isAdmin = Number(session?.user?.idRole) === 2;
@@ -117,6 +30,7 @@ export default function AdminPage() {
   const [error, setError] = useState("");
   const [banTarget, setBanTarget] = useState(null);
   const [actionId, setActionId] = useState(null);
+  const [pendingReports, setPendingReports] = useState(0);
 
   const loadUsers = useCallback(async (search) => {
     setLoading(true);
@@ -138,6 +52,24 @@ export default function AdminPage() {
     const timer = setTimeout(() => loadUsers(query.trim()), 300);
     return () => clearTimeout(timer);
   }, [isAdmin, query, loadUsers]);
+
+  // Cantidad de reportes sin revisar, para mostrarla en el acceso al panel.
+  useEffect(() => {
+    if (!isAdmin) return undefined;
+    let cancelled = false;
+
+    getReportsCount()
+      .then((data) => {
+        if (!cancelled) setPendingReports(Number(data?.pending) || 0);
+      })
+      .catch(() => {
+        if (!cancelled) setPendingReports(0);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAdmin]);
 
   const handleUnban = async (user) => {
     setActionId(user.userId);
@@ -183,13 +115,22 @@ export default function AdminPage() {
               </p>
             </div>
 
-            <input
-              type="search"
-              className="admin-search"
-              placeholder="Buscar por usuario o email…"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-            />
+            <div className="admin-toolbar">
+              <Link to="/admin/reports" className="admin-btn admin-btn--reports">
+                🚩 Reportes
+                {pendingReports > 0 && (
+                  <span className="admin-reports-badge">{pendingReports}</span>
+                )}
+              </Link>
+
+              <input
+                type="search"
+                className="admin-search"
+                placeholder="Buscar por usuario o email…"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+              />
+            </div>
           </div>
 
           {error && <p className="admin-error">{error}</p>}

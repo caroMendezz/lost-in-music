@@ -112,6 +112,13 @@ const {
   clearNotifications,
 } = require("./controllers/notifications");
 
+const {
+  createReport,
+  listReports,
+  getReportsCount,
+  updateReportStatus,
+} = require("./controllers/reports");
+
 // =====================================================
 // SOCKETS
 // =====================================================
@@ -502,6 +509,35 @@ server.delete(
   "/notifications",
   checkToken,
   clearNotifications
+);
+
+// =====================================================
+// REPORTES
+// =====================================================
+
+// Cualquier usuario autenticado puede reportar a otro usuario o una publicación.
+server.post("/reports", checkToken, createReport);
+
+// Panel de reportes para administradores.
+server.get(
+  "/admin/reports",
+  checkToken,
+  checkAdmin,
+  listReports
+);
+
+server.get(
+  "/admin/reports/count",
+  checkToken,
+  checkAdmin,
+  getReportsCount
+);
+
+server.patch(
+  "/admin/reports/:id",
+  checkToken,
+  checkAdmin,
+  updateReportStatus
 );
 
 // =====================================================

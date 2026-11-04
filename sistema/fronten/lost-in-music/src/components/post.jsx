@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import ImageViewer from './ImageViewer';
+import ReportModal from './ReportModal';
 import { postUrl } from '../services/postsApi';
 import { useFriends } from './FriendsContext';
 import '../styles/Post.css';
@@ -58,6 +59,7 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now, canDelete = fal
   const [confirmDel, setConfirmDel] = useState(false);
   const [viewerIndex, setViewerIndex] = useState(null); // null = visor cerrado
   const [copied, setCopied] = useState(false); // feedback del botón compartir
+  const [reportTarget, setReportTarget] = useState(null); // reporte abierto (usuario o post)
   const navigate = useNavigate();
   const { isOnline } = useFriends();
 
@@ -75,6 +77,12 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now, canDelete = fal
   // === ADAPTACIÓN PARA EL BACKEND (MongoDB / Sequelize) ===
   const postId = post._id || post.id;
   const content = post.postText ?? post.content ?? '';
+
+  // ¿Esta publicación es del usuario logueado? ¿Quien mira es administrador?
+  const isOwnPost = post.isOwner !== false;
+  const viewerIsAdmin = Number(localStorage.getItem('idRole')) === 2;
+  // Un administrador ya tiene el panel de administración: no reporta.
+  const canReport = !isOwnPost && !viewerIsAdmin;
 
   // Imágenes: rutas "crudas" (para mandar al backend) y URLs resueltas (para mostrar)
   const rawImages = post.image ?? [];
@@ -296,28 +304,29 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now, canDelete = fal
           </Link>
         </div>
 
-        {/* Botón ⋯ + menú desplegable (dueño del post o admin con permiso) */}
-        {(post.isOwner !== false || canDelete === true) && (
-          <div className="post-menu-wrapper" ref={menuRef}>
-            <button
-              type="button"
-              className="post-menu-btn"
-              onClick={() => { setMenuOpen((v) => !v); setConfirmDel(false); }}
-              aria-label="Opciones"
-            >
-              ⋯
-            </button>
-            {menuOpen && (
-              <div className="post-menu-dropdown">
-                {post.isOwner !== false && (
-                  <button
-                    type="button"
-                    className="post-menu-item"
-                    onClick={handleEditStart}
-                  >
-                    ✏️ Editar
-                  </button>
-                )}
+        {/* Botón ⋯ + menú desplegable (editar/eliminar o reportar) */}
+        <div className="post-menu-wrapper" ref={menuRef}>
+          <button
+            type="button"
+            className="post-menu-btn"
+            onClick={() => { setMenuOpen((v) => !v); setConfirmDel(false); }}
+            aria-label="Opciones"
+          >
+            ⋯
+          </button>
+          {menuOpen && (
+            <div className="post-menu-dropdown">
+              {isOwnPost && (
+                <button
+                  type="button"
+                  className="post-menu-item"
+                  onClick={handleEditStart}
+                >
+                  ✏️ Editar
+                </button>
+              )}
+
+              {(isOwnPost || canDelete === true) && (
                 <button
                   type="button"
                   className="post-menu-item post-menu-item--danger"
@@ -325,10 +334,48 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now, canDelete = fal
                 >
                   🗑️ Eliminar
                 </button>
-              </div>
-            )}
-          </div>
-        )}
+              )}
+
+              {canReport && (
+                <>
+                  <button
+                    type="button"
+                    className="post-menu-item"
+                    onClick={() => {
+                      setMenuOpen(false);
+                      setReportTarget({
+                        type: 'post',
+                        postId,
+                        userId: post.userId,
+                        username: post.author,
+                        postText: content,
+                      });
+                    }}
+                  >
+                    🚩 Reportar publicación
+                  </button>
+
+                  {post.userId && (
+                    <button
+                      type="button"
+                      className="post-menu-item"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        setReportTarget({
+                          type: 'user',
+                          userId: post.userId,
+                          username: post.author,
+                        });
+                      }}
+                    >
+                      👤 Reportar usuario
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* ── Confirmación de eliminación ── */}
@@ -554,6 +601,14 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now, canDelete = fal
           {copied ? '✔ link copiado' : '↗ compartir'}
         </button>
       </div>
+
+      {/* ── Ventana emergente de reporte ── */}
+      {reportTarget && (
+        <ReportModal
+          target={reportTarget}
+          onClose={() => setReportTarget(null)}
+        />
+      )}
     </div>
   );
 }

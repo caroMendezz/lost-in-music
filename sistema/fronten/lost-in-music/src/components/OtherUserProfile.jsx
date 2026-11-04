@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import '../styles/UserProfile.css';
 import '../styles/FriendsProfile.css'; // 👈 CSS importado
 import Post from './post.jsx';
+import ReportModal from './ReportModal';
 import SuspendedProfile from './SuspendedProfile';
 
 
@@ -59,6 +60,9 @@ function OtherUserProfile() {
   // 👇 NUEVOS ESTADOS PARA AMIGOS 👇
   const [friends, setFriends] = useState([]);
   const [showFriendsModal, setShowFriendsModal] = useState(false);
+
+  // Reporte del perfil que se está viendo.
+  const [reportOpen, setReportOpen] = useState(false);
 
   const getHeaders = useCallback(() => {
     const token = localStorage.getItem('token');
@@ -425,6 +429,17 @@ function OtherUserProfile() {
             >
               Volver
             </button>
+
+            {Number(user.idRole) !== 2 && (
+              <button
+                className="up-edit-button up-report-button"
+                type="button"
+                onClick={() => setReportOpen(true)}
+                title={`Reportar a @${name}`}
+              >
+                🚩 Reportar
+              </button>
+            )}
           </div>
         </div>
 
@@ -637,6 +652,17 @@ function OtherUserProfile() {
             </div>
           </section>
         </div>
+      )}
+      {/* 👇 VENTANA EMERGENTE PARA REPORTAR AL USUARIO 👇 */}
+      {reportOpen && (
+        <ReportModal
+          target={{
+            type: 'user',
+            userId: user.userId,
+            username: name,
+          }}
+          onClose={() => setReportOpen(false)}
+        />
       )}
     </main>
   );
