@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Avatar from "./Avatar";
 import { formatRelative } from "./formatters";
 import styles from "./ConversationItem.module.css";
@@ -32,13 +33,17 @@ export default function ConversationItem({ conversation, isActive, myId, onSelec
     // Posicion del menu en coordenadas de viewport (asi nunca lo recorta el scroll de la lista)
     const [anchor, setAnchor] = useState(null);
     const itemRef = useRef(null);
+    const menuRef = useRef(null);
 
     useEffect(() => {
         if (!menuOpen) return undefined;
 
         const close = () => setMenuOpen(false);
         const onPointerDown = (event) => {
+            // El menu vive en un portal (fuera del <li>), asi que hay que comprobarlo aparte:
+            // si no, el mousedown sobre "Eliminar chat" lo cerraria antes del click.
             if (itemRef.current?.contains(event.target)) return;
+            if (menuRef.current?.contains(event.target)) return;
             setMenuOpen(false);
         };
         const onKeyDown = (event) => {
@@ -120,8 +125,12 @@ export default function ConversationItem({ conversation, isActive, myId, onSelec
                 ⋯
             </button>
 
-            {menuOpen && anchor && (
+            {/* El menu se monta en document.body: el panel de la lista tiene backdrop-filter
+                (crea bloque contenedor para position:fixed) y overflow-y:auto, que recortaban
+                el menu y dejaban el boton de tres puntos sin accion visible. */}
+            {menuOpen && anchor && createPortal(
                 <div
+                    ref={menuRef}
                     className={styles.conversationMenu}
                     role="menu"
                     style={
@@ -144,7 +153,8 @@ export default function ConversationItem({ conversation, isActive, myId, onSelec
                         </span>
                         Eliminar chat
                     </button>
-                </div>
+                </div>,
+                document.body
             )}
         </li>
     );

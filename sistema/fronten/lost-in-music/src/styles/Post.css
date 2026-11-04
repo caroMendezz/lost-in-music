@@ -15,6 +15,13 @@
   overflow: visible; /* cambiado de hidden a visible para que el dropdown no se corte */
 }
 
+/* Con el menu abierto la tarjeta se eleva por encima de las siguientes:
+   .post-container tiene backdrop-filter y crea un contexto de apilado propio, asi que
+   el z-index del menu solo competia dentro de su tarjeta y el post de abajo lo tapaba. */
+.post-container--menu-open {
+  z-index: 30;
+}
+
 .post-container::before {
   content: "";
   position: absolute;

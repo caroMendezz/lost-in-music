@@ -109,6 +109,13 @@ function Header() {
     }
   };
 
+  // Perfil propio desde el menu del avatar: /perfil (sin id) es "mi perfil",
+  // /perfil/:userId es el perfil de otro usuario (ver rutas en main.jsx).
+  const handleViewOwnProfile = () => {
+    setMenuOpen(false);
+    navigate('/perfil');
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
@@ -235,8 +242,6 @@ function Header() {
               zIndex: 1000,
               minWidth: '140px'
             }}>
-              <button
-                onClick={() => { setMenuOpen(false); navigate('/perfil'); }}></button>
               {isAdmin && (
                 <button
                   onClick={() => {
@@ -255,7 +260,7 @@ function Header() {
 
 
               <button
-                onClick={handleLogout}
+                onClick={handleViewOwnProfile}
                 style={{
                   width: '100%',
                   padding: '8px 12px',

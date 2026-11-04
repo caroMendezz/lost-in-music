@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Avatar from "./Avatar";
 import DeleteForMeModal from "./DeleteForMeModal";
 import MessageInput from "./MessageInput";
@@ -26,6 +27,7 @@ export default function ChatWindow({
     // Abre el visor de imagenes a pantalla completa (imagenUrls, indice)
     onOpenImage
 }) {
+    const navigate = useNavigate();
     // Ventana abierta: { type: "revoke" | "deleteForMe", message }
     const [dialog, setDialog] = useState(null);
     // Mensaje que se esta editando (null = campo de escritura normal)
@@ -59,12 +61,11 @@ export default function ChatWindow({
 
     const infoLabel = infoOpen ? "Ocultar información del contacto" : "Mostrar información del contacto";
 
-    // Acceso al perfil del usuario desde el encabezado del chat.
-    // La navegacion al perfil todavia no esta implementada: por ahora solo se avisa en
-    // consola. Cuando exista la ruta de perfil, reemplazar el console.log por la
-    // navegacion (por ejemplo: navigate(`/perfil/${contact.userId}`)).
+    // Acceso al perfil del usuario desde el encabezado del chat: mismo criterio que el
+    // header, los admins tienen su propia vista de perfil.
     const handleOpenProfile = () => {
-        console.log("Redirigiendo al perfil");
+        const isAdmin = String(localStorage.getItem("idRole")) === "2";
+        navigate(isAdmin ? `/admin/perfil/${contact.userId}` : `/perfil/${contact.userId}`);
     };
     const closeDialog = () => setDialog(null);
 

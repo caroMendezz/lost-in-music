@@ -268,7 +268,7 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now, canDelete = fal
   }, [copied]);
 
   return (
-    <div className="post-container">
+    <div className={`post-container${menuOpen ? ' post-container--menu-open' : ''}`}>
 
       {/* ── Header ── */}
       <div className="post-header">

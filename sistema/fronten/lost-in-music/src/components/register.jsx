@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import '../styles/Register.css';
+import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../services/http';
+import '../styles/register.css';
 import MusicPlayerMini from './MusicPlayerMini';
 import ImageCropperModal from "./ImageCropperModal";
 
@@ -20,6 +22,15 @@ const calcPasswordStrength = (pwd) => {
 const strengthLabel = ['', 'Muy débil', 'Débil', 'Regular', 'Buena', 'Fuerte'];
 const strengthColor = ['', '#f06060', '#f0a060', '#f0d060', '#80cc60', '#4cce8a'];
 
+// El modelo User guarda el género como ENUM con estos valores exactos.
+const GENDER_BACKEND = {
+  masculino  : 'Masculino',
+  femenino   : 'Femenino',
+  no_binario : 'NoBinario',
+  otro       : 'Otro',
+  no_decir   : 'PrefieroNoDecir',
+};
+
 const GENEROS = [
   { id: 'masculino',      label: 'Masculino',         icon: '♂' },
   { id: 'femenino',       label: 'Femenino',           icon: '♀' },
@@ -37,7 +48,11 @@ const currentYear = new Date().getFullYear();
 const YEARS  = Array.from({ length: 100 }, (_, i) => currentYear - 13 - i);
 const DAYS   = Array.from({ length: 31  }, (_, i) => i + 1);
 
-export default function Register({ onLoginClick }) {
+export default function Register({ onLoginClick, goToLogin }) {
+  // La pantalla de acceso le pasa el callback con dos nombres distintos según el lugar.
+  const backToLogin = onLoginClick || goToLogin;
+  const navigate = useNavigate();
+
   //paso actual
   const [step, setStep] = useState(0);
   const [slideDir, setSlideDir] = useState('idle');
@@ -61,6 +76,8 @@ export default function Register({ onLoginClick }) {
   const [touched,setTouched] = useState({});
 
   const [isPlaying,setIsPlaying] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
   // Archivo pendiente de recortar (abre el modal de edición)
   const [cropFile, setCropFile] = useState(null);
   const [photoError, setPhotoError] = useState(null);
@@ -165,13 +182,79 @@ export default function Register({ onLoginClick }) {
     }, 420);
   };
 
-  // Submit final
-  const handleSubmit = (e) => {
+  // El backend exige género y fecha de nacimiento (columnas NOT NULL del modelo User).
+  const missingProfileData = !formData.genero || !formData.dia || !formData.mes || !formData.anio;
+
+  // Submit final: crea la cuenta en POST /register y deja la sesión iniciada.
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+
     const click = new Audio('/soundClick.mp3');
     click.volume = 0.1;
-    click.play();
-    console.log('Registro completo:', formData);
+    click.play().catch(() => {});
+
+    setTouched((p) => ({ ...p, genero: true, fecha: true }));
+    setSubmitError('');
+
+    if (missingProfileData) {
+      setSubmitError('Completá el género y la fecha de nacimiento para crear la cuenta.');
+      return;
+    }
+
+    const birthDate = `${formData.anio}-${String(formData.mes).padStart(2, '0')}-${String(formData.dia).padStart(2, '0')}`;
+
+    setSubmitting(true);
+
+    try {
+      const res = await fetch(`${API_URL}/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username    : formData.nombreUsuario.trim(),
+          email       : formData.email.trim(),
+          password    : formData.password,
+          gender      : GENDER_BACKEND[formData.genero],
+          birthDate,
+          // Si no eligió foto se manda vacío y el backend asigna la predeterminada.
+          profilePhoto: formData.fotoPreview || '',
+        }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        const details = Array.isArray(data.details) ? ` (${data.details.join(', ')})` : '';
+        setSubmitError(`${data.message || 'No se pudo crear la cuenta'}${details}`);
+        return;
+      }
+
+      // Cuenta creada: se inicia sesión para entrar directo a la app.
+      const loginRes = await fetch(`${API_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          username: formData.nombreUsuario.trim(),
+          password: formData.password,
+        }),
+      });
+
+      const loginData = await loginRes.json().catch(() => ({}));
+
+      if (loginRes.ok && loginData.token) {
+        localStorage.setItem('token', loginData.token);
+        if (loginData.idRole) localStorage.setItem('idRole', loginData.idRole);
+        navigate('/feed', { replace: true });
+        return;
+      }
+
+      // La cuenta ya existe aunque el login automático falle: se manda al login.
+      backToLogin?.();
+    } catch {
+      setSubmitError('No se pudo conectar con el servidor');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const pwdStrength = calcPasswordStrength(formData.password);
@@ -361,7 +444,7 @@ export default function Register({ onLoginClick }) {
 
               <p className="register-login-link">
                 ¿Ya tenes cuenta?{' '}
-                <a href="#" onClick={(e) => { e.preventDefault(); onLoginClick?.(); }}>
+                <a href="#" onClick={(e) => { e.preventDefault(); backToLogin?.(); }}>
                   Inicia sesión
                 </a>
               </p>
@@ -436,6 +519,9 @@ export default function Register({ onLoginClick }) {
                     </button>
                   ))}
                 </div>
+                {touched.genero && !formData.genero && (
+                  <p className="register-hint hint-error">Elegí una opción de género</p>
+                )}
 
                 {/* Fecha de nacimiento*/}
                 <div className="reg-section-title" style={{ marginTop: 18 }}>
@@ -499,6 +585,9 @@ export default function Register({ onLoginClick }) {
                     </div>
                   </div>
                 </div>
+                {touched.fecha && (!formData.dia || !formData.mes || !formData.anio) && (
+                  <p className="register-hint hint-error">Completá día, mes y año</p>
+                )}
 
                 {/*Botones*/}
                 <div className="reg-btns-row">
@@ -508,10 +597,14 @@ export default function Register({ onLoginClick }) {
                     </svg>
                     Volver
                   </button>
-                  <button type="submit" className="register-btn register-btn--final">
-                    Crear cuenta ✦
+                  <button type="submit" className="register-btn register-btn--final" disabled={submitting}>
+                    {submitting ? 'Creando cuenta...' : 'Crear cuenta ✦'}
                   </button>
                 </div>
+
+                {submitError && (
+                  <p className="register-hint hint-error" role="alert">{submitError}</p>
+                )}
 
               </form>
             </div>

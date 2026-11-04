@@ -203,6 +203,14 @@ server.get("/myProfile", checkToken, GetMyProfile);
 
 server.patch("/myProfile", checkToken, UpdateMyProfile);
 
+// Búsqueda de usuarios (header y mensajería). Debe ir ANTES de /users/:id:
+// si no, Express toma "search" como un userId y la búsqueda nunca se ejecuta.
+server.get(
+  "/users/search",
+  checkToken,
+  searchUsers
+);
+
 server.get("/users/:id", checkToken, GetUserProfile);
 
 server.patch("/deleteUser/:id", checkToken, DeleteUser);
@@ -414,12 +422,6 @@ server.get(
   "/conversations",
   checkToken,
   getConversations
-);
-
-server.get(
-  "/users/search",
-  checkToken,
-  searchUsers
 );
 
 server.put(
