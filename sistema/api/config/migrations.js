@@ -106,6 +106,25 @@ async function ensureUsersColumns() {
         });
         console.log("Columna users.gender actualizada con las opciones actuales");
     }
+
+    // Columnas de sanción: sequelize.sync() no las agrega a tablas ya existentes.
+    const banColumns = {
+        bannedUntil: {
+            type: DataTypes.DATE,
+            allowNull: true
+        },
+        banReason: {
+            type: DataTypes.STRING(255),
+            allowNull: true
+        }
+    };
+
+    for (const [name, definition] of Object.entries(banColumns)) {
+        if (table[name]) continue;
+
+        await queryInterface.addColumn("users", name, definition);
+        console.log(`Columna agregada a users: ${name}`);
+    }
 }
 
 module.exports = { ensureMessagesColumns, ensureUsersColumns };

@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken');
-const {User} = require('../models/User');
+const { User } = require('../models/User');
+const Role = require('../models/Role');
+const { buildBanPayload, clearExpiredBan } = require('../services/banService');
 
 
 const checkToken = async (req, res, next) => {
@@ -15,10 +17,8 @@ const checkToken = async (req, res, next) => {
         const token = authHeader.replace(/^Bearer\s+/i, '').trim();
 
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        console.log(decoded)
 
         const user = await User.findByPk(decoded.userId);
-        console.log(user)
 
         if (!user) {
             return res.status(404).json({
@@ -28,6 +28,15 @@ const checkToken = async (req, res, next) => {
             });
         }
 
+        // Una sanción vigente bloquea CUALQUIER endpoint autenticado.
+        const ban = buildBanPayload(user);
+        if (ban) {
+            return res.status(403).json(ban);
+        }
+
+        // Sanción vencida: se limpia para que la cuenta vuelva a estar habilitada.
+        await clearExpiredBan(user);
+
         req.user = user;
 
         next();
@@ -36,6 +45,26 @@ const checkToken = async (req, res, next) => {
         console.error(error);
         return res.status(401).json({
             message: 'Token inválido o expirado'
+        });
+    }
+};
+
+// Debe usarse siempre después de checkToken.
+const checkAdmin = async (req, res, next) => {
+    try {
+        const role = await Role.findByPk(req.user.idRole);
+
+        if (!role || role.role !== 'Admin') {
+            return res.status(403).json({
+                message: 'No está autorizado para realizar esta acción'
+            });
+        }
+
+        next();
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: 'Error al verificar los permisos'
         });
     }
 };
@@ -67,5 +96,6 @@ const IsAuth = async (req, res, next) => {
 
 module.exports = {
     checkToken,
+    checkAdmin,
     IsAuth
 };

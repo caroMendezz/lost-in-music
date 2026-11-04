@@ -8,15 +8,17 @@ const upload = require("./middlewares/upload");
 const uploadPostMedia = require("./middlewares/uploadPostMedia");
 const auditLog = require("./middlewares/auditLog");
 const {uploadFile} = require("./controllers/uploads");
-const { Login, Register, DeleteUser, UpdateUser} = require('./controllers/users')
+const { Login, Register, DeleteUser, UpdateUser, GetSession } = require('./controllers/users')
+const { listUsers, banUser, unbanUser } = require('./controllers/admin')
 const {createPost, deletePost, updatePost, getPosts, getPostById, getReplies, toggleLike} = require('./controllers/posts')
 const {createRole} = require('./controllers/roles')
 const {SendVerificationCode, CheckVerificationCode} = require('./controllers/verify')
-const {checkToken } = require('./middlewares/auth')
+const { checkToken, checkAdmin } = require('./middlewares/auth')
 const {getMessages, getConversations, deleteConversationForUser, getUserById, markAsRead, searchUsers} = require('./controllers/messages')
 const {createProduct, deleteProduct, updateProduct} = require('./controllers/products')
 const setupChat = require("./sockets/chat");
 const { setupPresence } = require("./sockets/presence");
+const { setupAccount } = require("./sockets/account");
 const {
   getFriends, getFriendRequests, searchPeople,
   sendFriendRequest, acceptFriendRequest, removeFriendship
@@ -62,8 +64,14 @@ server.post('/CreateRole', createRole);
 
 server.post('/login', Login);
 server.post('/register', Register);
+server.get('/session', checkToken, GetSession);
 server.patch('/deleteUser/:id',checkToken, DeleteUser);
 server.patch('/updateUser/:id',checkToken, UpdateUser);
+
+// Administración: listado, sanción temporal y levantamiento de sanción
+server.get('/admin/users', checkToken, checkAdmin, listUsers);
+server.patch('/admin/users/:id/ban', checkToken, checkAdmin, banUser);
+server.delete('/admin/users/:id/ban', checkToken, checkAdmin, unbanUser);
 
 server.post('/CreatePost', checkToken, uploadPostMedia, createPost);
 server.patch('/DeletePost/:id',checkToken, deletePost);
@@ -102,12 +110,15 @@ server.delete("/notifications", checkToken, clearNotifications);
 
 server.post("/Upload", checkToken, upload.single("file"), uploadFile);
 server.use("/uploads", express.static(path.join(__dirname, "uploads")));
+// Imagen predeterminada de perfil (se asigna a quien se registra sin foto)
+server.use("/assets", express.static(path.join(__dirname, "public")));
 
 // Permite que los controladores HTTP (por ejemplo markAsRead) emitan eventos por socket
 server.set("io", io);
 
 setupChat(io);
 setupPresence(io);
+setupAccount(io);
 
 const start = async () => {
   await sequelize.sync();

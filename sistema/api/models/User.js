@@ -2,6 +2,10 @@ const sequelize = require("../config/db");
 const { DataTypes} = require("sequelize")
 const Role = require("./Role");
 
+// Foto de perfil que recibe automáticamente toda cuenta que no sube una imagen.
+// El archivo se sirve desde el backend en /assets/default-profile.png
+const DEFAULT_PROFILE_PHOTO = "/assets/default-profile.png";
+
 const User = sequelize.define('User', {
   userId: {
     type: DataTypes.INTEGER(11),
@@ -65,6 +69,7 @@ const User = sequelize.define('User', {
   profilePhoto: { //
     type: DataTypes.TEXT('long'), // Permite guardar cadenas Base64 muy grandes
     allowNull: false,
+    defaultValue: DEFAULT_PROFILE_PHOTO,
   },
   banner: { //
     type: DataTypes.STRING(255),
@@ -82,6 +87,18 @@ const User = sequelize.define('User', {
     type: DataTypes.STRING(150),
     allowNull: false,
   },
+  // Sanción temporal aplicada por un administrador.
+  // bannedUntil null = sin sanción vigente.
+  bannedUntil: {
+    type: DataTypes.DATE,
+    allowNull: true,
+    defaultValue: null,
+  },
+  banReason: {
+    type: DataTypes.STRING(255),
+    allowNull: true,
+    defaultValue: null,
+  },
 
 });
 
@@ -91,5 +108,6 @@ User.belongsTo(Role, {
 });
 
 module.exports = {
-  User
+  User,
+  DEFAULT_PROFILE_PHOTO,
 };

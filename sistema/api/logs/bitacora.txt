@@ -15,3 +15,15 @@ fecha=2026-10-29 00:35:46.072 -03:00 | timestamp=1793244946072 | usuario=caropMe
 fecha=2026-10-29 00:36:16.371 -03:00 | timestamp=1793244976371 | usuario=caropMendez (id 3) | endpoint=POST /CreatePost | status=500 | duracion=10043ms | ip=::1 | token=sha256:4629c303e1b19622
 fecha=2026-10-29 00:38:13.454 -03:00 | timestamp=1793245093454 | usuario=zzz_t6_1793245093 (sin sesión) | endpoint=POST /register | status=201 | duracion=124ms | ip=::1 | token=sin-token
 fecha=2026-10-29 00:38:13.646 -03:00 | timestamp=1793245093646 | usuario=zzz_t6_1793245093 (sin sesión) | endpoint=POST /login | status=200 | duracion=87ms | ip=::1 | token=sin-token
+fecha=2026-11-03 20:43:01.026 -03:00 | timestamp=1793749381026 | usuario=caro@gmail.com (sin sesión) | endpoint=POST /login | status=400 | duracion=90ms | ip=::1 | token=sin-token
+fecha=2026-11-03 20:43:25.535 -03:00 | timestamp=1793749405535 | usuario=cartulinas (sin sesión) | endpoint=POST /register | status=400 | duracion=88ms | ip=::1 | token=sin-token
+fecha=2026-11-03 21:22:31.462 -03:00 | timestamp=1793751751462 | usuario=cartus (sin sesión) | endpoint=POST /register | status=201 | duracion=306ms | ip=::1 | token=sin-token
+fecha=2026-11-03 21:22:37.856 -03:00 | timestamp=1793751757856 | usuario=cartus@gmail.com (sin sesión) | endpoint=POST /login | status=200 | duracion=153ms | ip=::1 | token=sin-token
+fecha=2026-11-03 21:22:40.511 -03:00 | timestamp=1793751760511 | usuario=cartus (id 4) | endpoint=POST /CreatePost | status=201 | duracion=101ms | ip=::1 | token=sha256:7baedc1850a34924
+fecha=2026-11-03 21:59:49.807 -03:00 | timestamp=1793753989807 | usuario=caropapa (sin sesión) | endpoint=POST /register | status=201 | duracion=261ms | ip=::1 | token=sin-token
+fecha=2026-11-03 21:59:59.269 -03:00 | timestamp=1793753999269 | usuario=caropapa@gmail.com (sin sesión) | endpoint=POST /login | status=200 | duracion=146ms | ip=::1 | token=sin-token
+fecha=2026-11-03 22:00:00.930 -03:00 | timestamp=1793754000930 | usuario=caropapa (id 5) | endpoint=POST /CreatePost | status=201 | duracion=25ms | ip=::1 | token=sha256:0dad75c6b9c6e863
+fecha=2026-11-03 22:00:38.698 -03:00 | timestamp=1793754038698 | usuario=caropapa@gmail.com (sin sesión) | endpoint=POST /login | status=200 | duracion=91ms | ip=::1 | token=sin-token
+fecha=2026-11-03 22:46:49.829 -03:00 | timestamp=1793756809829 | usuario=dasasd (sin sesión) | endpoint=POST /register | status=201 | duracion=336ms | ip=::1 | token=sin-token
+fecha=2026-11-03 22:46:55.425 -03:00 | timestamp=1793756815425 | usuario=dasasd@gmail.com (sin sesión) | endpoint=POST /login | status=200 | duracion=139ms | ip=::1 | token=sin-token
+fecha=2026-11-03 22:46:57.906 -03:00 | timestamp=1793756817906 | usuario=dasasd (id 6) | endpoint=POST /CreatePost | status=201 | duracion=106ms | ip=::1 | token=sha256:c5f22ee6af1bdf86

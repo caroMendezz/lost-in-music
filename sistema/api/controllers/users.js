@@ -1,7 +1,8 @@
-const { User } = require("../models/User");
+const { User, DEFAULT_PROFILE_PHOTO } = require("../models/User");
 const { Op } = require("sequelize");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { buildBanPayload, clearExpiredBan } = require("../services/banService");
 
 
 const Login = async (req, res) => {
@@ -29,6 +30,15 @@ const Login = async (req, res) => {
     if (!compare)
       return res.status(400).json({ message: "Usuario o password incorrecta" });
 
+    // Sanción vigente: no se entrega token aunque las credenciales sean correctas.
+    const ban = buildBanPayload(user);
+    if (ban) {
+      return res.status(403).json(ban);
+    }
+
+    // Sanción vencida: se limpia y el usuario puede volver a ingresar normalmente.
+    await clearExpiredBan(user);
+
     const token = jwt.sign(
       { userId: user.userId, idRole: user.idRole },
       process.env.JWT_SECRET,
@@ -43,9 +53,32 @@ const Login = async (req, res) => {
   }
 };
 
+// GET /session -> valida el token y confirma que la cuenta no está sancionada.
+// checkToken ya rechazó con 403 { code: "BANNED" } si la sanción está vigente.
+const GetSession = async (req, res) => {
+  const user = req.user;
+
+  return res.status(200).json({
+    user: {
+      userId: user.userId,
+      username: user.username,
+      email: user.email,
+      idRole: user.idRole,
+      profilePhoto: user.profilePhoto,
+    },
+    banned: false,
+  });
+};
+
 const Register = async (req, res) => {
   const { email, username, password, gender, profilePhoto, birthDate} =
     req.body;
+
+  // La foto es opcional: si no viene (null, undefined o vacía) se asigna la
+  // imagen predeterminada en lugar de fallar la validación del modelo.
+  const chosenPhoto =
+    typeof profilePhoto === "string" ? profilePhoto.trim() : "";
+  const assignedPhoto = chosenPhoto || DEFAULT_PROFILE_PHOTO;
 
   if (password) req.body.password = "[REDACTED]";
 
@@ -71,7 +104,7 @@ const Register = async (req, res) => {
       description: "agregar descripcion",
       followerAmount: 0,
       followingAmount: 0,
-      profilePhoto,
+      profilePhoto: assignedPhoto,
       banner: "vacio",
       friendId: 2,
       ubication: "Agregar ubicacion",
@@ -164,4 +197,5 @@ module.exports = {
   Register,
   DeleteUser,
   UpdateUser,
+  GetSession,
 };

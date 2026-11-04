@@ -140,7 +140,7 @@ function PasswordRecovery({ goToLogin }) {
 
               <div className="login-input-group">
                 <label className="login-label">
-                  Correo electrónico o teléfono
+                  Correo electrónico
                 </label>
 
                 <input

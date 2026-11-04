@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { Routes, Route } from "react-router-dom";
 
 import "./styles/App.css";
-import "./styles/aero.css";
+import "./styles/aero.module.css";
 
 import Register from "./components/register";
 import Navbar from "./components/shopinvivo/Navbar";
@@ -25,6 +25,8 @@ import { LangProvider } from "./components/LangContext";
 import { FriendsProvider } from "./components/FriendsContext";
 import FriendsPage from "./pages/FriendsPage";
 import MessagesPage from "./pages/messages/MessagesPage";
+import AdminPage from "./pages/admin";
+import SessionGuard from "./components/SessionGuard";
 
 function Marketplace() {
   return (
@@ -165,8 +167,9 @@ export default function App() {
 
   return (
     <LangProvider>
-      <FriendsProvider>
-        <Routes>
+      <SessionGuard>
+        <FriendsProvider>
+          <Routes>
           <Route
             path="/"
             element={
@@ -213,6 +216,7 @@ export default function App() {
           <Route path="/messages" element={<MessagesPage />} />
 
           {/* Resto de la red social */}
+          <Route path="/admin" element={<AdminPage />} />
           <Route path="/amigos" element={<FriendsPage />} />
           <Route path="/post/:id" element={<PostPage />} />
           <Route path="/settings" element={<Configuracion />} />
@@ -240,8 +244,9 @@ export default function App() {
               />
             }
           />
-        </Routes>
-      </FriendsProvider>
+          </Routes>
+        </FriendsProvider>
+      </SessionGuard>
     </LangProvider>
   );
 }
