@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../services/http';
-import '../styles/register.css';
 import { useLang } from './LangContext';
 import LangSelector from './LangSelector';
 import '../styles/Register.css';
@@ -29,19 +28,6 @@ const GENDER_BACKEND = {
   no_decir   : 'PrefieroNoDecir',
 };
 
-const GENEROS = [
-  { id: 'masculino',      label: 'Masculino',         icon: '♂' },
-  { id: 'femenino',       label: 'Femenino',           icon: '♀' },
-  { id: 'no_binario',     label: 'No binario',         icon: '⚧' },
-  { id: 'otro',           label: 'Otro',               icon: '✦' },
-  { id: 'no_decir',       label: 'Prefiero no decir',  icon: '—' },
-];
-
-const MONTHS = [
-  'Enero','Febrero','Marzo','Abril','Mayo','Junio',
-  'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'
-];
-
 const currentYear = new Date().getFullYear();
 const YEARS = Array.from({ length: 100 }, (_, i) => currentYear - 13 - i);
 const DAYS = Array.from({ length: 31 }, (_, i) => i + 1);
@@ -50,6 +36,7 @@ export default function Register({ onLoginClick, goToLogin }) {
   // La pantalla de acceso le pasa el callback con dos nombres distintos según el lugar.
   const backToLogin = onLoginClick || goToLogin;
   const navigate = useNavigate();
+  const { t } = useLang();
 
   //paso actual
   const [step, setStep] = useState(0);
@@ -64,6 +51,8 @@ export default function Register({ onLoginClick, goToLogin }) {
   const [showConfirm, setShowConfirm] = useState(false);
   const [touched, setTouched] = useState({});
   const [isPlaying, setIsPlaying] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const bgMusicRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -148,6 +137,12 @@ export default function Register({ onLoginClick, goToLogin }) {
 
     if (missingProfileData) {
       setSubmitError('Completá el género y la fecha de nacimiento para crear la cuenta.');
+      return;
+    }
+
+    const d = new Date(Number(formData.anio), Number(formData.mes) - 1, Number(formData.dia));
+    if (d.getMonth() !== Number(formData.mes) - 1) {
+      setSubmitError('La fecha de nacimiento no es válida.');
       return;
     }
 
@@ -332,7 +327,7 @@ export default function Register({ onLoginClick, goToLogin }) {
 
               <p className="register-login-link">
                 {t.register.alreadyAccount}
-                <a href="#" onClick={(e) => { e.preventDefault(); goToLogin?.(); }}>{t.register.loginLink}</a>
+                <a href="#" onClick={(e) => { e.preventDefault(); backToLogin?.(); }}>{t.register.loginLink}</a>
               </p>
             </div>
 
@@ -430,6 +425,8 @@ export default function Register({ onLoginClick, goToLogin }) {
                   <p className="register-hint hint-error">Completá día, mes y año</p>
                 )}
 
+                {submitError && <p className="register-hint hint-error">{submitError}</p>}
+
                 <div className="reg-btns-row">
                   <button type="button" className="register-btn register-btn--back" onClick={goToStep1}>
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style={{ marginRight: 6 }}>
@@ -437,8 +434,8 @@ export default function Register({ onLoginClick, goToLogin }) {
                     </svg>
                     {t.register.btnBack}
                   </button>
-                  <button type="submit" className="register-btn register-btn--final">
-                    {t.register.btnSubmit}
+                  <button type="submit" className="register-btn register-btn--final" disabled={submitting}>
+                    {submitting ? '...' : t.register.btnSubmit}
                   </button>
                 </div>
               </form>
@@ -450,7 +447,6 @@ export default function Register({ onLoginClick, goToLogin }) {
   );
 }
 
-// ... (Los componentes Field, EyeBtn, ChevronDown, UserIcon, MailIcon, LockIcon quedan EXACTAMENTE IGUAL que en tu código original) ...
 function Field({ label, icon, error, valid, children, hasToggle }) {
   return (
     <div className="register-field-group">
