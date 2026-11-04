@@ -386,13 +386,13 @@ function Post({ post, onLike, onOpenPost, onDelete, onEdit, now, canDelete = fal
 
       <div className="post-actions">
         <button type="button" className={post.liked ? 'post-liked-btn' : 'post-action-btn'} aria-pressed={Boolean(post.liked)} onClick={() => onLike?.(postId)}>
-          ♪ {t.post.like}
+          {t.post.like}
         </button>
         <button type="button" className="post-action-btn" onClick={handleComment}>
-          💬 {t.post.comment}
+          {t.post.comment}
         </button>
         <button type="button" className="post-action-btn" onClick={handleShare}>
-          {copied ? `✔ ${t.post.linkCopied}` : `↗ ${t.post.share}`}
+          {copied ? `✔ ${t.post.linkCopied}` : ` ${t.post.share}`}
         </button>
       </div>
 
