@@ -140,7 +140,7 @@ export default function ProductGrid({ refreshKey = 0, filter = { category: "" },
     <div className={aero["main-col"]}>
       <GlassPanel className={aero["search-live"]}>
         <div className={aero["search-live-shell"]}>
-          <Search size={16} color="#cfe8f0" />
+          <Search size={16} color="#5b7180" />
           <input
             placeholder="Buscar en Shop in vivo"
             value={query}

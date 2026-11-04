@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import '../styles/UserProfile.css';
+import '../styles/userProfile.css';
 import '../styles/userProfileAdmin.css';
 import '../styles/FriendsProfile.css'; // 👈 CSS de amigos
 import Post from './post.jsx';

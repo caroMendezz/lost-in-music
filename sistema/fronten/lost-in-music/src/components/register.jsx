@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../services/http';
+import ImageCropperModal from './ImageCropperModal';
 import '../styles/register.css';
 
 const calcPasswordStrength = (pwd) => {
@@ -71,6 +72,8 @@ export default function Register({ onLoginClick, goToLogin }) {
   const [touched,setTouched] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
+  // Archivo pendiente de recortar (abre la ventana de ajuste de la foto)
+  const [cropFile, setCropFile] = useState(null);
 
   const fileInputRef= useRef(null);
   const sliderRef = useRef(null);
@@ -87,15 +90,38 @@ export default function Register({ onLoginClick, goToLogin }) {
 
   const handleBlur = (name) => setTouched((p) => ({ ...p, [name]: true }));
 
-  // Foto de perfil
+  // Foto de perfil: se valida el archivo y se abre la ventana para ajustarla
   const handleFile = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
+    e.target.value = ''; // permite volver a elegir el mismo archivo
+
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) =>
-      setFormData((p) => ({ ...p, fotoPerfil: file, fotoPreview: ev.target.result }));
-    reader.readAsDataURL(file);
+
+    if (!file.type.startsWith('image/')) {
+      alert('El archivo debe ser una imagen (PNG, JPG, etc.).');
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert('La imagen no puede superar los 5 MB.');
+      return;
+    }
+
+    setCropFile(file);
   };
+
+  // El modal devuelve la imagen ya recortada y ajustada (cuadrada)
+  const handleCropConfirm = (croppedDataUrl) => {
+    setFormData((p) => ({
+      ...p,
+      fotoPerfil: null,
+      fotoPreview: croppedDataUrl,
+    }));
+    setCropFile(null);
+  };
+
+  // Si cancela el ajuste no se guarda la imagen elegida
+  const handleCropCancel = () => setCropFile(null);
 
   const removePhoto = () =>
     setFormData((p) => ({ ...p, fotoPerfil: null, fotoPreview: null }));
@@ -549,6 +575,15 @@ export default function Register({ onLoginClick, goToLogin }) {
         </div>{/* /reg-slider-viewport */}
 
       </div>{/* /register-card */}
+
+      {/* Ventana para ajustar tamaño y posición de la foto de perfil */}
+      {cropFile && (
+        <ImageCropperModal
+          file={cropFile}
+          onConfirm={handleCropConfirm}
+          onCancel={handleCropCancel}
+        />
+      )}
     </div>
   );
 }

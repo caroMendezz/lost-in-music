@@ -18,7 +18,7 @@
 }
 
 .up-friend-item:hover {
-  background: rgba(0, 0, 0, 0.05); /* Ajustá el color según tu tema */
+  background: rgba(47, 127, 181, 0.08);
 }
 
 /* Foto de perfil del amigo */
@@ -27,7 +27,7 @@
   height: 36px;
   border-radius: 50%;
   object-fit: cover;
-  background: #ccc;
+  background: #d9f1ff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -38,6 +38,7 @@
 .up-friend-name {
   font-weight: 500;
   font-size: 14px;
+  color: #0c447c;
 }
 
 /* Botón "Ver todos" */
@@ -45,7 +46,7 @@
   margin-top: 10px;
   background: none;
   border: none;
-  color: #007bff; /* Azul por defecto, cambialo si querés */
+  color: #2f7fb5;
   cursor: pointer;
   font-size: 14px;
   font-weight: bold;

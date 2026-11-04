@@ -1,6 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/Header.css';
+import homeIcon from '../assets/home-icon.png';
+import settingsIcon from '../assets/settings-icon.png';
+import helpIcon from '../assets/help-icon.png';
+import logoIcon from '../assets/logo-icon.png';
 import { useLang } from './LangContext';
 
 import { useMyProfilePhoto } from '../hooks/useMyProfilePhoto';
@@ -129,6 +133,25 @@ function Header() {
   return (
     <header className="header-container">
 
+      {/* Logo + búsqueda: el logo queda pegado a la izquierda de la barra */}
+      <div className="header-left">
+
+      {/* --- LOGO (lleva al inicio) --- */}
+      <button
+        type="button"
+        className="header-logo-btn"
+        title="Lost In Music · Ir al inicio"
+        aria-label="Ir al inicio"
+        onClick={() => navigate('/feed')}
+      >
+        <img
+          src={logoIcon}
+          alt=""
+          aria-hidden="true"
+          className="header-logo-icon"
+        />
+      </button>
+
       {/* --- BARRA DE BÚSQUEDA --- */}
       <div className="header-searchbar" ref={searchRef} style={{ position: 'relative' }}>
         <span>🔍</span>
@@ -181,6 +204,7 @@ function Header() {
           </div>
         )}
       </div>
+      </div>
 
       {/* --- RESTO DEL HEADER (ICONOS Y PERFIL) --- */}
       <div className="header-icons">
@@ -190,11 +214,17 @@ function Header() {
 
         {/* 2. Inicio */}
         <button
-          className="header-icon-btn"
+          className="header-icon-btn header-icon-btn--image"
           title="Inicio"
+          aria-label="Inicio"
           onClick={() => navigate('/feed')}
         >
-          🏠
+          <img
+            src={homeIcon}
+            alt=""
+            aria-hidden="true"
+            className="header-img-icon"
+          />
         </button>
 
         {/* 3. Notificaciones */}
@@ -318,21 +348,32 @@ function Header() {
 
         {/* 5. Configuración */}
         <button
-          className="header-icon-btn"
+          className="header-icon-btn header-icon-btn--image"
           title="Configuración"
+          aria-label="Configuración"
           onClick={() => navigate('/settings')}
         >
-          ⚙️
+          <img
+            src={settingsIcon}
+            alt=""
+            aria-hidden="true"
+            className="header-img-icon"
+          />
         </button>
 
         {/* 6. Ayuda y contacto */}
         <button
-          className="header-icon-btn"
+          className="header-icon-btn header-icon-btn--image"
           title="Ayuda y contacto"
           aria-label="Ayuda y contacto"
           onClick={() => navigate('/ayuda')}
         >
-          ❓
+          <img
+            src={helpIcon}
+            alt=""
+            aria-hidden="true"
+            className="header-img-icon"
+          />
         </button>
 
       </div>

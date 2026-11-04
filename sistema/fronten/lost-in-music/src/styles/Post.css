@@ -22,6 +22,13 @@
   z-index: 30;
 }
 
+/* Con el menú abierto, el header (donde vive el desplegable) tiene que quedar
+   por encima del editor inline y del contenido, que también usan z-index 1.
+   Sin esto el menú quedaba tapado por el área de edición. */
+.post-container--menu-open .post-header {
+  z-index: 40;
+}
+
 .post-container::before {
   content: "";
   position: absolute;
@@ -252,6 +259,7 @@
 .post-menu-dropdown {
   position: absolute;
   top: calc(100% + 6px);
+  right: 0;
 
   min-width: 148px;
 

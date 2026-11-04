@@ -21,6 +21,37 @@
     z-index: 20;
 }
 
+/* Logo + barra de búsqueda agrupados a la izquierda */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* Logo de la página, a la izquierda de la barra de búsqueda */
+.header-logo-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+.header-logo-icon {
+  display: block;
+  width: 45px;
+  height: 45px;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
+}
+
 .header-searchbar {
   display: flex;
   align-items: center;
@@ -43,8 +74,8 @@
 }
 
 .header-icon-btn {
-  width: 28px;
-  height: 28px;
+  width: 33px;
+  height: 33px;
   border-radius: 50%;
   background: linear-gradient(180deg, #aee0fa 0%, #4a9fe8 100%);
   border: 1px solid rgba(255, 255, 255, 0.8);
@@ -53,4 +84,20 @@
   justify-content: center;
   font-size: 14px;
   cursor: pointer;
+}
+
+/* Los íconos con imagen son ellos mismos el botón: sin fondo ni borde extra */
+.header-icon-btn--image {
+  padding: 0;
+  background: none;
+  border: none;
+}
+
+.header-img-icon {
+  display: block;
+  width: 35px;
+  height: 35px;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
 }
