@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import "../styles/fondoAcceso.css";
+import "../styles/FondoAcceso.css";
 import MusicPlayerMini from "./MusicPlayerMini";
 
 export default function FondoAcceso({ children }) {
