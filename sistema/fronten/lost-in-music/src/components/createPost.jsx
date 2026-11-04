@@ -17,22 +17,18 @@ function getTextareaSizeClass(text) {
 function CreatePost({ onPost, title, placeholder, publishLabel, autoFocus = false }) {
   const { t } = useLang();
   const cp = t.createPost;
-  // Foto de perfil del usuario logueado para el avatar del cuadro de publicación
   const myPhoto = useMyProfilePhoto();
 
   const [content, setContent] = useState('');
-  // [{ file, preview, type: 'image' | 'video' }]
   const [media, setMedia] = useState([]);
   const textareaRef = useRef(null);
   const mediaRef = useRef([]);
   mediaRef.current = media;
 
-  // Liberar las URLs de preview al desmontar
   useEffect(() => {
     return () => mediaRef.current.forEach((m) => URL.revokeObjectURL(m.preview));
   }, []);
 
-  // Para usarlo como cuadro de respuesta: enfoca el textarea al abrir
   useEffect(() => {
     if (autoFocus) textareaRef.current?.focus();
   }, [autoFocus]);
@@ -73,7 +69,7 @@ function CreatePost({ onPost, title, placeholder, publishLabel, autoFocus = fals
 
       const maxMb = isImage ? MAX_IMAGE_MB : MAX_VIDEO_MB;
       if (file.size > maxMb * 1024 * 1024) {
-        alert(`"${file.name}" supera el máximo de ${maxMb} MB`);
+        alert(`"${file.name}" ${t.post.exceeds} ${maxMb} MB`); // 👈 Traducido
         continue;
       }
       accepted.push({

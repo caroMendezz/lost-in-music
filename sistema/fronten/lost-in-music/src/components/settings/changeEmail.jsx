@@ -1,7 +1,8 @@
-
 import React, { useState } from "react";
+import { useLang } from "../LangContext";
 
 function ChangeEmail() {
+  const { t } = useLang();
   const [email, setEmail] = useState("");
   const [confirm, setConfirm] = useState("");
   const [password, setPassword] = useState("");
@@ -23,7 +24,7 @@ function ChangeEmail() {
 
     if (email.trim().toLowerCase() !== confirm.trim().toLowerCase()) {
       setMessage({
-        text: "Los correos electrónicos no coinciden.",
+        text: t.settings.changeEmail.errorMismatch,
         type: "error",
       });
       return;
@@ -33,7 +34,7 @@ function ChangeEmail() {
 
     if (!token) {
       setMessage({
-        text: "Tu sesión no está activa. Iniciá sesión nuevamente.",
+        text: t.settings.changeEmail.errorSession,
         type: "error",
       });
       return;
@@ -61,7 +62,7 @@ function ChangeEmail() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "No se pudo solicitar el cambio.");
+        throw new Error(data.message || t.settings.changeEmail.errorGeneric);
       }
 
       setCodeSent(true);
@@ -72,7 +73,7 @@ function ChangeEmail() {
       });
     } catch (error) {
       setMessage({
-        text: error.message || "Error de conexión con el servidor.",
+        text: error.message || t.settings.changeEmail.errorGeneric,
         type: "error",
       });
     } finally {
@@ -88,7 +89,7 @@ function ChangeEmail() {
 
     if (!token) {
       setMessage({
-        text: "Tu sesión no está activa. Iniciá sesión nuevamente.",
+        text: t.settings.changeEmail.errorSession,
         type: "error",
       });
       return;
@@ -96,7 +97,7 @@ function ChangeEmail() {
 
     if (!/^\d{6}$/.test(code.trim())) {
       setMessage({
-        text: "Ingresá el código de seis dígitos.",
+        text: t.settings.changeEmail.errorCode,
         type: "error",
       });
       return;
@@ -120,7 +121,7 @@ function ChangeEmail() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "No se pudo confirmar el cambio.");
+        throw new Error(data.message || t.settings.changeEmail.errorGeneric);
       }
 
       setEmail("");
@@ -135,7 +136,7 @@ function ChangeEmail() {
       });
     } catch (error) {
       setMessage({
-        text: error.message || "Error de conexión con el servidor.",
+        text: error.message || t.settings.changeEmail.errorGeneric,
         type: "error",
       });
     } finally {
@@ -145,7 +146,7 @@ function ChangeEmail() {
 
   return (
     <section className="config-section">
-      <h3>Cambiar correo electrónico</h3>
+      <h3>{t.settings.changeEmail.title}</h3>
 
       {message.text && (
         <p
@@ -160,7 +161,7 @@ function ChangeEmail() {
       {!codeSent ? (
         <form className="config-form" onSubmit={handleRequest}>
           <label>
-            Contraseña actual
+            {t.settings.changeEmail.currentPass}
             <input
               type="password"
               value={password}
@@ -171,24 +172,24 @@ function ChangeEmail() {
           </label>
 
           <label>
-            Nuevo correo
+            {t.settings.changeEmail.newEmail}
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="ejemplo@gmail.com"
+              placeholder={t.settings.changeEmail.placeholderEmail}
               autoComplete="email"
               required
             />
           </label>
 
           <label>
-            Confirmar correo
+            {t.settings.changeEmail.confirmEmail}
             <input
               type="email"
               value={confirm}
               onChange={(e) => setConfirm(e.target.value)}
-              placeholder="ejemplo@gmail.com"
+              placeholder={t.settings.changeEmail.placeholderEmail}
               autoComplete="off"
               required
             />
@@ -200,19 +201,16 @@ function ChangeEmail() {
               className="btn-primary"
               disabled={loading}
             >
-              {loading ? "Enviando..." : "Solicitar cambio"}
+              {loading ? t.settings.changeEmail.sending : t.settings.changeEmail.btnRequest}
             </button>
           </div>
         </form>
       ) : (
         <form className="config-form" onSubmit={handleConfirm}>
-          <p>
-            Ingresá el código de seis dígitos que enviamos al nuevo
-            correo electrónico.
-          </p>
+          <p>{t.settings.changeEmail.codeInstruction}</p>
 
           <label>
-            Código de verificación
+            {t.settings.changeEmail.codeLabel}
             <input
               type="text"
               inputMode="numeric"
@@ -222,7 +220,7 @@ function ChangeEmail() {
               onChange={(e) =>
                 setCode(e.target.value.replace(/\D/g, "").slice(0, 6))
               }
-              placeholder="123456"
+              placeholder={t.settings.changeEmail.placeholderCode}
               autoComplete="one-time-code"
               required
             />
@@ -234,7 +232,7 @@ function ChangeEmail() {
               className="btn-primary"
               disabled={loading}
             >
-              {loading ? "Verificando..." : "Confirmar cambio"}
+              {loading ? t.settings.changeEmail.verifying : t.settings.changeEmail.btnConfirm}
             </button>
 
             <button
@@ -247,7 +245,7 @@ function ChangeEmail() {
                 setMessage({ text: "", type: "" });
               }}
             >
-              Cancelar
+              {t.settings.changeEmail.btnCancel}
             </button>
           </div>
         </form>

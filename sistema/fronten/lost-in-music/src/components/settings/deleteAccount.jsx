@@ -1,31 +1,31 @@
-// File: src/components/settings/DeleteAccount.jsx
 import React, { useState } from 'react';
+import { useLang } from '../LangContext';
 
 function DeleteAccount() {
+  const { t } = useLang();
   const [confirmText, setConfirmText] = useState('');
 
   return (
     <section className="config-section danger">
-      <h3>Eliminar cuenta</h3>
+      <h3>{t.settings.deleteAccount.title}</h3>
 
       <p className="muted">
-        Eliminar tu cuenta es irreversible. Recomendamos desactivarla o exportar
-        los datos antes.
+        {t.settings.deleteAccount.warning}
       </p>
 
       <form className="config-form">
         <label>
-          Escribe <strong>ELIMINAR</strong> para confirmar
+          <span dangerouslySetInnerHTML={{ __html: t.settings.deleteAccount.typeToConfirm }} />
           <input
             value={confirmText}
             onChange={(e) => setConfirmText(e.target.value)}
-            placeholder="ELIMINAR"
+            placeholder={t.settings.deleteAccount.placeholderConfirm}
           />
         </label>
 
         <div className="form-actions">
           <button type="submit" className="btn-danger">
-            Eliminar cuenta
+            {t.settings.deleteAccount.btnDelete}
           </button>
         </div>
       </form>
