@@ -1,10 +1,9 @@
 import React, { useState, useCallback } from "react";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
 import "./styles/App.css";
 import "./styles/aero.module.css";
 
-import Register from "./components/register";
 import Shopinvivo from "./pages/shopinvivo";
 
 import Header from "./components/header";
@@ -209,7 +208,9 @@ export default function App() {
           />
 
           {/* Registro y Shopinvivo */}
-          <Route path="/register" element={<Register />} />
+          {/* El registro se hace dentro de /acceso, que es donde vive el fondo
+              compartido (música, reproductor y burbujas). */}
+          <Route path="/register" element={<Navigate to="/acceso" replace />} />
           <Route path="/shopinvivo" element={<Shopinvivo />} />
           <Route path="/marketplace" element={<Shopinvivo />} />
           <Route path="/marketplace" element={<Marketplace />} />

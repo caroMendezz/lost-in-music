@@ -1,8 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../services/http';
 import '../styles/register.css';
-import MusicPlayerMini from './MusicPlayerMini';
 
 const calcPasswordStrength = (pwd) => {
   if (!pwd) return 0;
@@ -70,32 +69,16 @@ export default function Register({ onLoginClick, goToLogin }) {
   const [showPassword,setShowPassword] = useState(false);
   const [showConfirm,setShowConfirm]= useState(false);
   const [touched,setTouched] = useState({});
-  const [isPlaying,setIsPlaying] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
-  // Archivo pendiente de recortar (abre el modal de edición)
-  const [cropFile, setCropFile] = useState(null);
-  const [photoError, setPhotoError] = useState(null);
 
-  const bgMusicRef= useRef(null);
   const fileInputRef= useRef(null);
   const sliderRef = useRef(null);
 
-  //Audio
-  useEffect(() => {
-    bgMusicRef.current = new Audio('/background-music.mp3');
-    bgMusicRef.current.volume = 0.2;
-    bgMusicRef.current.loop   = true;
-    bgMusicRef.current.preload = 'auto';
-
-    bgMusicRef.current.play()
-      .then(() => setIsPlaying(true))
-      .catch(() => setIsPlaying(false));
-
-    return () => {
-      bgMusicRef.current?.pause();
-    };
-  }, []);
+  // La música de fondo, el reproductor y las burbujas los aporta FondoAcceso
+  // (el layout de /acceso). Antes este componente creaba su propio audio y su
+  // propio reproductor, así que al pasar de login a registro se escuchaba la
+  // canción dos veces y se veían dos reproductores y dos juegos de burbujas.
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -229,15 +212,6 @@ export default function Register({ onLoginClick, goToLogin }) {
 
   return (
     <div className="register-bg">
-
-      <MusicPlayerMini
-        audioRef={bgMusicRef}
-        isPlaying={isPlaying}
-        setIsPlaying={setIsPlaying}
-      />
-
-      {/*Burbujas*/}
-      {[1,2,3,4,5,6].map((n) => <div key={n} className={`bubble bubble-${n}`} />)}
 
       <div className="register-card">
 

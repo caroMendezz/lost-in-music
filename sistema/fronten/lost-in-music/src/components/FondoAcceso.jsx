@@ -27,6 +27,17 @@ export default function FondoAcceso({ children }) {
     };
   }, []);
 
+  // index.css fuerza la barra de scroll vertical en toda la app. En /acceso eso
+  // deja una franja blanca a la derecha del fondo, porque la imagen solo ocupa
+  // el ancho del contenido. Mientras este layout está montado ocultamos esa
+  // barra; si la tarjeta no entra en pantalla, scrollea .acceso-bg.
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.add("acceso-sin-scrollbar");
+
+    return () => root.classList.remove("acceso-sin-scrollbar");
+  }, []);
+
   return (
     <div className="acceso-bg">
 

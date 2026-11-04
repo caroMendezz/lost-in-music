@@ -1,3 +1,11 @@
+/* En /acceso la barra de scroll del navegador deja una franja blanca a la
+   derecha del fondo: la ocultamos mientras el layout de acceso está montado.
+   El scroll de la tarjeta, si hace falta, lo maneja .acceso-bg. */
+html.acceso-sin-scrollbar,
+html.acceso-sin-scrollbar body {
+  overflow-y: hidden !important;
+}
+
 .acceso-bg {
   width: 100%;
   height: 100vh;
