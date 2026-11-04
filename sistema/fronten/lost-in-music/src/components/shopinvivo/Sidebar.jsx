@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Home, Bell, Plus, ChevronRight } from "lucide-react";
+import { Home, Plus, ChevronRight } from "lucide-react";
 import UploadProductModal from "./UploadProductModal";
 import GlassPanel from "./GlassPanel";
 import { CATEGORIES } from "../../data/categories";
@@ -35,7 +35,6 @@ export default function Sidebar({ filter = { category: "" }, onFilterChange, onP
       >
         <Home size={17} /> Explorar todo
       </button>
-      <div className={aero["nav-link"]}><Bell size={17} /> Notificaciones</div>
       <button className={aero["upload-btn"]} type="button" onClick={() => setUploadOpen(true)}>
         <Plus size={16} /> Subir producto
       </button>

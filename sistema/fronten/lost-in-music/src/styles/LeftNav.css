@@ -56,6 +56,29 @@
   overflow: hidden;
 }
 
+/* Los ítems con imagen usan la imagen completa como botón: sin círculo de
+   fondo ni borde (inicio y mensajes) */
+.leftnav-icon--image,
+.leftnav-icon--image.leftnav-icon-active {
+  background: none;
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
+.leftnav-icon--image.leftnav-icon-active::before {
+  content: none;
+}
+
+.leftnav-image-icon {
+  display: block;
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: none;
+}
+
 .leftnav-icon-active::before {
   content: "";
   position: absolute;

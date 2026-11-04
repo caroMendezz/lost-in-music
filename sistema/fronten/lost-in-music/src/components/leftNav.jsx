@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useLang } from './LangContext';
+import homeIcon from '../assets/home-icon.png';
+import messagesIcon from '../assets/messages-icon.png';
+import shopIcon from '../assets/shop-icon.png';
+import friendsIcon from '../assets/friends-icon.png';
 import '../styles/LeftNav.css';
 
 // Pestaña que corresponde a la ruta actual (null = ninguna de las que navegan)
@@ -21,10 +25,10 @@ function LeftNav() {
   // Keys estables; las etiquetas vienen del diccionario.
   // `path` = a dónde navega el botón (los que no tienen path solo se resaltan, como antes)
   const navItems = [
-    { key: 'principal', label: n.principal, icon: '🏠', path: '/' },
-    { key: 'mensajes',  label: n.mensajes,  icon: '💬', path: '/messages' },
-    { key: 'shop',      label: n.shop,      icon: '🛍️', path: '/shopinvivo' },
-    { key: 'amigos',    label: n.amigos,    icon: '👥', path: '/amigos' },
+    { key: 'principal', label: n.principal, image: homeIcon, path: '/' },
+    { key: 'mensajes',  label: n.mensajes,  image: messagesIcon, path: '/messages' },
+    { key: 'shop',      label: n.shop,      image: shopIcon, path: '/shopinvivo' },
+    { key: 'amigos',    label: n.amigos,    image: friendsIcon, path: '/amigos' },
   ];
 
   const routeKey = getKeyFromPath(pathname);
@@ -48,8 +52,21 @@ function LeftNav() {
           className={`leftnav-item ${active === item.key ? 'leftnav-item-active' : ''}`}
           onClick={() => handleClick(item)}
         >
-          <div className={`leftnav-icon ${active === item.key ? 'leftnav-icon-active' : ''}`}>
-            {item.icon}
+          <div
+            className={`leftnav-icon ${active === item.key ? 'leftnav-icon-active' : ''} ${
+              item.image ? 'leftnav-icon--image' : ''
+            }`}
+          >
+            {item.image ? (
+              <img
+                src={item.image}
+                alt=""
+                aria-hidden="true"
+                className="leftnav-image-icon"
+              />
+            ) : (
+              item.icon
+            )}
           </div>
           <span>{item.label}</span>
         </div>

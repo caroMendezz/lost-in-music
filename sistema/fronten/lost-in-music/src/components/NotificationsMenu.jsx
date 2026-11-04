@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '../hooks/useNotifications';
 import { resolveMedia } from '../services/friendsApi';
+import bellIcon from '../assets/notifications-icon.png';
 import '../styles/Notifications.css';
 
 function timeAgo(dateValue) {
@@ -98,13 +99,19 @@ function NotificationsMenu() {
     <div className="notif-wrapper" ref={wrapperRef}>
       <button
         type="button"
-        className="header-icon-btn"
+        className="header-icon-btn header-icon-btn--image"
         title="Notificaciones"
+        aria-label="Notificaciones"
         aria-haspopup="true"
         aria-expanded={open}
         onClick={handleToggle}
       >
-        🔔
+        <img
+          src={bellIcon}
+          alt=""
+          aria-hidden="true"
+          className="header-img-icon"
+        />
       </button>
 
       {unreadCount > 0 && (

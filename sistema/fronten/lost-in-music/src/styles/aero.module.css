@@ -241,9 +241,10 @@
   height: 100%;
   border-radius: 0 !important;
   border: none !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.15) !important;
-  background: rgba(142, 196, 255, 0.885);
-  box-shadow: 4px 0 15px rgba(0, 0, 0, 0.3);
+  border-right: 1px solid rgba(255, 255, 255, 0.7) !important;
+  /* Mismo color que el menú lateral de /feed */
+  background: #d9f1ff;
+  box-shadow: none;
 }
 
 .nav-link {
@@ -349,9 +350,9 @@
 .sidebar-footer {
   margin-top: auto;
   padding-top: 14px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.6);
   font-size: 12px;
-  color: #9db6c4;
+  color: #5f5e5a;
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -369,32 +370,37 @@
 }
 
 .search-live {
-  padding: 16px 20px;
+  padding: 10px 14px;
+  /* Mismo color que el buscador del /feed */
+  background: #f5fbff;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 20px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .search-live-shell {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(108, 152, 255, 0.442);
+  background: transparent;
+  border: none;
   border-radius: 12px;
-  padding: 12px 16px;
+  padding: 2px;
 }
 
 .search-live-shell input {
   background: transparent;
   border: none;
   outline: none;
-  color: #ffffff;
-  caret-color: #ffffff;
+  color: #3f4d5b;
+  caret-color: #2f7fb5;
   font-size: 14px;
   width: 100%;
   font-family: 'Nunito Sans', sans-serif;
 }
 
 .search-live-shell input::placeholder {
-  color: #ffffffc9;
+  color: #6b7d8a;
 }
 
 .products-scroll {
@@ -1978,13 +1984,13 @@
   padding: 0;
   border: 0;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.18);
-  color: #eef7fb;
+  background: rgba(47, 127, 181, 0.12);
+  color: #2f7fb5;
   cursor: pointer;
 }
 
 .search-clear:hover {
-  background: rgba(255, 255, 255, 0.32);
+  background: rgba(47, 127, 181, 0.22);
 }
 
 .search-status {
@@ -1993,7 +1999,7 @@
   align-items: center;
   gap: 8px;
   margin-top: 10px;
-  color: #eaf6ff;
+  color: #3f5b6d;
   font-size: 12.5px;
 }
 
