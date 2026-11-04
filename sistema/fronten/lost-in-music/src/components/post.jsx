@@ -4,7 +4,7 @@ import ImageViewer from './ImageViewer';
 import ReportModal from './ReportModal';
 import { postUrl } from '../services/postsApi';
 import { useFriends } from './friendsContext';
-import { useLang } from './LangContext'; // 👈 Hook de idioma
+import { useLang } from './Langcontext'; // 👈 Hook de idioma
 import '../styles/Post.css';
 
 const SEE_MORE_LIMIT = 220;

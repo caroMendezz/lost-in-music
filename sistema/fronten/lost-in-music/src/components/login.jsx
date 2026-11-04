@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { clearSession, fetchSession } from "../services/session";
-import { useLang } from "./LangContext";
+import { useLang } from "./Langcontext";
 import LangSelector from "./LangSelector";
 import "../styles/login.css";
 

@@ -592,8 +592,8 @@ const start = async () => {
 
     await connectDB();
 
-    httpServer.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+    httpServer.listen(process.env.PORT_BACKEND, () => {
+      console.log(`Server running on port ${process.env.PORT_BACKEND}`);
     });
 
   } catch (error) {

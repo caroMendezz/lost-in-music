@@ -11,7 +11,7 @@ import {
 import './index.css';
 
 import App from './App.jsx';
-import { LangProvider } from './components/LangContext';
+import { LangProvider } from './components/Langcontext';
 
 import AccesoLayout from './pages/AccesoLayout';
 import Acceso from './pages/registerlogin/registerlogin';

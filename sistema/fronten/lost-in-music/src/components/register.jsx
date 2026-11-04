@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../services/http';
-import { useLang } from './LangContext';
+import { useLang } from './Langcontext';
 import LangSelector from './LangSelector';
 import '../styles/Register.css';
 import MusicPlayerMini from './MusicPlayerMini';

@@ -5,7 +5,7 @@ const translations = {
     header: {
       search: 'Buscar', searchPlaceholder: 'Buscar usuarios...', searching: 'Buscando...',
       noUsers: 'No se encontraron usuarios', notifications: 'Notificaciones', profile: 'Perfil',
-      home: 'Inicio', viewProfile: 'Ver perfil', logout: '🚪 Cerrar sesión', settings: 'Configuración',
+      home: 'Inicio', viewProfile: 'Ver perfil', logout: 'Cerrar sesión', settings: 'Configuración',
     },
     nav: { principal: 'Principal', mensajes: 'Mensajes', shop: 'Shop en vivo', amigos: 'Amigos', settings: 'Configuración', terms: 'Condiciones y políticas' },
     footer: { tagline: 'Conjuguando - Comunicamos y disfrutamos.', settings: 'Configuración', terms: 'Condiciones y políticas' },

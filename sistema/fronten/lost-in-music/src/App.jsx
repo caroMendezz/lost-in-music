@@ -212,6 +212,8 @@ export default function App() {
               compartido (música, reproductor y burbujas). */}
           <Route path="/register" element={<Navigate to="/acceso" replace />} />
           <Route path="/shopinvivo" element={<Shopinvivo />} />
+          {/* Link compartido de una publicación: abre su detalle en Shop in vivo */}
+          <Route path="/producto/:productId" element={<Shopinvivo />} />
           <Route path="/marketplace" element={<Shopinvivo />} />
           <Route path="/marketplace" element={<Marketplace />} />
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLang } from './LangContext';
+import { useLang } from './Langcontext';
 import '../styles/Langselector.css';
 
 function LangSelector() {

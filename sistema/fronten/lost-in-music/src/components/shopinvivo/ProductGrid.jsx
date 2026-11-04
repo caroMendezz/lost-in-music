@@ -75,7 +75,14 @@ function matchesQuery(product, term) {
 }
 
 // refreshKey cambia cuando se publica un producto: vuelve a pedir la lista
-export default function ProductGrid({ refreshKey = 0, filter = { category: "" }, onClearFilter }) {
+// initialProductId abre directamente el detalle del link compartido.
+export default function ProductGrid({
+  refreshKey = 0,
+  filter = { category: "" },
+  initialProductId,
+  onCloseLinkedProduct,
+  onClearFilter,
+}) {
   const [query, setQuery] = useState("");
   const [selected, setSelected] = useState(null);
   const [products, setProducts] = useState([]);
@@ -104,6 +111,28 @@ export default function ProductGrid({ refreshKey = 0, filter = { category: "" },
     }
     loadProducts();
   }, [loadProducts, refreshKey]);
+
+  // Link compartido (/producto/:id): cuando termina la carga se abre el detalle
+  // de esa publicación. Si ya no existe, se avisa sin romper la grilla.
+  useEffect(() => {
+    if (!initialProductId || loading) return;
+
+    const linked = products.find(
+      (product) => String(product.id) === String(initialProductId)
+    );
+
+    if (linked) {
+      setSelected(linked);
+    } else if (!error) {
+      showToast("La publicación del enlace no existe o fue eliminada.", "error");
+    }
+  }, [initialProductId, loading, products, error, showToast]);
+
+  // Cerrar un detalle abierto desde un link vuelve a la grilla de Shop in vivo.
+  const handleCloseProduct = useCallback(() => {
+    setSelected(null);
+    if (initialProductId) onCloseLinkedProduct?.();
+  }, [initialProductId, onCloseLinkedProduct]);
 
   // Una publicación eliminada se saca de la lista apenas el backend confirma la
   // baja, así no hace falta recargar todo el catálogo.
@@ -211,7 +240,7 @@ export default function ProductGrid({ refreshKey = 0, filter = { category: "" },
         <ProductModal
           product={selected}
           key={selected.id}
-          onClose={() => setSelected(null)}
+          onClose={handleCloseProduct}
           onUpdated={handleProductUpdated}
           onDeleted={handleProductDeleted}
         />

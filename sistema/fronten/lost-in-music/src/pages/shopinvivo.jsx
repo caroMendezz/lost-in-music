@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import aero from "../styles/aero.module.css";
 import Header from "../components/header";
 import Sidebar from "../components/shopinvivo/Sidebar";
@@ -10,6 +11,9 @@ export default function Shopinvivo() {
   const [refreshKey, setRefreshKey] = useState(0);
   // Filtro elegido en el left nav: { category: "", item?: "" }
   const [filter, setFilter] = useState({ category: "" });
+  // Link compartido (/producto/:productId): la grilla abre ese detalle.
+  const { productId } = useParams();
+  const navigate = useNavigate();
 
   return (
     <div className={aero["aero-root"]}>
@@ -24,6 +28,8 @@ export default function Shopinvivo() {
           <ProductGrid
             refreshKey={refreshKey}
             filter={filter}
+            initialProductId={productId}
+            onCloseLinkedProduct={() => navigate("/shopinvivo", { replace: true })}
             onClearFilter={() => setFilter({ category: "" })}
           />
           <RightSidebar />

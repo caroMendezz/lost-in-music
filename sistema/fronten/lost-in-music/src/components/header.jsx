@@ -5,7 +5,7 @@ import homeIcon from '../assets/home-icon.png';
 import settingsIcon from '../assets/settings-icon.png';
 import helpIcon from '../assets/help-icon.png';
 import logoIcon from '../assets/logo-icon.png';
-import { useLang } from './LangContext';
+import { useLang } from './Langcontext';
 
 import { useMyProfilePhoto } from '../hooks/useMyProfilePhoto';
 import LangSelector from './LangSelector';

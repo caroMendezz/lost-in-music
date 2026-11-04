@@ -3024,7 +3024,7 @@ function Header() {
                 onMouseEnter={(e) => e.target.style.background = '#f5f5f5'}
                 onMouseLeave={(e) => e.target.style.background = 'transparent'}
               >
-                🚪 Cerrar sesión
+                Cerrar sesión
               </button>
             </div>
           )}
