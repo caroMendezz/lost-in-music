@@ -1,6 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import "../styles/MusicPlayerMini.css";
 
+// Reproductores montados actualmente. Sirve para que solo suene uno a la vez:
+// cuando aparece un reproductor nuevo (ej: pasar de login a registro),
+// se pausan los anteriores.
+const activePlayers = new Set();
+
 export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
   const [volume, setVolume]           = useState(0.2);
   const [currentTime, setCurrentTime] = useState(0);
@@ -35,6 +40,23 @@ export default function MusicPlayerMini({ audioRef, isPlaying, setIsPlaying }) {
 
     return () => clearInterval(interval);
   }, [audioRef]);
+
+  // Solo un reproductor sonando: al montar pausa a los demás; al desmontar se pausa
+  useEffect(() => {
+    const me = { audioRef, setIsPlaying };
+
+    activePlayers.forEach((p) => {
+      if (p.audioRef.current !== audioRef?.current) p.audioRef.current?.pause();
+      p.setIsPlaying(false);
+    });
+    activePlayers.clear();
+    activePlayers.add(me);
+
+    return () => {
+      activePlayers.delete(me);
+      audioRef?.current?.pause();
+    };
+  }, [audioRef, setIsPlaying]);
 
   useEffect(() => {
     const audio = audioRef?.current;
