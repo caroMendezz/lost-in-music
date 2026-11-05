@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLang } from '../LangContext';
+import { useLang } from '../Langcontext';
 
 function ChangePassword() {
   const { t } = useLang();
@@ -39,7 +39,7 @@ function ChangePassword() {
       setLoading(true);
 
       const response = await fetch(
-        'http://localhost:3000/password/change/request',
+        `${API_URL}/password/change/request`,
         {
           method: 'POST',
           headers: {
@@ -88,7 +88,7 @@ function ChangePassword() {
       setLoading(true);
 
       const response = await fetch(
-        'http://localhost:3000/password/change/confirm',
+        `${API_URL}/password/change/confirm`,
         {
           method: 'POST',
           headers: {

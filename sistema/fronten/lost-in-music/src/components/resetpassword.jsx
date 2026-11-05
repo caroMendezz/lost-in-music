@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useLang } from './LangContext';
+import { useLang } from './Langcontext';
 import LangSelector from './LangSelector';
 import '../styles/login.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+import { API_URL } from "../services/http"; 
 
 async function post(path, body) {
   const res = await fetch(`${API_URL}${path}`, {

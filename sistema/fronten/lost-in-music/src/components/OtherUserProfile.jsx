@@ -7,7 +7,7 @@ import ReportModal from './ReportModal';
 import SuspendedProfile from './SuspendedProfile';
 
 
-const API_URL = 'http://localhost:3000';
+import { API_URL } from "../services/http"; 
 
 const TABS = [
   { id: 'posts', label: 'Publicaciones' },

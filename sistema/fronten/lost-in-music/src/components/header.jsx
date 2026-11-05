@@ -72,7 +72,7 @@ function Header() {
       setIsSearching(true);
       try {
         const token = localStorage.getItem('token');
-        const res = await fetch(`http://localhost:3000/users/search?q=${encodeURIComponent(searchQuery)}`, {
+        const res = await fetch(`${API_URL}/users/search?q=${encodeURIComponent(searchQuery)}`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 

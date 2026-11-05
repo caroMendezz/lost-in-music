@@ -148,8 +148,8 @@ const server = express();
 
 const httpServer = http.createServer(server);
 
-const PORT = 3000;
-const CLIENT_URL = "http://localhost:5173";
+const PORT = process.env.PORT_BACKEND || 3000;
+const CLIENT_URL = process.env.URL_FRONTEND;
 
 const io = new Server(httpServer, {
   cors: {
@@ -187,6 +187,9 @@ server.use((req, res, next) => {
   next();
 });
 
+server.get("/", (req, res) => {
+  res.json({ status: "ok", app: "Lost In Music" });
+});
 // Bitácora: registra todas las interacciones que no sean GET.
 server.use(auditLog);
 
@@ -592,8 +595,8 @@ const start = async () => {
 
     await connectDB();
 
-    httpServer.listen(process.env.PORT_BACKEND, () => {
-      console.log(`Server running on port ${process.env.PORT_BACKEND}`);
+    httpServer.listen(PORT, () => {
+      console.log("Server running on port", PORT);
     });
 
   } catch (error) {

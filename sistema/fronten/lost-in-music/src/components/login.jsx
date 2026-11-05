@@ -4,6 +4,7 @@ import { clearSession, fetchSession } from "../services/session";
 import { useLang } from "./Langcontext";
 import LangSelector from "./LangSelector";
 import "../styles/login.css";
+import { API_URL } from "../services/http";
 
 function Login({ goToRegister, goToResetPassword }) {
   const navigate = useNavigate();
@@ -52,7 +53,7 @@ function Login({ goToRegister, goToResetPassword }) {
     setSubmitError("");
 
     try {
-      const res = await fetch("http://localhost:3000/login", {
+      const res = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: emailUser, password }),

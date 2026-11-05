@@ -5,7 +5,7 @@ import '../styles/FriendsProfile.css'; // 👈 Nuevo CSS importado
 import Post from './post.jsx';
 import { notifyProfileUpdated } from '../hooks/useMyProfilePhoto';
 
-const API_URL = 'http://localhost:3000';
+import { API_URL } from "../services/http"; 
 
 const TABS = [
   { id: 'posts', label: 'Publicaciones' },

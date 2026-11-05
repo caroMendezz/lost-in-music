@@ -8,7 +8,7 @@ import { useLang } from './Langcontext'; // 👈 Hook de idioma
 import '../styles/Post.css';
 
 const SEE_MORE_LIMIT = 220;
-const API_URL = 'http://localhost:3000';
+import { API_URL } from "../services/http"; 
 
 const MAX_IMAGES = 10;
 const MAX_VIDEOS = 5;

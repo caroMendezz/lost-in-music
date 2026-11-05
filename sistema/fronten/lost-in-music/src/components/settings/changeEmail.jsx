@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { useLang } from "../LangContext";
+import { useLang } from "../Langcontext";
+import { API_URL } from "../../services/http";
 
 function ChangeEmail() {
   const { t } = useLang();
@@ -14,7 +15,7 @@ function ChangeEmail() {
     type: "",
   });
 
-  const API_URL = "http://localhost:3000";
+
 
   const getToken = () => localStorage.getItem("token");
 

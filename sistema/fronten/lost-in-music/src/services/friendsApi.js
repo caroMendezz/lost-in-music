@@ -1,5 +1,5 @@
 // Igual que messageService: se puede apuntar a otra API con VITE_API_URL
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+import { API_URL } from "./http";
 
 // Namespace de socket.io para la presencia (en línea / desconectado)
 export const PRESENCE_URL = `${API_URL}/presence`;

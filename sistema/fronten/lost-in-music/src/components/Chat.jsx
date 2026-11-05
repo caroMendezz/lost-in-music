@@ -34,10 +34,10 @@ export default function Chat({ currentUserId, receiverId }) {
           <li key={m.messageId}>
             {m.messageType === "text" && <span>{m.content}</span>}
             {m.messageType === "image" && (
-              <img src={`http://localhost:3000${m.fileUrl}`} alt={m.fileName} width={200} />
+              <img src={`${API_URL}${m.fileUrl}`} alt={m.fileName} width={200} />
             )}
             {m.messageType === "file" && (
-              <a href={`http://localhost:3000${m.fileUrl}`} download>
+              <a href={`${API_URL}${m.fileUrl}`} download>
                 {m.fileName}
               </a>
             )}

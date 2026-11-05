@@ -1,6 +1,8 @@
 // Servicio HTTP de mensajeria. Usa el backend real (Express, puerto 3000).
 
-export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+import { API_URL } from "./http";
+
+export { API_URL };
 
 // AJUSTAR: clave con la que tu login guarda el JWT en localStorage.
 const TOKEN_KEY = "token";

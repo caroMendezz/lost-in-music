@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000';
+import { API_URL } from "./http";
 
 const authHeaders = () => ({
   Authorization: `Bearer ${localStorage.getItem('token')}`,

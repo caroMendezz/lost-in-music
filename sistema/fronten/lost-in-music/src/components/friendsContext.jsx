@@ -2,6 +2,7 @@ import React, { createContext, useCallback, useContext, useEffect, useMemo, useS
 import { io } from 'socket.io-client';
 import { PRESENCE_URL, fetchFriends, fetchFriendRequests } from '../services/friendsApi';
 
+
 // Valor por defecto: así los componentes que lo usen fuera del provider no se rompen
 const FriendsContext = createContext({
   friends: [],

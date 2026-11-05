@@ -5,7 +5,7 @@ import '../styles/userProfileAdmin.css';
 import '../styles/FriendsProfile.css'; // 👈 CSS de amigos
 import Post from './post.jsx';
 
-const API_URL = 'http://localhost:3000';
+import { API_URL } from "../services/http"; 
 
 const TABS = [
   { id: 'posts', label: 'Publicaciones' },
