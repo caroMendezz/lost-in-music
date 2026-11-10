@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Header from "../components/header";
 import Footer from "../components/footer";
-import { useLang } from "../components/LangContext"; // Ajustá la ruta si es necesario
+import { useLang } from "../components/Langcontext"; // Ajustá la ruta si es necesario
 
 import ChangeEmail from "../components/settings/changeEmail";
 import ChangePassword from "../components/settings/changePassword";

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useLang } from './LangContext';
+import { useLang } from './Langcontext';
 import { useMyProfilePhoto } from '../hooks/useMyProfilePhoto';
 import '../styles/CreatePost.css';
 

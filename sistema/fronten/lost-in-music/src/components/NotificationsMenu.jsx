@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useNotifications } from '../hooks/useNotifications';
 import { resolveMedia } from '../services/friendsApi';
 import bellIcon from '../assets/notifications-icon.png';
-import '../styles/Notifications.css';
+import '../styles/notifications.css';
 
 function timeAgo(dateValue) {
   const diffSeconds = Math.floor((Date.now() - new Date(dateValue).getTime()) / 1000);

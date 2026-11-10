@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import ReactDOM from 'react-dom';
 import { useNavigate } from 'react-router-dom';
 import ThreadView from './ThreadView';
-import { useLang } from './LangContext';
+import { useLang } from './Langcontext';
 import '../styles/PostModal.css';
 
 function PostModal({ post, onClose, getReplies, onComment, onLike, now }) {

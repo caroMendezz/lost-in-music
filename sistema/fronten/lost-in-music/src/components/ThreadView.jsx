@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../styles/ThreadView.css';
-import { useLang } from './LangContext';
+import { useLang } from './Langcontext';
 
 /**
  * ThreadView
