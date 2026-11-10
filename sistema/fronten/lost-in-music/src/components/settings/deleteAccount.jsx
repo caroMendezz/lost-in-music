@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useLang } from '../LangContext';
+import { useLang } from '../Langcontext';
 
 function DeleteAccount() {
   const { t } = useLang();
