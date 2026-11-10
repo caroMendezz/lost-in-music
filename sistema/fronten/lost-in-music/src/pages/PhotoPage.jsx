@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ThreadView from '../components/ThreadView';
-import { useLang } from '../components/LangContext';
+import { useLang } from '../components/Langcontext';
 import '../styles/photo.css';
 
 function PhotoPage({ posts, getReplies, onComment, onLike }) {

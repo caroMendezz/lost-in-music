@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../services/http';
 import { useLang } from './Langcontext';
-import LangSelector from './LangSelector';
-import '../styles/Register.css';
+import LangSelector from './Langselector';
+import '../styles/register.css';
 import MusicPlayerMini from './MusicPlayerMini';
 import ImageCropperModal from './ImageCropperModal';
 

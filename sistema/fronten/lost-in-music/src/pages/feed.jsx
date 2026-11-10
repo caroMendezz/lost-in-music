@@ -3,7 +3,7 @@ import CreatePost from '../components/createPost';
 import Post from '../components/post';
 import { fetchPosts, createPostRequest } from '../services/postsApi';
 import { usePostActions } from '../hooks/usePostActions';
-import { useLang } from '../components/LangContext'; // 👈 Importamos idioma
+import { useLang } from '../components/Langcontext'; // 👈 Importamos idioma
 
 const idOf = (post) => post._id || post.id;
 

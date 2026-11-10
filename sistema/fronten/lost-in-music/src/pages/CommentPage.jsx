@@ -5,7 +5,7 @@ import Header from '../components/header';
 import LeftNav from '../components/leftNav';
 import Sidebar from '../components/sidebar';
 import Footer from '../components/footer';
-import { useLang } from '../components/LangContext';
+import { useLang } from '../components/Langcontext';
 import '../styles/CommentPage.css';
 
 function CommentPage({ getPost, getReplies, onComment, onLike }) {
