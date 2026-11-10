@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useLang } from './LangContext';
+import { useLang } from './Langcontext';
 import { useFriends } from './friendsContext';
 import {
   getConversations,

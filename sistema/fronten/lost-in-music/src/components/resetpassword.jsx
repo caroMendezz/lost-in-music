@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useLang } from './Langcontext';
-import LangSelector from './LangSelector';
+import LangSelector from './Langselector';
 import '../styles/login.css';
 
 import { API_URL } from "../services/http"; 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useLang } from './LangContext';
+import { useLang } from './Langcontext';
 import homeIcon from '../assets/home-icon.png';
 import messagesIcon from '../assets/messages-icon.png';
 import shopIcon from '../assets/shop-icon.png';

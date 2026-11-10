@@ -8,7 +8,7 @@ import logoIcon from '../assets/logo-icon.png';
 import { useLang } from './Langcontext';
 
 import { useMyProfilePhoto } from '../hooks/useMyProfilePhoto';
-import LangSelector from './LangSelector';
+import LangSelector from './Langselector';
 import NotificationsMenu from './NotificationsMenu';
 import { useSession } from '../hooks/sessionContext';
 import { clearSession } from '../services/session';
