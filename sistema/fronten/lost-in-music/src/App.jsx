@@ -17,7 +17,7 @@ import PostPage from "./pages/PostPage";
 import Configuracion from "./pages/settings";
 import PostModal from "./components/PostModal";
 import { usePosts } from "./hooks/UsePosts";
-import { LangProvider } from "./components/LangContext";
+import { LangProvider } from "./components/Langcontext";
 import { FriendsProvider } from "./components/friendsContext";
 import FriendsPage from "./pages/friendsPage";
 import MessagesPage from "./pages/messages/MessagesPage";
