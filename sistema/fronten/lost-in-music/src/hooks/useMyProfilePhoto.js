@@ -12,6 +12,7 @@ const readCachedUser = () => {
   }
 };
 
+
 const writeCachedUser = (user) => {
   try {
     localStorage.setItem(CACHED_USER_KEY, JSON.stringify({ ...readCachedUser(), ...user }));
