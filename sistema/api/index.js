@@ -148,7 +148,7 @@ const server = express();
 
 const httpServer = http.createServer(server);
 
-const PORT = process.env.PORT_BACKEND || 3000;
+const PORT = process.env.PORT || 3000;
 const CLIENT_URL = process.env.URL_FRONTEND;
 
 const io = new Server(httpServer, {
@@ -595,7 +595,7 @@ const start = async () => {
 
     await connectDB();
 
-    httpServer.listen(PORT, () => {
+    httpServer.listen(PORT, '0.0.0.0', () => {
       console.log("Server running on port", PORT);
     });
 
